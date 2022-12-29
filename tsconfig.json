@@ -1,0 +1,12 @@
+{
+  "include": ["./src/**/*"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "es2021",
+    "strict": true,
+    "moduleResolution": "Node",
+    "paths": {
+      "@": ["./src"]
+    }
+  }
+}

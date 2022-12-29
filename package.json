@@ -1,0 +1,26 @@
+{
+  "name": "chat",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "parcel ./src/views/index.pug --port=3000",
+    "build": "npm run dist-clean && parcel build ./src/views/index.pug",
+    "dist-clean": "rm -rf ./dist/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexYurin/chat.git"
+  },
+  "author": "Yalex",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alexYurin/chat/issues"
+  },
+  "homepage": "https://github.com/alexYurin/chat#readme",
+  "devDependencies": {
+    "@parcel/transformer-pug": "^2.8.2",
+    "@parcel/transformer-sass": "^2.8.2",
+    "parcel": "^2.8.2",
+    "parcel-resolver-tspaths": "^0.0.9"
+  }
+}

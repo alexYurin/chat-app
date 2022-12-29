@@ -1,0 +1,22 @@
+extends ../layouts/base
+
+block title
+  | Pages
+
+block content
+  -
+    const views = [
+      ['Main', 'main'],
+      ['Auth', 'auth'],
+      ['User', 'user'],
+      ['404', '404'],
+      ['Error', 'error'],
+    ]
+
+  h1 Pages:
+  ul
+    each view in views
+      - const [title, url] = view
+
+      li
+        a(href=`./${url}/index.pug`) #{title}
