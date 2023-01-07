@@ -5,7 +5,7 @@ export interface BaseComponentProps {
 }
 
 export default class BaseComponent<PropsType extends BaseComponentProps> {
-  protected template = ''
+  public template = ''
 
   constructor(public name: string | null = null) {
     if (typeof name === 'string') {

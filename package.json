@@ -3,15 +3,18 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "npm run dist:clean && parcel src/views/index.pug --port=3000",
+    "dev": "npm run dist:clean && parcel src/app.pug --port=3000",
     "start": "npm run build && node ./server.js",
-    "build": "npm run dist:clean && parcel build ./src/views/index.pug",
+    "build": "npm run dist:clean && parcel build ./src/app.pug",
     "lint": "eslint --ext .js,.ts .",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
     "dist:clean": "rm -rf ./dist/*"
   },
   "alias": {
-    "@components": "./src/components",
+    "components": "./src/components",
+    "controllers": "./src/controllers",
+    "views": "./src/views",
+    "models": "./src/models",
     "renderer": "./src/renderer",
     "utils": "./src/utils",
     "styles": "./src/styles"

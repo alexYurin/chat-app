@@ -4,4 +4,9 @@
     'button_primary': status === 'primary',
   }
 
-button(class=classNames).button #{slot}
+button(
+  type=type
+  name=name
+  class=classNames
+  disabled=disabled
+).button #{slot}
