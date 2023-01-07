@@ -1,0 +1,15 @@
+{
+  "extends": "@parcel/config-default",
+  "transformers": {
+    "bundle-text:*.pug": [
+      "@parcel/transformer-inline-string"
+    ],
+    "*.{ts,tsx}": [
+      "@parcel/transformer-typescript-tsc"
+    ]
+  },
+  "resolvers": [
+    "parcel-resolver-ts-base-url",
+    "..."
+  ]
+}

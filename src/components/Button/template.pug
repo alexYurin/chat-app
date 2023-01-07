@@ -1,0 +1,7 @@
+-
+  const classNames = {
+    [`${className}`]: typeof className === 'string',
+    'button_primary': status === 'primary',
+  }
+
+button(class=classNames).button #{slot}

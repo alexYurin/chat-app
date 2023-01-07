@@ -1,21 +1,5 @@
-include ../components/button/mixin
+extends ./base
 
-doctype html
-html
-  head
-    meta(charset="utf-8")
-    meta(http-equiv="X-UA-Compatible" content="ie=edge")
-    meta(name="description" content="Chat")
-    meta(
-      name="viewport"
-      content="width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no"
-    )
-    link(rel="icon" type="image/svg+xml" href="/static/images/favicon.png")
-
-    title
-      block title
-
-  body
-    block root
-
-    script(type="module" src="/src/app.ts")
+block root
+  main#root
+    block content

@@ -1,0 +1,7 @@
+-
+  const classNames = {
+    [`${className}`]: typeof className === 'string',
+    'link_primary': status === 'primary',
+  }
+
+a(href=link class=classNames).link #{slot}
