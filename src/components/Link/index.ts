@@ -1,5 +1,5 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index.'
-import pugTemplate from 'bundle-text:./template.pug'
+import templateString from 'bundle-text:./template.pug'
 import './styles.scss'
 
 export interface LinkProps extends BaseComponentProps {
@@ -8,10 +8,12 @@ export interface LinkProps extends BaseComponentProps {
   className?: string
 }
 
-export default class Button extends BaseComponent<LinkProps> {
-  constructor() {
-    super('button')
-  }
+class Link extends BaseComponent<LinkProps> {
+  public template = templateString
 
-  template = pugTemplate
+  constructor() {
+    super('link')
+  }
 }
+
+export default new Link()

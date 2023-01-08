@@ -1,0 +1,26 @@
+@use 'sass:math';
+@use 'sass:map';
+@use 'styles/config' as cfg;
+@use 'styles/themes' as *;
+
+@function theme-color($theme-name, $theme-color) {
+  $theme-colors: map.get($themes, $theme-name);
+
+  @if $theme-colors {
+    @return map.get($theme-colors, $theme-color);
+  }
+
+  @return null;
+}
+
+@function offset($increment: false) {
+  @if $increment {
+    @return calc(#{cfg.$offset} * #{$increment});
+  }
+
+  @return cfg.$offset;
+}
+
+@function half($size) {
+  @return math.div($size, 2);
+}

@@ -1,5 +1,5 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index.'
-import pugTemplate from 'bundle-text:./template.pug'
+import templateString from 'bundle-text:./template.pug'
 import './styles.scss'
 
 export interface ButtonProps extends BaseComponentProps {
@@ -9,10 +9,12 @@ export interface ButtonProps extends BaseComponentProps {
   className?: string
 }
 
-export default class Button extends BaseComponent<ButtonProps> {
+class Button extends BaseComponent<ButtonProps> {
+  public template = templateString
+
   constructor() {
     super('button')
   }
-
-  template = pugTemplate
 }
+
+export default new Button()

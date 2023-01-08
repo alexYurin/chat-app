@@ -1,0 +1,19 @@
+@use 'sass:color';
+@use 'sass:map';
+@use 'styles/colors' as clr;
+
+$theme-dark: (
+  primary: clr.$primary,
+  main-bg: clr.$background,
+  link: color.adjust(clr.$purple-100, $blackness: 10%),
+  text: color.adjust(clr.$comment, $lightness: 15%),
+) !default;
+
+$theme-light: (
+  primary: clr.$primary,
+) !default;
+
+$themes: (
+  'dark': $theme-dark,
+  'light': $theme-light,
+) !default;

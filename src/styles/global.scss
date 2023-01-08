@@ -1,3 +1,5 @@
+@use 'styles/config' as cfg;
+@use 'styles/mixins' as mx;
 
 html,
 body {
@@ -16,15 +18,22 @@ html {
 }
 
 body {
-  font-family: Arial, sans-serif;
+  @include mx.themify('background-color', 'main-bg');
+  @include mx.themify('color', 'text');
+
   height: 100%;
   margin: 0;
   padding: 0;
   width: 100%;
   font-size: 1.4rem;
+  font-family: cfg.$font-family-default, Verdana, Geneva, Tahoma, sans-serif;
 
   * {
     box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
   }
+}
+
+.root {
+  height: 100%;
 }

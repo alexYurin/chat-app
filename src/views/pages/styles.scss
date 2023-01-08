@@ -1,0 +1,26 @@
+@use 'styles/functions' as fn;
+
+.pages {
+  height: 100%;
+
+  &__header {
+    margin: 0;
+  }
+
+  &__nav {
+    margin-top: fn.offset(2);
+  }
+
+  &__list {
+  }
+
+  &__item {
+    &:not(:last-child) {
+      margin-bottom: fn.offset();
+    }
+  }
+
+  &__link {
+    font-size: 1.6rem;
+  }
+}

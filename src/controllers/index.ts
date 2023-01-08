@@ -1,1 +1,1 @@
-export { default as PageController } from './Page'
+export { default as ViewController } from './View'

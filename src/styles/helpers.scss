@@ -1,0 +1,38 @@
+@use 'styles/config' as cfg;
+
+.flex {
+  display: flex;
+}
+
+.row {
+  @extend .flex;
+  flex-wrap: wrap;
+
+  &_nowrap {
+    flex-wrap: nowrap;
+  }
+}
+
+.column {
+  @extend .flex;
+  flex-direction: column;
+}
+
+.center {
+  @extend .flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.round {
+  border-radius: cfg.$radius;
+}
+
+.circle {
+  border-radius: 50%;
+}
+
+.offset-drop {
+  margin: 0;
+  padding: 0;
+}

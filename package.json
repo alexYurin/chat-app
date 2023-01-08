@@ -3,14 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "npm run dist:clean && parcel src/app.pug --port=3000",
+    "dev": "npm run dist:clean && parcel src/index.pug --port=3000",
     "start": "npm run build && node ./server.js",
-    "build": "npm run dist:clean && parcel build ./src/app.pug",
-    "lint": "eslint --ext .js,.ts .",
+    "build": "npm run dist:clean && parcel build ./src/index.pug",
+    "lint": "eslint --ext .js, .ts .",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
     "dist:clean": "rm -rf ./dist/*"
   },
   "alias": {
+    "router": "./router",
+    "static": "./static",
     "components": "./src/components",
     "controllers": "./src/controllers",
     "views": "./src/views",
@@ -21,6 +23,12 @@
   },
   "engines": {
     "node": ">=12"
+  },
+  "targets": {
+    "global": {
+      "context": "browser",
+      "outputFormat": "global"
+    }
   },
   "repository": {
     "type": "git",

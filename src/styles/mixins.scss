@@ -1,0 +1,58 @@
+@use 'sass:map';
+@use 'sass:color';
+@use 'styles/functions' as fn;
+@use 'styles/config' as cfg;
+@use 'styles/themes' as tm;
+
+// Media
+@mixin tablet {
+  @media only screen and (min-width: ((cfg.$tablet + 1) * 1px)) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media only screen and (min-width: ((cfg.$desktop + 1) * 1px)) {
+    @content;
+  }
+}
+
+@mixin wide-screen {
+  @media only screen and (min-width: ((cfg.$wide-screen + 1) * 1px)) {
+    @content;
+  }
+}
+
+// Theme
+@mixin themify($property, $theme-color, $adjust: false, $level: 0%) {
+  @each $theme-name in cfg.$theme-names {
+    html[class='theme-#{$theme-name}'] & {
+      @if $adjust == 'blackness' {
+        #{$property}: color.adjust(
+          fn.theme-color($theme-name, $theme-color),
+          $blackness: $level
+        );
+      } @else if $adjust == 'lightness' {
+        #{$property}: color.adjust(
+          fn.theme-color($theme-name, $theme-color),
+          $lightness: $level
+        );
+      } @else {
+        #{$property}: fn.theme-color($theme-name, $theme-color);
+      }
+    }
+  }
+}
+
+// Typography
+@mixin set-font($size, $weight: fasle, $color: false) {
+  font-size: $size;
+
+  @if $weight {
+    font-weight: map.get(cfg.$font-weights, $weight);
+  }
+
+  @if $color {
+    color: $color;
+  }
+}

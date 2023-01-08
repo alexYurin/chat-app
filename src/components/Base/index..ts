@@ -1,4 +1,4 @@
-import Renderer from 'renderer'
+import Renderer from 'renderer/Renderer'
 
 export interface BaseComponentProps {
   slot?: string
