@@ -1,6 +1,15 @@
 import view from 'bundle-text:./view.pug'
-import model from './model'
-import Route from 'router/Route'
+import createModel from './model'
+import ViewModel from 'views/ViewModel'
+import routes from 'router/routes'
 import './styles.scss'
 
-new Route(view, model)
+const { pathname, title } = routes.chat
+
+export default new ViewModel(
+  pathname,
+  view,
+  createModel({
+    title,
+  })
+)

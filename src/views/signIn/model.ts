@@ -1,15 +1,14 @@
 import { Link } from 'components/index'
-import routes from 'router/routes'
+import { BaseModelType } from 'views/ViewModel'
 
-const { pathname, title } = routes.signIn
+export type SignInModelType = BaseModelType
 
-const model = {
-  pathname,
+const createModel = ({ title }: SignInModelType) => ({
   title,
   backLink: new Link().create({
     href: '/',
     slot: 'Back',
   }),
-}
+})
 
-export default model
+export default createModel

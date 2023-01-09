@@ -2,7 +2,7 @@ import BaseComponent, {
   BaseComponentProps,
   BaseComponentOptions,
 } from 'components/Base/index.'
-import Router from 'router/Router'
+import HistoryPusher from 'router/HistoryPusher'
 import templateString from 'bundle-text:./template.pug'
 import './styles.scss'
 
@@ -27,7 +27,7 @@ export default class Link extends BaseComponent<LinkProps> {
             if (target instanceof HTMLAnchorElement) {
               event.preventDefault()
 
-              Router.redirectTo(target.href)
+              HistoryPusher.pushTo(target.href)
             }
           },
         },

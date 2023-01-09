@@ -1,27 +1,54 @@
-export type RouterOptionsType = {
-  onChangeURL?: (event: Event) => void
-}
+import HistoryPusher from 'router/HistoryPusher'
+import routes from 'router/routes'
+import * as views from 'views/index'
+
+const routesCollection = Object.values(routes).map((route) => route.pathname)
+
+const isDefinedPath = (pathname: string) => routesCollection.includes(pathname)
+
+const isMatchedPaths = (currentPathname: string, pathname: string) =>
+  currentPathname === pathname
 
 export default class Router {
-  constructor(private options: RouterOptionsType = {}) {
+  private currentPathname = window.location.pathname
+
+  constructor() {
     this.addListeners()
+    this.init()
 
     return this
   }
 
-  private onChange(event: Event) {
-    if (typeof this.options.onChangeURL === 'function') {
-      this.options.onChangeURL(event)
+  private init() {
+    const isUnknownRoute = !isDefinedPath(this.currentPathname)
+
+    if (isUnknownRoute) {
+      return HistoryPusher.pushTo(routes.notFound.pathname)
     }
+
+    this.renderCurrentView()
+  }
+
+  private onChangeUrl() {
+    this.currentPathname = window.location.pathname
+    this.renderCurrentView()
+  }
+
+  private renderCurrentView() {
+    Object.values(views).forEach((View) => {
+      if (this.isCurrentRoute(View.pathname)) {
+        View.render()
+      }
+    })
   }
 
   private addListeners() {
-    window.addEventListener('popstate', this.onChange.bind(this))
+    new HistoryPusher({
+      onChangeURL: this.onChangeUrl.bind(this),
+    })
   }
 
-  static redirectTo(url: string) {
-    window.history.pushState({}, '', url)
-
-    window.dispatchEvent(new Event('popstate'))
+  public isCurrentRoute(pathname: string) {
+    return isMatchedPaths(this.currentPathname, pathname)
   }
 }

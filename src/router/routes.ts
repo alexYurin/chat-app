@@ -29,4 +29,6 @@ const routes = {
   },
 }
 
+export type RoutesTypes = typeof routes
+
 export default routes

@@ -1,15 +1,14 @@
 import { Link } from 'components/index'
-import routes from 'router/routes'
+import { BaseModelType } from 'views/ViewModel'
 
-const { pathname, title } = routes.error
+export type ErrorModelType = BaseModelType
 
-const model = {
-  pathname,
+const createModel = ({ title }: ErrorModelType) => ({
   title,
   backLink: new Link().create({
     href: '/',
     slot: 'Back',
   }),
-}
+})
 
-export default model
+export default createModel

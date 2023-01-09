@@ -1,3 +1,5 @@
 import 'styles/index.scss'
 import 'components'
-import 'views'
+import Router from 'router/Router'
+
+new Router()

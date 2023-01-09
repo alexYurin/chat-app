@@ -1,12 +1,14 @@
 import { Link } from 'components/index'
-import routes from 'router/routes'
+import { BaseModelType } from 'views/ViewModel'
+import { RoutesTypes } from 'router/routes'
 
-const { pathname, title } = routes.pages
+export interface PagesModelType extends BaseModelType {
+  routes: RoutesTypes
+}
 
 const isNotRootLocation = (pathname: string) => pathname !== '/'
 
-const model = {
-  pathname,
+const createModel = ({ routes, title }: PagesModelType) => ({
   title,
   links: Object.values(routes).reduce((currentRoutes, route) => {
     if (isNotRootLocation(route.pathname)) {
@@ -22,6 +24,6 @@ const model = {
 
     return currentRoutes
   }, [] as string[]),
-}
+})
 
-export default model
+export default createModel
