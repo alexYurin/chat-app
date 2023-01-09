@@ -1,4 +1,4 @@
-import { RendererType } from 'renderer'
+import { RendererType } from 'renderer/Renderer'
 
 export default abstract class BaseRenderer {
   constructor(public name: RendererType) {
