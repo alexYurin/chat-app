@@ -19,8 +19,8 @@ export default class HistoryPusher {
     window.addEventListener('popstate', this.onChange.bind(this))
   }
 
-  static pushTo(url: string) {
-    window.history.pushState({}, '', url)
+  static pushTo(url: string, state = {}, title = '') {
+    window.history.pushState(state, title, url)
 
     window.dispatchEvent(new Event('popstate'))
   }

@@ -11,5 +11,9 @@
   "resolvers": [
     "parcel-resolver-ts-base-url",
     "..."
+  ],
+  "reporters": [
+    "...",
+    "parcel-reporter-clean-dist"
   ]
 }
