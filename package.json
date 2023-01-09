@@ -5,9 +5,14 @@
   "scripts": {
     "dev": "parcel src/index.pug --port=3000",
     "start": "npm run build && node ./server.js",
-    "build": "parcel build ./src/index.pug",
+    "build": "parcel build ./src/index.pug && cp _redirects dist",
     "lint": "eslint '**/*.{ts,tsx}'",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
+  },
+  "staticFiles": {
+    "staticPath": [
+      "./_redirects"
+    ]
   },
   "alias": {
     "router": "./router",
