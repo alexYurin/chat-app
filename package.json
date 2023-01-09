@@ -9,11 +9,6 @@
     "lint": "eslint '**/*.{ts,tsx}'",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
   },
-  "staticFiles": {
-    "staticPath": [
-      "./_redirects"
-    ]
-  },
   "alias": {
     "router": "./router",
     "static": "./static",

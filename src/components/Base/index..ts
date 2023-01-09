@@ -13,7 +13,7 @@ export interface BaseComponentProps {
   slot?: string
 }
 
-const createRandomId = () => (+new Date()).toString(36).slice(-5)
+const createRandomId = () => `_id_${(+new Date()).toString(36).slice(-5)}`
 
 export default class BaseComponent<PropsType extends BaseComponentProps> {
   public id = ''
@@ -58,7 +58,7 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
       elementConatiner.innerHTML = Renderer.toHTML(this.template, props)
 
       const element = elementConatiner.firstElementChild
-      element?.setAttribute('data-id', this.id)
+      element?.setAttribute('data-component-id', this.id)
 
       return elementConatiner.innerHTML
     }
@@ -68,7 +68,7 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
 
   public getElement() {
     if (this.id) {
-      return document.querySelector(`[data-id=${this.id}]`)
+      return document.querySelector(`[data-component-id=${this.id}]`)
     } else {
       throw new Error('Can`t get component before create')
     }
