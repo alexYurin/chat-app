@@ -8,12 +8,10 @@ export interface LinkProps extends BaseComponentProps {
   className?: string
 }
 
-class Link extends BaseComponent<LinkProps> {
+export default class Link extends BaseComponent<LinkProps> {
   public template = templateString
 
   constructor() {
     super('link')
   }
 }
-
-export default new Link()

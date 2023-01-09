@@ -1,0 +1,7 @@
+import 'views/pages'
+import 'views/signIn'
+import 'views/signUp'
+import 'views/chat'
+import 'views/profile'
+import 'views/notFound'
+import 'views/error'

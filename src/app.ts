@@ -1,10 +1,3 @@
-import 'components/index'
 import 'styles/index.scss'
-
-import 'models/pages'
-import 'models/signIn'
-import 'models/signUp'
-import 'models/chat'
-import 'models/profile'
-import 'models/notFound'
-import 'models/error'
+import 'components'
+import 'views'

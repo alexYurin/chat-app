@@ -14,9 +14,7 @@
     "router": "./router",
     "static": "./static",
     "components": "./src/components",
-    "controllers": "./src/controllers",
     "views": "./src/views",
-    "models": "./src/models",
     "renderer": "./src/renderer",
     "utils": "./src/utils",
     "styles": "./src/styles"

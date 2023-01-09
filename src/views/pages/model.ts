@@ -1,6 +1,4 @@
-import { ViewController } from 'controllers/index'
 import { Link } from 'components/index'
-import view from 'views/pages'
 import routes from 'router/routes'
 
 const { pathname, title } = routes.pages
@@ -14,7 +12,7 @@ const model = {
     if (isNotRootLocation(route.pathname)) {
       return [
         ...currentRoutes,
-        Link.create({
+        new Link().create({
           className: 'pages__link',
           href: route.pathname,
           slot: route.title,
@@ -26,4 +24,4 @@ const model = {
   }, [] as string[]),
 }
 
-new ViewController(view, model)
+export default model

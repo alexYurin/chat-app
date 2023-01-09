@@ -11,8 +11,6 @@
       "router/*": ["./src/router/*"],
       "styles/*": ["./src/styles/*"],
       "views/*": ["./src/views/*"],
-      "models/*": ["./src/models/*"],
-      "controllers/*": ["./src/controllers/*"],
       "components/*": ["./src/components/*"],
       "renderer/*": ["./src/renderer/*"],
       "utils/*": ["./src/utils/*"]

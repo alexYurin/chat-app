@@ -9,12 +9,10 @@ export interface ButtonProps extends BaseComponentProps {
   className?: string
 }
 
-class Button extends BaseComponent<ButtonProps> {
+export default class Button extends BaseComponent<ButtonProps> {
   public template = templateString
 
   constructor() {
     super('button')
   }
 }
-
-export default new Button()

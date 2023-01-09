@@ -1,4 +1,6 @@
-import template from 'bundle-text:./index.pug'
+import view from 'bundle-text:./view.pug'
+import model from './model'
+import Route from 'router/Route'
 import './styles.scss'
 
-export default template
+new Route(view, model)

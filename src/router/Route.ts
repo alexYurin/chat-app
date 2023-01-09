@@ -2,7 +2,7 @@ import Renderer from 'renderer/Renderer'
 import Router from 'router/Router'
 import routes from 'router/routes'
 
-export type BaseModelProps = {
+export type BaseModelType = {
   pathname: string
   title: string
 }
@@ -13,18 +13,18 @@ const SELECTORS = {
 
 const routesCollection = Object.values(routes).map((route) => route.pathname)
 
-const isDefinedRoute = (pathname: string) => routesCollection.includes(pathname)
+const isDefinedPath = (pathname: string) => routesCollection.includes(pathname)
 
-const isMatchedRoutes = (currentPathname: string, pathname: string) =>
+const isMatchedPaths = (currentPathname: string, pathname: string) =>
   currentPathname === pathname
 
-export default class ViewController<ModelProps extends BaseModelProps> {
+export default class Route<ModelType extends BaseModelType> {
   private pathname = ''
   private currentPathname = window.location.pathname
   private HTMLRootElement = document.querySelector(SELECTORS.root)
 
-  constructor(private template: string, private props: ModelProps) {
-    this.pathname = props.pathname
+  constructor(private view: string, private model: ModelType) {
+    this.pathname = model.pathname
 
     this.addListeners()
     this.init()
@@ -33,11 +33,11 @@ export default class ViewController<ModelProps extends BaseModelProps> {
   }
 
   private init() {
-    if (!isDefinedRoute(this.currentPathname)) {
+    if (!isDefinedPath(this.currentPathname)) {
       return Router.redirectTo(this.pathname)
     }
 
-    if (isMatchedRoutes(this.currentPathname, this.pathname)) {
+    if (isMatchedPaths(this.currentPathname, this.pathname)) {
       this.renderModel()
     }
   }
@@ -52,12 +52,9 @@ export default class ViewController<ModelProps extends BaseModelProps> {
     if (
       Renderer &&
       this.HTMLRootElement &&
-      isMatchedRoutes(this.currentPathname, this.pathname)
+      isMatchedPaths(this.currentPathname, this.pathname)
     ) {
-      this.HTMLRootElement.innerHTML = Renderer.toHTML(
-        this.template,
-        this.props
-      )
+      this.HTMLRootElement.innerHTML = Renderer.toHTML(this.view, this.model)
     }
   }
 
