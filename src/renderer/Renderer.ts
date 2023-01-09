@@ -5,9 +5,7 @@ export type RendererType = 'pug'
 
 const DEFAULT_RENDERER = process.env.HTML_RENDERER as RendererType
 
-const createRenderer = (
-  renderer: RendererType
-): AbstractRenderer | undefined => {
+const createRenderer = (renderer: RendererType): AbstractRenderer => {
   switch (renderer) {
     case 'pug':
       return new PugRenderer({

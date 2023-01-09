@@ -16,24 +16,12 @@ export default class Router {
   }
 
   private addListeners() {
-    window.addEventListener('changeurl', this.onChange.bind(this))
+    window.addEventListener('popstate', this.onChange.bind(this))
   }
 
   static redirectTo(url: string) {
     window.history.pushState({}, '', url)
 
-    window.dispatchEvent(new Event('changeurl'))
+    window.dispatchEvent(new Event('popstate'))
   }
 }
-
-const onAnchorElementClick = (event: Event) => {
-  const target = event.target
-
-  if (target instanceof HTMLAnchorElement) {
-    event.preventDefault()
-
-    Router.redirectTo(target.href)
-  }
-}
-
-window.addEventListener('click', onAnchorElementClick)

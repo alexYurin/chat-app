@@ -21,7 +21,9 @@ const isMatchedPaths = (currentPathname: string, pathname: string) =>
 export default class Route<ModelType extends BaseModelType> {
   private pathname = ''
   private currentPathname = window.location.pathname
-  private HTMLRootElement = document.querySelector(SELECTORS.root)
+  private HTMLRootElement = document.querySelector(
+    SELECTORS.root
+  ) as HTMLElement
 
   constructor(private view: string, private model: ModelType) {
     this.pathname = model.pathname
@@ -33,11 +35,13 @@ export default class Route<ModelType extends BaseModelType> {
   }
 
   private init() {
-    if (!isDefinedPath(this.currentPathname)) {
-      return Router.redirectTo(this.pathname)
+    const isUnknownRoute = !isDefinedPath(this.currentPathname)
+
+    if (isUnknownRoute) {
+      return Router.redirectTo(routes.notFound.pathname)
     }
 
-    if (isMatchedPaths(this.currentPathname, this.pathname)) {
+    if (this.isCurrentRoute()) {
       this.renderModel()
     }
   }
@@ -49,11 +53,7 @@ export default class Route<ModelType extends BaseModelType> {
   }
 
   private renderModel() {
-    if (
-      Renderer &&
-      this.HTMLRootElement &&
-      isMatchedPaths(this.currentPathname, this.pathname)
-    ) {
+    if (this.isCurrentRoute()) {
       this.HTMLRootElement.innerHTML = Renderer.toHTML(this.view, this.model)
     }
   }
@@ -62,5 +62,9 @@ export default class Route<ModelType extends BaseModelType> {
     new Router({
       onChangeURL: this.onChangeUrl.bind(this),
     })
+  }
+
+  public isCurrentRoute() {
+    return isMatchedPaths(this.currentPathname, this.pathname)
   }
 }
