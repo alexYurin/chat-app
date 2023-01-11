@@ -1,5 +1,5 @@
 import { Title, Link } from 'components/index'
-import { BaseModelType } from 'views/ViewModel'
+import { BaseModelType } from 'layouts/LayoutModel'
 import { RoutesTypes } from 'router/routes'
 
 export interface PagesModelType extends BaseModelType {
@@ -8,7 +8,7 @@ export interface PagesModelType extends BaseModelType {
 
 const isNotRootLocation = (pathname: string) => pathname !== '/'
 
-const createModel = ({ routes, title }: PagesModelType) => ({
+const modelConstructor = ({ routes, title }: PagesModelType) => ({
   title: new Title().create({
     level: 1,
     slot: title,
@@ -29,4 +29,6 @@ const createModel = ({ routes, title }: PagesModelType) => ({
   }, [] as string[]),
 })
 
-export default createModel
+export type PagesModelConstructorType = ReturnType<typeof modelConstructor>
+
+export default modelConstructor

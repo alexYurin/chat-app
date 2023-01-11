@@ -1,0 +1,13 @@
+section.profile-layout.column.center.h100
+  | !{title}
+
+  form.form.auth__form
+    each field in fields || []
+      fieldset.form__fieldset
+        .form__control
+          label.form__label !{field.label}
+          | !{field.input}
+    .form__control.form__control_action
+      | !{submitButton}
+    .form__control.form__control_footer
+      | !{backLink}

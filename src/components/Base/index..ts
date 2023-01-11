@@ -18,7 +18,9 @@ export interface BaseComponentProps {
   slot?: string
 }
 
-const createRandomId = () => `_id_${(+new Date()).toString(36).slice(-5)}`
+const generateRandomId = () => `_id_${(+new Date()).toString(36).slice(-5)}`
+
+const componentAttributeNameId = 'data-component-id'
 
 export default class BaseComponent<PropsType extends BaseComponentProps> {
   public id = ''
@@ -45,7 +47,7 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
       listeners.forEach((listener) => {
         window.addEventListener(listener.eventType, (event: Event) => {
           if (
-            event.target === this.getElement() &&
+            event.target === this.getCurrentElement() &&
             typeof listener.callback === 'function'
           ) {
             listener.callback(event)
@@ -57,23 +59,23 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
 
   public create(props: PropsType): string {
     if (Renderer) {
-      this.id = createRandomId()
+      this.id = generateRandomId()
 
-      const elementConatiner = document.createElement('div')
-      elementConatiner.innerHTML = Renderer.toHTML(this.template, props)
+      const elementTempContainer = document.createElement('div')
+      elementTempContainer.innerHTML = Renderer.toHTML(this.template, props)
 
-      const element = elementConatiner.firstElementChild
-      element?.setAttribute('data-component-id', this.id)
+      const element = elementTempContainer.firstElementChild
+      element?.setAttribute(componentAttributeNameId, this.id)
 
-      return elementConatiner.innerHTML
+      return elementTempContainer.innerHTML
     }
 
     return ''
   }
 
-  public getElement() {
+  public getCurrentElement() {
     if (this.id) {
-      return document.querySelector(`[data-component-id=${this.id}]`)
+      return document.querySelector(`[${componentAttributeNameId}=${this.id}]`)
     } else {
       throw new Error('Can`t get component before create')
     }

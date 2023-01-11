@@ -5,8 +5,8 @@ const { pathname, title } = routes.error
 
 export default new PlaceholderLayout({
   pathname,
+  pageTitle: title,
+}).createModel({
   title,
   description: 'Мы уже фиксим',
-  linkUrl: '/',
-  linkText: 'К списку страниц',
 })

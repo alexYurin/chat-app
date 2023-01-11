@@ -1,6 +1,6 @@
 const routes = {
   pages: {
-    title: 'Pages',
+    title: 'Страницы',
     pathname: '/',
   },
   signIn: {
@@ -12,11 +12,11 @@ const routes = {
     pathname: '/sign-up',
   },
   chat: {
-    title: 'Chat',
+    title: 'Чат',
     pathname: '/chat',
   },
   profile: {
-    title: 'Profile',
+    title: 'Профиль',
     pathname: '/profile',
   },
   notFound: {

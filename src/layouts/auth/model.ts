@@ -1,5 +1,5 @@
 import { Title, Link, Input, Button } from 'components/index'
-import { BaseModelType } from 'views/ViewModel'
+import { BaseModelType } from 'layouts/LayoutModel'
 
 export type AuthFieldType = {
   label: string
@@ -19,7 +19,7 @@ export interface AuthModelType extends BaseModelType {
   backLinkText: string
 }
 
-const createModel = ({
+const modelConstructor = ({
   title,
   fields,
   submitButtonText,
@@ -54,4 +54,6 @@ const createModel = ({
   }),
 })
 
-export default createModel
+export type AuthModelConstructorType = ReturnType<typeof modelConstructor>
+
+export default modelConstructor

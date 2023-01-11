@@ -1,16 +1,9 @@
-import view from 'bundle-text:./view.pug'
-import createModel from './model'
 import routes from 'router/routes'
-import ViewModel from 'views/ViewModel'
-import './styles.scss'
+import { PagesLayout } from 'layouts/index'
 
 const { pathname, title } = routes.pages
 
-export default new ViewModel(
-  pathname,
-  view,
-  createModel({
-    routes,
-    title,
-  })
-)
+export default new PagesLayout({ pathname, pageTitle: title }).createModel({
+  title,
+  routes,
+})

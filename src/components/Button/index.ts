@@ -6,8 +6,9 @@ import templateString from 'bundle-text:./template.pug'
 import './styles.scss'
 
 export interface ButtonProps extends BaseComponentProps {
-  type?: 'button' | 'submit'
+  type?: HTMLButtonElement['type']
   name?: string
+  value?: string
 }
 
 export default class Button extends BaseComponent<ButtonProps> {

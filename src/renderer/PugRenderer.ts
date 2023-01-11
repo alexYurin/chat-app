@@ -1,5 +1,5 @@
 import pug from 'pug'
-import BaseRenderer from './AbstractRenderer'
+import BaseRenderer from './BaseRenderer'
 
 export default class PugRenderer extends BaseRenderer {
   constructor(private rendererOptions: pug.Options = {}) {

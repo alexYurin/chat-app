@@ -1,27 +1,24 @@
 import { Title, Link } from 'components/index'
-import { BaseModelType } from 'views/ViewModel'
+import { BaseModelType } from 'layouts/LayoutModel'
 
 export interface PlaceholderModelType extends BaseModelType {
   description: string
-  linkUrl: string
-  linkText: string
 }
 
-const createModel = ({
-  title,
-  description,
-  linkUrl,
-  linkText,
-}: PlaceholderModelType) => ({
+const modelConstructor = ({ title, description }: PlaceholderModelType) => ({
   title: new Title().create({
     level: 1,
     slot: title,
   }),
   description,
   backLink: new Link().create({
-    href: linkUrl,
-    slot: linkText,
+    href: '/',
+    slot: 'К списку страниц',
   }),
 })
 
-export default createModel
+export type PlaceholderModelConstructorType = ReturnType<
+  typeof modelConstructor
+>
+
+export default modelConstructor

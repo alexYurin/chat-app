@@ -1,14 +1,18 @@
-import view from 'bundle-text:./view.pug'
-import createModel, { PlaceholderModelType } from './model'
-import ViewModel from 'layouts/ViewModel'
+import layout from 'bundle-text:./layout.pug'
+import modelConstructor, {
+  PlaceholderModelType,
+  PlaceholderModelConstructorType,
+} from './model'
+import BaseLayout, { BaseLayoutProps } from 'layouts/BaseLayout'
 import './styles.scss'
 
-export interface PlaceholderLayoutProps extends PlaceholderModelType {
-  pathname: string
-}
+export type PlaceholderLayoutProps = BaseLayoutProps
 
-export default class PlaceholderLayout {
-  constructor({ pathname, ...modelProps }: PlaceholderLayoutProps) {
-    return new ViewModel(pathname, view, createModel(modelProps))
-  }
+export default class PlaceholderLayout extends BaseLayout<
+  PlaceholderLayoutProps,
+  PlaceholderModelType,
+  PlaceholderModelConstructorType
+> {
+  public layout = layout
+  public modelConstructor = modelConstructor
 }

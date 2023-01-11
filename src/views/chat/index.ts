@@ -1,15 +1,12 @@
-import view from 'bundle-text:./view.pug'
-import createModel from './model'
-import ViewModel from 'views/ViewModel'
 import routes from 'router/routes'
-import './styles.scss'
+import { PlaceholderLayout } from 'layouts/index'
 
 const { pathname, title } = routes.chat
 
-export default new ViewModel(
+export default new PlaceholderLayout({
   pathname,
-  view,
-  createModel({
-    title,
-  })
-)
+  pageTitle: title,
+}).createModel({
+  title,
+  description: 'Будет реализован в следующих спринтах 😜',
+})

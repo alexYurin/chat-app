@@ -8,20 +8,26 @@ const SELECTORS = {
   root: '#root',
 }
 
-export default class ViewModel<ModelType extends BaseModelType> {
+export default class LayoutModel<ModelType extends BaseModelType> {
   private HTMLRootElement = document.querySelector(
     SELECTORS.root
   ) as HTMLElement
 
   constructor(
     public pathname: string,
-    private view: string,
+    public pageTitle: string,
+    private layout: string,
     private model: ModelType
   ) {
     return this
   }
 
+  private setPageTitle() {
+    document.title = this.pageTitle
+  }
+
   public render() {
-    this.HTMLRootElement.innerHTML = Renderer.toHTML(this.view, this.model)
+    this.setPageTitle()
+    this.HTMLRootElement.innerHTML = Renderer.toHTML(this.layout, this.model)
   }
 }

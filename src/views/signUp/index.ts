@@ -3,8 +3,7 @@ import { AuthLayout } from 'layouts/index'
 
 const { pathname, title } = routes.signUp
 
-export default new AuthLayout({
-  pathname,
+export default new AuthLayout({ pathname, pageTitle: title }).createModel({
   title,
   submitButtonText: 'Зарегистрироваться',
   footerLinkUrl: routes.signIn.pathname,

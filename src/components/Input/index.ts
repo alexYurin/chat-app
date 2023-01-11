@@ -9,7 +9,8 @@ import './styles.scss'
 export interface InputProps extends BaseComponentProps {
   status?: ComponentStatusType
   name: string
-  type?: string
+  type?: HTMLInputElement['type']
+  value?: string
   disabled?: boolean
   readonly?: boolean
   placeholder?: string

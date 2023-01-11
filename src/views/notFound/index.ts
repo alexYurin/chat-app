@@ -5,8 +5,8 @@ const { pathname, title } = routes.notFound
 
 export default new PlaceholderLayout({
   pathname,
+  pageTitle: title,
+}).createModel({
   title,
   description: 'Не туда попали',
-  linkUrl: '/',
-  linkText: 'К списку страниц',
 })

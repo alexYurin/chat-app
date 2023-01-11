@@ -1,15 +1,33 @@
-import view from 'bundle-text:./view.pug'
-import createModel from './model'
 import routes from 'router/routes'
-import ViewModel from 'views/ViewModel'
-import './styles.scss'
+import { ProfileLayout } from 'layouts/index'
 
 const { pathname, title } = routes.profile
 
-export default new ViewModel(
-  pathname,
-  view,
-  createModel({
-    title,
-  })
-)
+export default new ProfileLayout({ pathname, pageTitle: title }).createModel({
+  title,
+  changeDataLinkUrl: '#',
+  changeDataLinkText: 'Изменить данные',
+  changePasswordLinkUrl: '#',
+  changePasswordLinkText: 'Изменить пароль',
+  logoutLinkUrl: '/',
+  logoutLinkText: 'Выйти',
+  submitButtonText: 'Сохранить',
+  fields: [
+    {
+      label: 'Почта',
+      input: {
+        name: 'email',
+        type: 'email',
+        required: true,
+      },
+    },
+    {
+      label: 'Логин',
+      input: {
+        name: 'login',
+        type: 'text',
+        required: true,
+      },
+    },
+  ],
+})

@@ -1,17 +1,17 @@
 import layout from 'bundle-text:./layout.pug'
 import modelConstructor, {
-  AuthModelType,
-  AuthModelConstructorType,
+  ProfileModelType,
+  ProfileModelConstructorType,
 } from './model'
 import BaseLayout, { BaseLayoutProps } from 'layouts/BaseLayout'
 import './styles.scss'
 
-export type AuthLayoutProps = BaseLayoutProps
+export type ProfileLayoutProps = BaseLayoutProps
 
-export default class AuthLayout extends BaseLayout<
-  AuthLayoutProps,
-  AuthModelType,
-  AuthModelConstructorType
+export default class ProfileLayout extends BaseLayout<
+  ProfileLayoutProps,
+  ProfileModelType,
+  ProfileModelConstructorType
 > {
   public layout = layout
   public modelConstructor = modelConstructor
