@@ -1,0 +1,9 @@
+-
+  const classNames = {
+    [`${className}`]: typeof className === 'string',
+    [`title_level_h${level}`]: level > 0 && level <= 6,
+  }
+
+  const tag = tagName || 'h1'
+
+#{tag}(class=classNames).title #{slot}

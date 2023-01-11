@@ -1,15 +1,12 @@
-import view from 'bundle-text:./view.pug'
-import createModel from './model'
 import routes from 'router/routes'
-import ViewModel from 'views/ViewModel'
-import './styles.scss'
+import { PlaceholderLayout } from 'layouts/index'
 
 const { pathname, title } = routes.notFound
 
-export default new ViewModel(
+export default new PlaceholderLayout({
   pathname,
-  view,
-  createModel({
-    title,
-  })
-)
+  title,
+  description: 'Не туда попали',
+  linkUrl: '/',
+  linkText: 'К списку страниц',
+})

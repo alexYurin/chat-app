@@ -4,11 +4,11 @@ const routes = {
     pathname: '/',
   },
   signIn: {
-    title: 'Sign In',
+    title: 'Вход',
     pathname: '/sign-in',
   },
   signUp: {
-    title: 'Sign Up',
+    title: 'Регистрация',
     pathname: '/sign-up',
   },
   chat: {
@@ -24,7 +24,7 @@ const routes = {
     pathname: '/404',
   },
   error: {
-    title: 'Error',
+    title: '500',
     pathname: '/error',
   },
 }

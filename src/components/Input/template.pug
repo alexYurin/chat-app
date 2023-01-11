@@ -1,0 +1,18 @@
+-
+  const classNames = {
+    [`input_${status}`]: typeof status === 'string',
+    [`${className}`]: typeof className === 'string',
+  }
+
+.input(class=classNames)
+  .input__area
+    input(
+      id=id
+      type=type
+      name=name
+      disabled=disabled
+      readonly=readonly
+      placeholder=placeholder
+    ).input__field
+  if message
+    p.input__message #{message}

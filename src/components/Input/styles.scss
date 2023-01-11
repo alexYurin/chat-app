@@ -1,0 +1,38 @@
+@use 'styles/mixins' as mx;
+@use 'styles/config' as cfg;
+
+.input {
+  flex-direction: column;
+
+  &,
+  &__area,
+  &__message {
+    display: inline-flex;
+  }
+
+  &__area,
+  &__field {
+    @include mx.themify('background-color', 'input-bg');
+  }
+
+  &__area {
+    @include mx.themify('border-color', 'input-border');
+    @include mx.themify('color', 'input-color');
+
+    flex-wrap: nowrap;
+    border-width: 0.1rem;
+    border-style: solid;
+    border-radius: cfg.$radius;
+  }
+
+  &__field {
+    all: unset;
+    color: inherit;
+  }
+
+  &__message {
+    align-items: center;
+    line-height: 1.4rem;
+    font-size: 1.2rem;
+  }
+}

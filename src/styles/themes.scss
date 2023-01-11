@@ -6,6 +6,10 @@ $theme-dark: (
   primary: clr.$primary,
   main-bg: clr.$background,
   link: color.adjust(clr.$purple-100, $blackness: 10%),
+  link-hover: color.adjust(clr.$purple-100, $lightness: 5%),
+  input-bg: white,
+  input-color: black,
+  input-border: grey,
   text: color.adjust(clr.$comment, $lightness: 15%),
 ) !default;
 

@@ -1,5 +1,7 @@
 import Renderer from 'renderer/Renderer'
 
+export type ComponentStatusType = 'primary' | 'success' | 'warning' | 'alert'
+
 export type ComponentListenerPropType = {
   eventType: Event['type']
   callback: (event: Event) => void
@@ -10,6 +12,9 @@ export interface BaseComponentOptions {
 }
 
 export interface BaseComponentProps {
+  status?: ComponentStatusType
+  id?: string
+  className?: string
   slot?: string
 }
 

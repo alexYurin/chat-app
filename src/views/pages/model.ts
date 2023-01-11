@@ -1,4 +1,4 @@
-import { Link } from 'components/index'
+import { Title, Link } from 'components/index'
 import { BaseModelType } from 'views/ViewModel'
 import { RoutesTypes } from 'router/routes'
 
@@ -9,7 +9,10 @@ export interface PagesModelType extends BaseModelType {
 const isNotRootLocation = (pathname: string) => pathname !== '/'
 
 const createModel = ({ routes, title }: PagesModelType) => ({
-  title,
+  title: new Title().create({
+    level: 1,
+    slot: title,
+  }),
   links: Object.values(routes).reduce((currentRoutes, route) => {
     if (isNotRootLocation(route.pathname)) {
       return [

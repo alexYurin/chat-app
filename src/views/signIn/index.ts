@@ -1,15 +1,32 @@
-import view from 'bundle-text:./view.pug'
-import createModel from './model'
 import routes from 'router/routes'
-import ViewModel from 'views/ViewModel'
-import './styles.scss'
+import { AuthLayout } from 'layouts/index'
 
 const { pathname, title } = routes.signIn
 
-export default new ViewModel(
+export default new AuthLayout({
   pathname,
-  view,
-  createModel({
-    title,
-  })
-)
+  title,
+  submitButtonText: 'Вход',
+  footerLinkUrl: routes.signUp.pathname,
+  footerLinkText: 'Нет аккаунта?',
+  backLinkUrl: routes.pages.pathname,
+  backLinkText: 'К списку страниц',
+  fields: [
+    {
+      label: 'Логин',
+      input: {
+        name: 'login',
+        type: 'text',
+        required: true,
+      },
+    },
+    {
+      label: 'Пароль',
+      input: {
+        name: 'password',
+        type: 'password',
+        required: true,
+      },
+    },
+  ],
+})

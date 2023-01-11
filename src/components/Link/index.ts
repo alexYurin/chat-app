@@ -7,9 +7,7 @@ import templateString from 'bundle-text:./template.pug'
 import './styles.scss'
 
 export interface LinkProps extends BaseComponentProps {
-  href?: string
-  status?: 'primary' | 'default'
-  className?: string
+  href: string
 }
 
 export default class Link extends BaseComponent<LinkProps> {

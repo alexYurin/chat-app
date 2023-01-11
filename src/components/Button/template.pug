@@ -1,10 +1,11 @@
 -
   const classNames = {
     [`${className}`]: typeof className === 'string',
-    'button_primary': status === 'primary',
+    [`button_${status}`]: typeof status === 'string',
   }
 
 button(
+  id=id
   type=type
   name=name
   class=classNames

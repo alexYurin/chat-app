@@ -12,6 +12,7 @@
   "alias": {
     "router": "./router",
     "static": "./static",
+    "layouts": "./src/layouts",
     "components": "./src/components",
     "views": "./src/views",
     "renderer": "./src/renderer",

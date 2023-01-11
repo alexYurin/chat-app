@@ -8,6 +8,7 @@
     "allowSyntheticDefaultImports": true,
     "paths": {
       "static/*": ["./static/*"],
+      "layouts/*": ["./src/layouts/*"],
       "router/*": ["./src/router/*"],
       "styles/*": ["./src/styles/*"],
       "views/*": ["./src/views/*"],
