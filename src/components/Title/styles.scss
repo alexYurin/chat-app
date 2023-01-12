@@ -1,7 +1,7 @@
 @use 'styles/config' as cfg;
 @use 'styles/mixins' as mx;
 
-$h-base-size: cfg.$base-font-size * 2.5;
+$h-base-size: cfg.$base-font-size * 2.2;
 $levels: 1, 2, 3, 4, 5, 6;
 $line-height-modify: 1.2;
 
@@ -14,7 +14,7 @@ $line-height-modify: 1.2;
     @each $level in $levels {
       $size: $h-base-size - ($level * 0.5);
 
-      &_h#{$level} {
+      &_#{$level} {
         font-size: $size;
         line-height: $size * $line-height-modify;
       }

@@ -2,6 +2,8 @@
   const classNames = {
     [`input_${status}`]: Boolean(status),
     [`${className}`]: Boolean(className),
+    [`input_readonly`]: readonly,
+    [`input_disabled`]: disabled,
   }
 
 .input(class=classNames)
@@ -11,9 +13,9 @@
       type=type
       name=name
       value=value
-      disabled=disabled
-      readonly=readonly
+      form=form
       placeholder=placeholder
+      required=required
     ).input__field
   if message
     p.input__message #{message}

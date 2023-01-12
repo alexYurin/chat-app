@@ -9,6 +9,7 @@ export interface ButtonProps extends BaseComponentProps {
   type?: HTMLButtonElement['type']
   name?: string
   value?: string
+  form?: string
 }
 
 export default class Button extends BaseComponent<ButtonProps> {

@@ -1,2 +1,74 @@
+@use 'styles/functions' as fn;
+@use 'styles/mixins' as mx;
+
 .profile-layout {
+  &_editable {
+    .profile-layout__content {
+      box-shadow: 0 0 10rem #{fn.theme-color('dark', 'card-box-shadow-scale')};
+      transform: scale(1.1);
+
+      .profile-layout__avatar {
+        cursor: pointer;
+      }
+
+      .profile-layout__avatar-file {
+        pointer-events: unset;
+      }
+
+      .profile-layout__button_save {
+        display: flex;
+      }
+
+      & ~ .profile-layout__back-link,
+      .profile-layout__link {
+        display: none;
+      }
+    }
+  }
+
+  &__column {
+    margin-right: fn.offset(3);
+  }
+
+  &__content {
+    margin-bottom: fn.offset();
+    transition: transform 0.2s linear;
+  }
+
+  &__avatar {
+    @include mx.themify('background-color', 'primary');
+
+    margin-bottom: fn.offset(1.5);
+    padding: fn.offset(0.1);
+    width: 160px;
+    height: 160px;
+    background-color: black;
+    overflow: hidden;
+
+    &-file {
+      display: none;
+      pointer-events: none;
+    }
+
+    &-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  &__button {
+    &_save {
+      display: none;
+      margin-top: auto;
+    }
+  }
+
+  &__link {
+    margin-bottom: fn.offset();
+
+    &:last-child {
+      opacity: 0.6;
+    }
+  }
 }

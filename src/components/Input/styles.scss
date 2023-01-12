@@ -47,11 +47,48 @@
     border-style: solid;
     border-radius: cfg.$form-item-radius;
     overflow: hidden;
+    transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+
+    &:focus-within {
+      @include mx.themify('border-color', 'primary');
+
+      box-shadow: 0 0 0.5rem #{fn.theme-color('dark', 'primary')};
+    }
   }
 
   &__message {
     align-items: center;
     line-height: 1.4rem;
     font-size: 1.2rem;
+  }
+
+  .form.form_disabled &,
+  .form.form_readonly &,
+  &_disabled,
+  &_readonly {
+    .input__area,
+    .input__field {
+      pointer-events: none;
+    }
+  }
+
+  .form.form_readonly &,
+  &_readonly {
+    .input__area {
+      @include mx.themify('color', 'primary');
+
+      padding-left: 0;
+      border-width: 0;
+      font-weight: 600;
+
+      &:focus-within {
+        box-shadow: none;
+      }
+    }
+
+    .input__area,
+    .input__field {
+      @include mx.themify('background-color', 'drop');
+    }
   }
 }

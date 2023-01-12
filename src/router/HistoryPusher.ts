@@ -20,6 +20,10 @@ export default class HistoryPusher {
   }
 
   static pushTo(url: string, state = {}, title = '') {
+    if (window.location.href === url) {
+      return
+    }
+
     window.history.pushState(state, title, url)
 
     window.dispatchEvent(new Event('popstate'))

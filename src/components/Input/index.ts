@@ -10,6 +10,7 @@ export interface InputProps extends BaseComponentProps {
   status?: ComponentStatusType
   name: string
   type?: HTMLInputElement['type']
+  form?: string
   value?: string
   disabled?: boolean
   readonly?: boolean

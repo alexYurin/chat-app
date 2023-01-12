@@ -20,6 +20,7 @@ $border-width: 0.1rem;
   line-height: 2.2rem;
   outline: none;
   cursor: pointer;
+  transition: 0.3s ease-in-out;
 
   * {
     font-weight: 500;
@@ -30,7 +31,11 @@ $border-width: 0.1rem;
   }
 
   &_primary {
-    @include mx.themify('background-color', 'primary');
+    @include mx.themify('background-color', 'button-bg');
     @include mx.themify('color', 'main-bg');
+
+    &:hover {
+      @include mx.themify('background-color', 'primary');
+    }
   }
 }

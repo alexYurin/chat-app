@@ -1,4 +1,15 @@
 @use 'styles/config' as cfg;
+@use 'styles/functions' as fn;
+@use 'styles/mixins' as mx;
+
+.card {
+  @include mx.themify('background-color', 'card');
+
+  padding: fn.offset(2) fn.offset(2) fn.offset(1.5);
+  border-radius: cfg.$radius;
+  box-shadow: 0 0 8.5rem #{fn.theme-color('dark', 'card-box-shadow')};
+  transition: box-shadow 0.2s linear;
+}
 
 .flex {
   display: flex;

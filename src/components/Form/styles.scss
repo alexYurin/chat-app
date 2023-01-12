@@ -13,12 +13,12 @@
     }
 
     &_action {
-      margin-top: fn.offset(3);
+      margin-top: fn.offset(2);
     }
   }
 
   &__label {
-    margin-bottom: fn.offset(0.2);
+    margin-bottom: fn.offset(0.5);
     font-weight: 500;
   }
 }

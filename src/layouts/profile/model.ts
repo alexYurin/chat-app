@@ -1,66 +1,64 @@
-import { Title, Link, Input, Button } from 'components/index'
+import { Link, Button, Form } from 'components/index'
+import { FieldType } from 'components/Form'
 import { BaseModelType } from 'layouts/LayoutModel'
 
-export type ProfileFieldType = {
-  label: string
-  input: {
-    type: string
-    name: string
-    required: boolean
+export interface ProfileModelType extends BaseModelType {
+  fields: FieldType[]
+  avatar: {
+    src: string
+    fieldName: string
+    alt: string
   }
 }
 
-export interface ProfileModelType extends BaseModelType {
-  fields: ProfileFieldType[]
-  submitButtonText: string
-  changeDataLinkUrl: string
-  changeDataLinkText: string
-  changePasswordLinkUrl: string
-  changePasswordLinkText: string
-  logoutLinkUrl: string
-  logoutLinkText: string
+const triggerFormEdit = (event: Event) => {
+  event.preventDefault()
+
+  const layout = document.querySelector('.profile-layout')
+  const form = document.querySelector('.profile-layout__form')
+
+  layout?.classList.add('profile-layout_editable')
+  form?.classList.remove('form_readonly')
 }
 
-const modelConstructor = ({
+const modelConstructor = ({ title, fields, avatar }: ProfileModelType) => ({
   title,
-  fields,
-  submitButtonText,
-  changeDataLinkUrl,
-  changeDataLinkText,
-  changePasswordLinkUrl,
-  changePasswordLinkText,
-  logoutLinkUrl,
-  logoutLinkText,
-}: ProfileModelType) => ({
-  title: new Title().create({
-    level: 1,
-    slot: title,
+  avatarSrc: avatar.src,
+  avatarAlt: avatar.alt,
+  avatarFieldName: avatar.fieldName,
+  form: new Form().create({
+    id: 'profile-form',
+    readonly: true,
+    className: 'profile-layout__form',
+    fields,
+    actionButtons: [],
   }),
-  fields: fields.map(({ label, input }) => ({
-    label,
-    input: new Input().create({
-      type: input.type,
-      name: input.name,
-      required: input.required,
-    }),
-  })),
-  changeDataLink: new Link().create({
-    href: changeDataLinkUrl,
-    slot: changeDataLinkText,
+  changeDataLink: new Link({
+    listeners: [
+      {
+        eventType: 'click',
+        callback: triggerFormEdit,
+      },
+    ],
+  }).create({
+    href: '#',
+    slot: 'Изменить данные',
   }),
   changePasswordLink: new Link().create({
-    href: changePasswordLinkUrl,
-    slot: changePasswordLinkText,
+    href: '#',
+    slot: 'Изменить пароль',
   }),
   logoutLink: new Link().create({
-    href: logoutLinkUrl,
-    slot: logoutLinkText,
+    href: '/',
+    slot: 'Выйти',
   }),
-  submitButton: new Button().create({
+  saveButton: new Button().create({
+    form: 'profile-form',
+    status: 'primary',
     type: 'submit',
-    slot: submitButtonText,
+    slot: 'Сохранить',
   }),
-  backLink: new Link().create({
+  slot: new Link().create({
     href: '/',
     slot: 'К списку страниц',
   }),

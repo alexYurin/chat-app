@@ -1,18 +1,12 @@
-@use 'styles/mixins' as mx;
-@use 'styles/config' as cfg;
 @use 'styles/functions' as fn;
 
 .auth-layout {
   &__content {
-    @include mx.themify('background-color', 'card');
-
-    width: clamp(320px, 80%, 460px);
-    padding: fn.offset(2) fn.offset(1.5) fn.offset(1.5);
-    border-radius: cfg.$radius;
+    width: clamp(320px, 60%, 420px);
   }
 
   &__title.title {
-    margin-bottom: fn.offset();
+    margin-bottom: fn.offset(1.2);
   }
 
   &__form {

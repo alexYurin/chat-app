@@ -5,13 +5,17 @@
 $theme-dark: (
   primary: clr.$primary,
   main-bg: clr.$background,
-  card: clr.$current-line,
+  card: color.adjust(clr.$background, $blackness: 5%, $alpha: -0.9),
+  card-box-shadow: color.adjust(clr.$purple-100, $alpha: -0.9),
+  card-box-shadow-scale: color.adjust(clr.$purple-100, $alpha: -0.6),
   link: color.adjust(clr.$purple-100, $blackness: 10%),
   link-hover: color.adjust(clr.$purple-100, $lightness: 5%),
-  input-bg: color.adjust(clr.$background, $lightness: 20%),
-  input-color: color.adjust(clr.$comment, $lightness: 30%),
-  input-border: color.adjust(clr.$background, $lightness: 15%),
+  button-bg: color.adjust(clr.$primary, $blackness: 5%, $alpha: -0.1),
+  input-bg: color.adjust(clr.$background, $lightness: 5%),
+  input-color: color.adjust(clr.$comment, $lightness: 25%),
+  input-border: color.adjust(clr.$background, $lightness: 10%),
   text: color.adjust(clr.$comment, $lightness: 15%),
+  drop: transparent,
 ) !default;
 
 $theme-light: (

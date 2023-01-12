@@ -48,8 +48,8 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
       listeners.forEach((listener) => {
         window.addEventListener(listener.eventType, (event: Event) => {
           if (
-            event.target === this.getCurrentElement() &&
-            typeof listener.callback === 'function'
+            typeof listener.callback === 'function' &&
+            this.isCurrentElement(event.target as HTMLElement)
           ) {
             listener.callback(event)
           }
@@ -81,6 +81,10 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
     }
 
     return ''
+  }
+
+  public isCurrentElement(element: HTMLElement) {
+    return this.id === element.getAttribute(componentAttributeNameId)
   }
 
   public getCurrentElement() {

@@ -57,7 +57,7 @@ export default new AuthLayout({ pathname, pageTitle: title }).createModel({
     {
       label: 'Пароль (ещё раз)',
       input: {
-        name: 'password',
+        name: 'password_confirm',
         type: 'password',
         required: true,
       },

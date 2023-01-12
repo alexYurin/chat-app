@@ -27,6 +27,8 @@ export interface FormProps extends BaseComponentProps {
   action?: string
   method?: string
   target?: string
+  disabled?: boolean
+  readonly?: boolean
   fields: FieldType[]
   actionButtons: ButtonsFieldType[]
 }
