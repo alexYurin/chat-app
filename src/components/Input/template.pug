@@ -1,7 +1,7 @@
 -
   const classNames = {
-    [`input_${status}`]: typeof status === 'string',
-    [`${className}`]: typeof className === 'string',
+    [`input_${status}`]: Boolean(status),
+    [`${className}`]: Boolean(className),
   }
 
 .input(class=classNames)

@@ -1,7 +1,7 @@
 -
   const classNames = {
-    [`${className}`]: typeof className === 'string',
-    [`button_${status}`]: typeof status === 'string',
+    [`${className}`]: Boolean(className),
+    [`button_${status}`]: Boolean(status),
   }
 
 button(

@@ -5,11 +5,6 @@ const { pathname, title } = routes.signUp
 
 export default new AuthLayout({ pathname, pageTitle: title }).createModel({
   title,
-  submitButtonText: 'Зарегистрироваться',
-  footerLinkUrl: routes.signIn.pathname,
-  footerLinkText: 'Войти',
-  backLinkUrl: routes.pages.pathname,
-  backLinkText: 'К списку страниц',
   fields: [
     {
       label: 'Почта',
@@ -30,7 +25,7 @@ export default new AuthLayout({ pathname, pageTitle: title }).createModel({
     {
       label: 'Имя',
       input: {
-        name: 'login',
+        name: 'first_name',
         type: 'text',
         required: true,
       },
@@ -38,15 +33,15 @@ export default new AuthLayout({ pathname, pageTitle: title }).createModel({
     {
       label: 'Фамилия',
       input: {
-        name: 'password',
-        type: 'password',
+        name: 'second_name',
+        type: 'text',
         required: true,
       },
     },
     {
       label: 'Телефон',
       input: {
-        name: 'login',
+        name: 'phone',
         type: 'text',
         required: true,
       },
@@ -65,6 +60,19 @@ export default new AuthLayout({ pathname, pageTitle: title }).createModel({
         name: 'password',
         type: 'password',
         required: true,
+      },
+    },
+  ],
+  authLink: {
+    href: routes.signIn.pathname,
+    slot: 'Войти',
+  },
+  actionButtons: [
+    {
+      button: {
+        status: 'primary',
+        type: 'submit',
+        slot: 'Зарегистрироваться',
       },
     },
   ],

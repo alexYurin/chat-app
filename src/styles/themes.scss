@@ -5,11 +5,12 @@
 $theme-dark: (
   primary: clr.$primary,
   main-bg: clr.$background,
+  card: clr.$current-line,
   link: color.adjust(clr.$purple-100, $blackness: 10%),
   link-hover: color.adjust(clr.$purple-100, $lightness: 5%),
-  input-bg: white,
-  input-color: black,
-  input-border: grey,
+  input-bg: color.adjust(clr.$background, $lightness: 20%),
+  input-color: color.adjust(clr.$comment, $lightness: 30%),
+  input-border: color.adjust(clr.$background, $lightness: 15%),
   text: color.adjust(clr.$comment, $lightness: 15%),
 ) !default;
 

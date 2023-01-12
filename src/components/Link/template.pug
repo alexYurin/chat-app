@@ -1,6 +1,6 @@
 -
   const classNames = {
-    [`${className}`]: typeof className === 'string',
+    [`${className}`]: Boolean(className),
   }
 
 a(href=href class=classNames).link #{slot}

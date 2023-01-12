@@ -5,11 +5,6 @@ const { pathname, title } = routes.signIn
 
 export default new AuthLayout({ pathname, pageTitle: title }).createModel({
   title,
-  submitButtonText: 'Вход',
-  footerLinkUrl: routes.signUp.pathname,
-  footerLinkText: 'Нет аккаунта?',
-  backLinkUrl: routes.pages.pathname,
-  backLinkText: 'К списку страниц',
   fields: [
     {
       label: 'Логин',
@@ -25,6 +20,18 @@ export default new AuthLayout({ pathname, pageTitle: title }).createModel({
         name: 'password',
         type: 'password',
         required: true,
+      },
+    },
+  ],
+  authLink: {
+    href: routes.signUp.pathname,
+    slot: 'Нет аккаунта?',
+  },
+  actionButtons: [
+    {
+      button: {
+        status: 'primary',
+        slot: 'Вход',
       },
     },
   ],

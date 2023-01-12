@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 $offset: 1.8rem;
 $radius: 1.6rem;
 
@@ -5,10 +7,13 @@ $tablet: 800;
 $desktop: 1200;
 $wide-screen: 1440;
 
-$font-family-default: Poppins;
+$font-family-default: 'Poppins';
 $base-font-size: 1.4rem;
 
 $theme-names: light, dark;
+
+$form-item-height: 4.6rem;
+$form-item-radius: math.div($radius, 1.5);
 
 $font-weights: (
   '100': 100,

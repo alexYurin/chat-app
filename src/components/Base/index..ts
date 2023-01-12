@@ -18,9 +18,10 @@ export interface BaseComponentProps {
   slot?: string
 }
 
-const generateRandomId = () => `_id_${(+new Date()).toString(36).slice(-5)}`
+export const generateRandomId = () =>
+  `_id_${(+new Date()).toString(36).slice(-5)}`
 
-const componentAttributeNameId = 'data-component-id'
+export const componentAttributeNameId = 'data-component-id'
 
 export default class BaseComponent<PropsType extends BaseComponentProps> {
   public id = ''
@@ -57,12 +58,21 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
     }
   }
 
+  public prepareProps(props: PropsType): PropsType {
+    return props
+  }
+
   public create(props: PropsType): string {
     if (Renderer) {
+      const preparedProps = this.prepareProps(props)
+
       this.id = generateRandomId()
 
       const elementTempContainer = document.createElement('div')
-      elementTempContainer.innerHTML = Renderer.toHTML(this.template, props)
+      elementTempContainer.innerHTML = Renderer.toHTML(
+        this.template,
+        preparedProps
+      )
 
       const element = elementTempContainer.firstElementChild
       element?.setAttribute(componentAttributeNameId, this.id)

@@ -26,7 +26,8 @@ body {
   padding: 0;
   width: 100%;
   font-size: cfg.$base-font-size;
-  font-family: cfg.$font-family-default, Verdana, Geneva, Tahoma, sans-serif;
+  // font-family: cfg.$font-family-default, Verdana, Geneva, Tahoma, sans-serif;
+  font-family: cfg.$font-family-default;
 
   * {
     box-sizing: border-box;

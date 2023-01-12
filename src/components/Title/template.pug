@@ -1,6 +1,6 @@
 -
   const classNames = {
-    [`${className}`]: typeof className === 'string',
+    [`${className}`]: Boolean(className),
     [`title_level_h${level}`]: level > 0 && level <= 6,
   }
 
