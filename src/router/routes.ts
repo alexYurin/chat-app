@@ -16,12 +16,16 @@ const routes = {
     pathname: '/chat',
   },
   profile: {
-    title: 'Профиль',
+    title: 'Профиль (Настройки)',
     pathname: '/profile',
+  },
+  profileEditPassword: {
+    title: 'Профиль (Смена пароля)',
+    pathname: '/profile-edit-password',
   },
   notFound: {
     title: '404',
-    pathname: '/404',
+    pathname: '/not-found',
   },
   error: {
     title: '500',

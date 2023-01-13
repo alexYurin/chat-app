@@ -61,7 +61,7 @@ export default new ProfileLayout({ pathname, pageTitle: title }).createModel({
       input: {
         name: 'phone',
         type: 'text',
-        value: 'Иван',
+        value: '+7 (909) 967 30 30',
         required: true,
       },
     },
