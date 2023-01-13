@@ -1,0 +1,24 @@
+@use 'styles/functions' as fn;
+
+.form {
+  &,
+  &__control {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__control {
+    &:not(:first-child):not(.form__control_action) {
+      margin-top: fn.offset();
+    }
+
+    &_action {
+      margin-top: fn.offset(2);
+    }
+  }
+
+  &__label {
+    margin-bottom: fn.offset(0.5);
+    font-weight: 500;
+  }
+}

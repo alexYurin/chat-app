@@ -1,0 +1,20 @@
+{
+  "include": ["src/**/*.ts"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "es2021",
+    "strict": true,
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "static/*": ["./static/*"],
+      "layouts/*": ["./src/layouts/*"],
+      "router/*": ["./src/router/*"],
+      "styles/*": ["./src/styles/*"],
+      "views/*": ["./src/views/*"],
+      "components/*": ["./src/components/*"],
+      "renderer/*": ["./src/renderer/*"],
+      "utils/*": ["./src/utils/*"]
+    }
+  }
+}

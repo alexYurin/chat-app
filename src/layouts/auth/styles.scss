@@ -1,0 +1,19 @@
+@use 'styles/functions' as fn;
+
+.auth-layout {
+  &__content {
+    width: clamp(320px, 60%, 420px);
+  }
+
+  &__title.title {
+    margin-bottom: fn.offset(1.2);
+  }
+
+  &__form {
+    width: 100%;
+  }
+
+  &__link {
+    margin-top: fn.offset();
+  }
+}

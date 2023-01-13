@@ -1,0 +1,30 @@
+@use 'sass:math';
+
+$offset: 1.8rem;
+$radius: 1.6rem;
+
+$tablet: 800;
+$desktop: 1200;
+$wide-screen: 1440;
+
+$font-family-default: Inter;
+$base-font-size: 1.4rem;
+
+$theme-names: light, dark;
+
+$form-item-height: 4rem;
+$form-item-radius: math.div($radius, 2);
+
+$font-weights: (
+  '100': 100,
+  '200': 200,
+  '300': 300,
+  '400': 400,
+  '500': 500,
+  '600': 600,
+  '700': 700,
+  '800': 800,
+  '900': 900,
+);
+
+$base-z-index: 1;

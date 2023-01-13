@@ -1,0 +1,12 @@
+@use 'styles/mixins' as mx;
+
+.link {
+  @include mx.themify('color', 'link');
+
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    @include mx.themify('color', 'link-hover');
+  }
+}

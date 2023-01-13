@@ -1,0 +1,9 @@
+-
+  const classNames = {
+    [`${className}`]: Boolean(className),
+    [`title_level_${level}`]: level > 0 && level <= 6,
+  }
+
+  const tag = tagName || 'h1'
+
+#{tag}(class=classNames).title #{slot}

@@ -1,0 +1,53 @@
+@use 'styles/config' as cfg;
+@use 'styles/functions' as fn;
+@use 'styles/mixins' as mx;
+
+.card {
+  @include mx.themify('background-color', 'card');
+
+  padding: fn.offset(2) fn.offset(2) fn.offset(1.5);
+  border-radius: cfg.$radius;
+  box-shadow: 0 0 8.5rem #{fn.theme-color('dark', 'card-box-shadow')};
+  transition: box-shadow 0.2s linear;
+}
+
+.flex {
+  display: flex;
+}
+
+.row {
+  @extend .flex;
+  flex-wrap: wrap;
+
+  &_nowrap {
+    flex-wrap: nowrap;
+  }
+}
+
+.column {
+  @extend .flex;
+  flex-direction: column;
+}
+
+.center {
+  @extend .flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.round {
+  border-radius: cfg.$radius;
+}
+
+.circle {
+  border-radius: 50%;
+}
+
+.offset-drop {
+  margin: 0;
+  padding: 0;
+}
+
+.h100 {
+  height: 100%;
+}

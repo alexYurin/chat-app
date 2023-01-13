@@ -1,0 +1,15 @@
+-
+  const classNames = {
+    [`${className}`]: Boolean(className),
+    [`button_${status}`]: Boolean(status),
+  }
+
+button(
+  id=id
+  type=type
+  name=name
+  form=form
+  class=classNames
+  value=value
+  disabled=disabled
+).button #{slot}

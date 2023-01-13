@@ -1,0 +1,8 @@
+@use 'styles/functions' as fn;
+
+.placeholder-layout {
+  &__description {
+    margin: fn.offset(0.5) 0 fn.offset(4);
+    font-size: 1.8rem;
+  }
+}

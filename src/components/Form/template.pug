@@ -1,0 +1,27 @@
+-
+  const classNames = {
+    [`${className}`]: Boolean(className),
+    [`form_readonly`]: readonly,
+    [`form_disabled`]: disabled,
+  }
+
+form(
+  id=id
+  name=name
+  class=classNames
+  action=action
+  method=method
+  target=target
+).form
+  if (fields || []).length
+    each field in fields
+      .form__control
+        label.form__label !{field.label}
+        | !{field.inputTemplate}
+
+  if (actionButtons || []).length
+    .form__control.form__control_action
+      each action in actionButtons
+        | !{action.buttonTemplate}
+
+

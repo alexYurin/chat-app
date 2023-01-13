@@ -1,0 +1,23 @@
+@use 'styles/config' as cfg;
+@use 'styles/mixins' as mx;
+
+$h-base-size: cfg.$base-font-size * 2.2;
+$levels: 1, 2, 3, 4, 5, 6;
+$line-height-modify: 1.2;
+
+.title {
+  margin: 0;
+  font-weight: 600;
+  line-height: $h-base-size * $line-height-modify;
+
+  &_level {
+    @each $level in $levels {
+      $size: $h-base-size - ($level * 0.5);
+
+      &_#{$level} {
+        font-size: $size;
+        line-height: $size * $line-height-modify;
+      }
+    }
+  }
+}
