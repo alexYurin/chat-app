@@ -30,7 +30,7 @@
 
 `/profile` - Страница профиля с переключением в режим редактирования.
 
-`/profile-edit-password` - Страница профиля с изменения пароля.
+`/profile-edit-password` - Страница профиля для изменения пароля.
 
 `/not-found` - Страница 404.
 
@@ -38,12 +38,12 @@
 
 ## Команды
 
-`npm run start` - Запуск проекта.
+`npm run start` - Запуск проекта на `localhost:3000`.
 
-`npm run dev` - Запуск сервера разработки.
+`npm run dev` - Запуск сервера разработки. Браузер автоматически откроет вкладку `localhost:3000`.
 
-`npm run build` - Собрать проект в директории `dist`
+`npm run build` - Собрать проект в директории `dist`.
 
-`npm run lint` - Запустить линтер **Eslint**
+`npm run lint` - Запустить линтер **Eslint**.
 
-`npm run format` Запустить проверку **Prettier**
+`npm run format` Запустить проверку **Prettier**.

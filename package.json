@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "parcel src/index.pug --port=3000",
+    "dev": "parcel src/index.pug --port=3000 --open",
     "start": "npm run build && node ./server.js",
     "build": "parcel build ./src/index.pug && cp _redirects dist",
     "lint": "eslint '**/*.{ts,tsx}'",
