@@ -1,3 +1,3 @@
 ### Ссылка на PR
 
-[https://github.com/alexYurin/middle.messenger.praktikum.yandex/pull/2](https://github.com/alexYurin/middle.messenger.praktikum.yandex/pull/2)
+[Спринт 1](https://github.com/alexYurin/middle.messenger.praktikum.yandex/pull/2)
