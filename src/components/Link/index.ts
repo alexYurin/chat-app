@@ -13,8 +13,11 @@ export interface LinkProps extends BaseComponentProps {
 export default class Link extends BaseComponent<LinkProps> {
   public template = templateString
 
-  constructor(options: BaseComponentOptions = {}) {
-    super('link', {
+  constructor(
+    baseProps: LinkProps = { href: '' },
+    options: BaseComponentOptions = {}
+  ) {
+    super('link', baseProps, {
       ...options,
       listeners: [
         {

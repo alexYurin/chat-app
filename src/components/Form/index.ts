@@ -36,8 +36,14 @@ export interface FormProps extends BaseComponentProps {
 export default class Form extends BaseComponent<FormProps> {
   public template = templateString
 
-  constructor(options: BaseComponentOptions = {}) {
-    super('form', options)
+  constructor(
+    baseProps: FormProps = {
+      fields: [],
+      actionButtons: [],
+    },
+    options: BaseComponentOptions = {}
+  ) {
+    super('form', baseProps, options)
   }
 
   public prepareProps(props: FormProps): FormProps {

@@ -26,10 +26,10 @@ export const componentAttributeNameId = 'data-component-id'
 export default class BaseComponent<PropsType extends BaseComponentProps> {
   public id = ''
   public template = ''
-  public HTMLRef: Element | null = null
 
   constructor(
     public name: string | null = null,
+    private props: PropsType = {} as PropsType,
     private options: BaseComponentOptions = {}
   ) {
     if (typeof name === 'string') {
@@ -63,8 +63,10 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
   }
 
   public create(props: PropsType): string {
+    this.props = { ...this.props, ...props }
+
     if (Renderer) {
-      const preparedProps = this.prepareProps(props)
+      const preparedProps = this.prepareProps(this.props)
 
       this.id = generateRandomId()
 
@@ -87,11 +89,15 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
     return this.id === element.getAttribute(componentAttributeNameId)
   }
 
-  public getCurrentElement() {
+  public getProps() {
+    return this.props
+  }
+
+  public getDOMRef() {
     if (this.id) {
       return document.querySelector(`[${componentAttributeNameId}=${this.id}]`)
     } else {
-      throw new Error('Can`t get component before create')
+      throw new Error('Can`t get component before create and paste in DOM')
     }
   }
 }

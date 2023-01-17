@@ -21,7 +21,12 @@ export interface InputProps extends BaseComponentProps {
 export default class Input extends BaseComponent<InputProps> {
   public template = templateString
 
-  constructor(options: BaseComponentOptions = {}) {
-    super('input', options)
+  constructor(
+    baseProps: InputProps = {
+      name: '',
+    },
+    options: BaseComponentOptions = {}
+  ) {
+    super('input', baseProps, options)
   }
 }

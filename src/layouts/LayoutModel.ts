@@ -30,4 +30,8 @@ export default class LayoutModel<ModelType extends BaseModelType> {
     this.setPageTitle()
     this.HTMLRootElement.innerHTML = Renderer.toHTML(this.layout, this.model)
   }
+
+  public getRootElement() {
+    return this.HTMLRootElement
+  }
 }

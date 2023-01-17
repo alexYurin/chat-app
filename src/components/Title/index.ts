@@ -13,7 +13,7 @@ export interface TitleProps extends BaseComponentProps {
 export default class Title extends BaseComponent<TitleProps> {
   public template = templateString
 
-  constructor(options: BaseComponentOptions = {}) {
-    super('title', options)
+  constructor(baseProps: TitleProps = {}, options: BaseComponentOptions = {}) {
+    super('title', baseProps, options)
   }
 }

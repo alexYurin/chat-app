@@ -34,14 +34,19 @@ const modelConstructor = ({ title, fields, avatar }: ProfileModelType) => ({
     fields,
     actionButtons: [],
   }),
-  changeDataLink: new Link({
-    listeners: [
-      {
-        eventType: 'click',
-        callback: triggerFormEdit,
-      },
-    ],
-  }).create({
+  changeDataLink: new Link(
+    {
+      href: '#',
+    },
+    {
+      listeners: [
+        {
+          eventType: 'click',
+          callback: triggerFormEdit,
+        },
+      ],
+    }
+  ).create({
     href: '#',
     slot: 'Изменить данные',
   }),
