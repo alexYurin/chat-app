@@ -1,4 +1,5 @@
 import Renderer from 'renderer/Renderer'
+import { v4 as makeUUID } from 'uuid'
 
 export type ComponentStatusType = 'primary' | 'success' | 'warning' | 'alert'
 
@@ -17,9 +18,6 @@ export interface BaseComponentProps {
   className?: string
   slot?: string
 }
-
-export const generateRandomId = () =>
-  `_id_${(+new Date()).toString(36).slice(-5)}`
 
 export const componentAttributeNameId = 'data-component-id'
 
@@ -68,7 +66,7 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
     if (Renderer) {
       const preparedProps = this.prepareProps(this.props)
 
-      this.id = generateRandomId()
+      this.id = `_id_${makeUUID()}`
 
       const elementTempContainer = document.createElement('div')
       elementTempContainer.innerHTML = Renderer.toHTML(
