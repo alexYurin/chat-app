@@ -9,6 +9,7 @@ export type ComponentListenerPropType = {
 }
 
 export interface BaseComponentOptions {
+  withId?: boolean
   listeners?: ComponentListenerPropType[]
 }
 
@@ -30,6 +31,8 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
     private props: PropsType = {} as PropsType,
     private options: BaseComponentOptions = {}
   ) {
+    this.options = { withId: true, ...options }
+
     if (typeof name === 'string') {
       this.addListeners()
 
@@ -66,7 +69,9 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
     if (Renderer) {
       const preparedProps = this.prepareProps(this.props)
 
-      this.id = `_id_${makeUUID()}`
+      if (this.options.withId) {
+        this.id = `_id_${makeUUID()}`
+      }
 
       const elementTempContainer = document.createElement('div')
       elementTempContainer.innerHTML = Renderer.toHTML(
