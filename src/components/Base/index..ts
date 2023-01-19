@@ -23,11 +23,11 @@ export interface BaseComponentProps {
 export const componentAttributeNameId = 'data-component-id'
 
 export default class BaseComponent<PropsType extends BaseComponentProps> {
-  public id = ''
-  public template = ''
+  private id = ''
+  protected template = ''
 
   constructor(
-    public name: string | null = null,
+    protected name: string | null = null,
     private props: PropsType = {} as PropsType,
     private options: BaseComponentOptions = {}
   ) {
