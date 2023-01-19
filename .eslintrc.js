@@ -18,8 +18,9 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'eslint-plugin-prettier'],
   rules: {
-    'prettier/prettier': 'error',
-    '@typescript-eslint/no-unused-vars': 'error',
+    'prettier/prettier': 2,
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['error'],
     semi: ['error', 'never'],
     quotes: ['error', 'single'],
     indent: ['error', 2, { SwitchCase: 1 }],

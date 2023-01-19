@@ -5,6 +5,7 @@ $border-width: 0.1rem;
 
 .button {
   all: unset;
+
   @include mx.themify('border-color', 'primary');
   @include mx.themify('color', 'primary');
 
