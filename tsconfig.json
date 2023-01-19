@@ -6,6 +6,12 @@
     "strict": true,
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
     "paths": {
       "static/*": ["./static/*"],
       "layouts/*": ["./src/layouts/*"],
