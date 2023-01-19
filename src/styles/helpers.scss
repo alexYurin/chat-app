@@ -2,6 +2,10 @@
 @use 'styles/functions' as fn;
 @use 'styles/mixins' as mx;
 
+%flex {
+  display: flex;
+}
+
 .card {
   @include mx.themify('background-color', 'card');
 
@@ -12,11 +16,11 @@
 }
 
 .flex {
-  display: flex;
+  @extend %flex;
 }
 
 .row {
-  @extend .flex;
+  @extend %flex;
   flex-wrap: wrap;
 
   &_nowrap {
@@ -25,12 +29,12 @@
 }
 
 .column {
-  @extend .flex;
+  @extend %flex;
   flex-direction: column;
 }
 
 .center {
-  @extend .flex;
+  @extend %flex;
   justify-content: center;
   align-items: center;
 }

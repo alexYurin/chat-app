@@ -7,6 +7,7 @@
     "start": "npm run build && node ./server.js",
     "build": "parcel build ./src/index.pug && cp _redirects dist",
     "lint": "eslint '**/*.{ts,tsx}'",
+    "lint:styles": "stylelint '**/*.scss'",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
   },
   "alias": {
@@ -60,7 +61,7 @@
     "process": "0.11.10",
     "stylelint": "14.16.1",
     "stylelint-config-prettier-scss": "0.0.1",
-    "stylelint-config-standard-scss": "6.1.0",
+    "stylelint-config-sass-guidelines": "9.0.1",
     "typescript": "4.9.4"
   },
   "dependencies": {
