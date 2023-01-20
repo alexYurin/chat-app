@@ -11,7 +11,7 @@ const isNotRootLocation = (pathname: string) => pathname !== '/'
 const modelConstructor = ({ routes, title }: PagesModelType) => ({
   title: new Title().create({
     level: 1,
-    slot: title,
+    children: [title],
   }),
   links: Object.values(routes).reduce((currentRoutes, route) => {
     if (isNotRootLocation(route.pathname)) {
@@ -20,7 +20,7 @@ const modelConstructor = ({ routes, title }: PagesModelType) => ({
         new Link().create({
           className: 'pages__link',
           href: route.pathname,
-          slot: route.title,
+          children: [route.title],
         }),
       ]
     }

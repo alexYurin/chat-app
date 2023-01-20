@@ -14,6 +14,7 @@
     "strictNullChecks": true,
     "paths": {
       "static/*": ["./static/*"],
+      "core/*": ["./src/core/*"],
       "layouts/*": ["./src/layouts/*"],
       "router/*": ["./src/router/*"],
       "styles/*": ["./src/styles/*"],

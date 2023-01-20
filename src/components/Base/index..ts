@@ -1,4 +1,5 @@
 import Renderer from 'renderer/Renderer'
+import { BaseModule } from 'core/index'
 import { v4 as makeUUID } from 'uuid'
 
 export type ComponentStatusType = 'primary' | 'success' | 'warning' | 'alert'
@@ -17,12 +18,14 @@ export interface BaseComponentProps {
   status?: ComponentStatusType
   id?: string
   className?: string
-  slot?: string
+  children?: string[]
 }
 
 export const componentAttributeNameId = 'data-component-id'
 
-export default class BaseComponent<PropsType extends BaseComponentProps> {
+export default class BaseComponent<
+  PropsType extends BaseComponentProps
+> extends BaseModule {
   private id = ''
   protected template = ''
 
@@ -31,10 +34,17 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
     private props: PropsType = {} as PropsType,
     private options: BaseComponentOptions = {}
   ) {
+    super()
     this.options = { withId: true, ...options }
 
     if (typeof name === 'string') {
       this.addListeners()
+
+      this.eventEmitter.on('@event:mount', () => {
+        setTimeout(() => {
+          console.log(this.name, this.getDOMRef())
+        }, 1000)
+      })
 
       return this
     } else {
@@ -63,7 +73,7 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
     return props
   }
 
-  public create(props: PropsType): string {
+  public create(props: PropsType = {} as PropsType): string {
     this.props = { ...this.props, ...props }
 
     if (Renderer) {
@@ -81,6 +91,8 @@ export default class BaseComponent<PropsType extends BaseComponentProps> {
 
       const element = elementTempContainer.firstElementChild
       element?.setAttribute(componentAttributeNameId, this.id)
+
+      this.eventEmitter.emit('@event:mount')
 
       return elementTempContainer.innerHTML
     }

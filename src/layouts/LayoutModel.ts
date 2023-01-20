@@ -1,4 +1,5 @@
 import Renderer from 'renderer/Renderer'
+import { BaseModule } from 'core/index'
 
 export type BaseModelType = {
   title: string
@@ -8,7 +9,9 @@ const SELECTORS = {
   root: '#root',
 }
 
-export default class LayoutModel<ModelType extends BaseModelType> {
+export default class LayoutModel<
+  ModelType extends BaseModelType
+> extends BaseModule {
   private HTMLRootElement = document.querySelector(
     SELECTORS.root
   ) as HTMLElement
@@ -19,6 +22,8 @@ export default class LayoutModel<ModelType extends BaseModelType> {
     private layout: string,
     private model: ModelType
   ) {
+    super()
+
     return this
   }
 

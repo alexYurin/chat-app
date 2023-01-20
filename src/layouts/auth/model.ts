@@ -9,28 +9,32 @@ export interface AuthModelType extends BaseModelType {
   authLink: LinkProps
 }
 
-const modelConstructor = ({
+function modelConstructor({
   title,
   fields,
   actionButtons,
   authLink,
-}: AuthModelType) => ({
-  title: new Title().create({
-    className: 'auth-layout__title',
-    level: 1,
-    slot: title,
-  }),
-  authLink: new Link().create(authLink),
-  form: new Form().create({
-    className: 'auth-layout__form',
-    fields,
-    actionButtons,
-  }),
-  slot: new Link().create({
-    href: '/',
-    slot: 'К списку страниц',
-  }),
-})
+}: AuthModelType) {
+  return {
+    title: new Title({
+      className: 'auth-layout__title',
+      level: 1,
+      children: [title],
+    }).create(),
+    authLink: new Link().create(authLink),
+    form: new Form({
+      className: 'auth-layout__form',
+      fields,
+      actionButtons,
+    }).create(),
+    children: new Link({
+      href: '/',
+      children: ['К списку страниц'],
+    }).create(),
+  }
+}
+
+modelConstructor.components = [Title, Link]
 
 export type AuthModelConstructorType = ReturnType<typeof modelConstructor>
 

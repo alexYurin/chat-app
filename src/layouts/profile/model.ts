@@ -48,25 +48,25 @@ const modelConstructor = ({ title, fields, avatar }: ProfileModelType) => ({
     }
   ).create({
     href: '#',
-    slot: 'Изменить данные',
+    children: ['Изменить данные'],
   }),
   changePasswordLink: new Link().create({
     href: routes.profileEditPassword.pathname,
-    slot: 'Изменить пароль',
+    children: ['Изменить пароль'],
   }),
   logoutLink: new Link().create({
     href: '/',
-    slot: 'Выйти',
+    children: ['Выйти'],
   }),
   saveButton: new Button().create({
     form: 'profile-form',
     status: 'primary',
     type: 'submit',
-    slot: 'Сохранить',
+    children: ['Сохранить'],
   }),
   slot: new Link().create({
     href: '/',
-    slot: 'К списку страниц',
+    children: ['К списку страниц'],
   }),
 })
 

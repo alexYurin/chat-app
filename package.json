@@ -13,6 +13,7 @@
   "alias": {
     "router": "./router",
     "static": "./static",
+    "core": "./src/core",
     "layouts": "./src/layouts",
     "components": "./src/components",
     "views": "./src/views",

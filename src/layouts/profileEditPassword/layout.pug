@@ -11,4 +11,5 @@ section.profile-layout.profile-layout_scaled.column.center.h100
       | !{form}
 
   .profile-layout__back-link.center
-    | !{slot}
+    each child in children || []
+      | !{child}

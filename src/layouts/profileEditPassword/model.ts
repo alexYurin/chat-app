@@ -27,11 +27,11 @@ const modelConstructor = ({ title, fields, avatar }: ProfileModelType) => ({
     form: 'profile-form',
     status: 'primary',
     type: 'submit',
-    slot: 'Сохранить',
+    children: ['Сохранить'],
   }),
   slot: new Link().create({
     href: '/',
-    slot: 'К списку страниц',
+    children: ['К списку страниц'],
   }),
 })
 

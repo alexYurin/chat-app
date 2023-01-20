@@ -22,4 +22,5 @@ section.profile-layout.column.center.h100
       | !{form}
 
   .profile-layout__back-link.center
-    | !{slot}
+    each child in children || []
+      | !{child}

@@ -8,12 +8,12 @@ export interface PlaceholderModelType extends BaseModelType {
 const modelConstructor = ({ title, description }: PlaceholderModelType) => ({
   title: new Title().create({
     level: 1,
-    slot: title,
+    children: [title],
   }),
   description,
   backLink: new Link().create({
     href: '/',
-    slot: 'К списку страниц',
+    children: ['К списку страниц'],
   }),
 })
 
