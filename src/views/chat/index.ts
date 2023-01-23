@@ -6,7 +6,7 @@ const { pathname, title } = routes.chat
 export default new PlaceholderLayout({
   pathname,
   pageTitle: title,
-}).createModel({
+}).create({
   title,
   description: 'Будет реализован в следующих спринтах 😜',
 })

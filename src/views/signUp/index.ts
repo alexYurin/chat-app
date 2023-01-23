@@ -3,7 +3,7 @@ import { AuthLayout } from 'layouts/index'
 
 const { pathname, title } = routes.signUp
 
-export default new AuthLayout({ pathname, pageTitle: title }).createModel({
+export default new AuthLayout({ pathname, pageTitle: title }).create({
   title,
   fields: [
     {

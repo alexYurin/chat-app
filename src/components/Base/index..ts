@@ -40,12 +40,6 @@ export default class BaseComponent<
     if (typeof name === 'string') {
       this.addListeners()
 
-      this.eventEmitter.on('@event:mount', () => {
-        setTimeout(() => {
-          console.log(this.name, this.getDOMRef())
-        }, 1000)
-      })
-
       return this
     } else {
       throw new Error(`Invalid component name: ${this.name}`)
@@ -102,6 +96,10 @@ export default class BaseComponent<
 
   public isCurrentElement(element: HTMLElement) {
     return this.id === element.getAttribute(componentAttributeNameId)
+  }
+
+  public mountComponent() {
+    this.eventEmitter.emit('@event:mount')
   }
 
   public getProps() {

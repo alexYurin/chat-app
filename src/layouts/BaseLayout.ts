@@ -1,4 +1,6 @@
-import LayoutModel, { BaseModelType } from 'layouts/LayoutModel'
+import LayoutModel from 'layouts/LayoutModel'
+
+import BaseModel, { BaseModelType } from 'layouts/BaseModel'
 
 export interface BaseLayoutProps {
   pathname: string
@@ -7,23 +9,23 @@ export interface BaseLayoutProps {
 
 export default class BaseLayout<
   LayoutProps extends BaseLayoutProps,
-  ModelData extends BaseModelType,
-  LayoutModel extends BaseModelType
+  ModelType extends BaseModelType
 > {
   public layout = ''
-  public modelConstructor: (model: ModelData) => LayoutModel = () =>
-    ({} as LayoutModel)
 
-  constructor(private props: LayoutProps) {
+  constructor(
+    private props: LayoutProps,
+    private model: BaseModel<LayoutProps, ModelType>
+  ) {
     return this
   }
 
-  public createModel(modelData: ModelData) {
+  public create() {
     return new LayoutModel(
       this.props.pathname,
       this.props.pageTitle,
       this.layout,
-      this.modelConstructor(modelData)
+      this.model
     )
   }
 }

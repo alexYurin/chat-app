@@ -7,7 +7,7 @@ const { pathname, title } = routes.profileEditPassword
 export default new ProfileEditPasswordLayout({
   pathname,
   pageTitle: title,
-}).createModel({
+}).create({
   title,
   avatar: {
     src: avatarPlaceholderIconSrc,
