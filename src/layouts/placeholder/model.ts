@@ -1,5 +1,5 @@
 import { Title, Link } from 'components/index'
-import { BaseModelType } from 'layouts/LayoutModel'
+import { BaseModelType } from 'layouts/LayoutController'
 
 export interface PlaceholderModelType extends BaseModelType {
   description: string

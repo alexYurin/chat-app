@@ -10,6 +10,9 @@ export default class AuthLayout extends BaseLayout<
   public layout = layout
 
   constructor(props: AuthModelProps) {
-    super(props, new AuthModel(props))
+    super(new AuthModel(props))
+
+    this.pathname = props.pathname
+    this.pageTitle = props.pageTitle
   }
 }

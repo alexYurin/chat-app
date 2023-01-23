@@ -1,5 +1,6 @@
 import Renderer from 'renderer/Renderer'
 import { BaseModule } from 'core/index'
+import { identity } from 'utils/index'
 import { v4 as makeUUID } from 'uuid'
 
 export type ComponentStatusType = 'primary' | 'success' | 'warning' | 'alert'
@@ -12,6 +13,8 @@ export type ComponentListenerPropType = {
 export interface BaseComponentOptions {
   withId?: boolean
   listeners?: ComponentListenerPropType[]
+  onMount?: <T>(...args: T[]) => void
+  onUpdate?: <T>(...args: T[]) => void
 }
 
 export interface BaseComponentProps {
@@ -23,7 +26,7 @@ export interface BaseComponentProps {
 
 export const componentAttributeNameId = 'data-component-id'
 
-export default class BaseComponent<
+export default abstract class BaseComponent<
   PropsType extends BaseComponentProps
 > extends BaseModule {
   private id = ''
@@ -38,7 +41,13 @@ export default class BaseComponent<
     this.options = { withId: true, ...options }
 
     if (typeof name === 'string') {
+      const customMountCallback = this.options.onMount || identity
+      const customUpdateCallback = this.options.onUpdate || identity
+
       this.addListeners()
+
+      this.eventEmitter.on('@event:mount', customMountCallback.bind(this))
+      this.eventEmitter.on('@event:update', customUpdateCallback.bind(this))
 
       return this
     } else {
@@ -63,15 +72,15 @@ export default class BaseComponent<
     }
   }
 
-  public prepareProps(props: PropsType): PropsType {
-    return props
-  }
+  public abstract prepareProps(props: PropsType): PropsType
 
   public create(props: PropsType = {} as PropsType): string {
     this.props = { ...this.props, ...props }
 
     if (Renderer) {
-      const preparedProps = this.prepareProps(this.props)
+      const preparedProps = this.prepareProps
+        ? this.prepareProps(this.props)
+        : this.props
 
       if (this.options.withId) {
         this.id = `_id_${makeUUID()}`
@@ -86,8 +95,6 @@ export default class BaseComponent<
       const element = elementTempContainer.firstElementChild
       element?.setAttribute(componentAttributeNameId, this.id)
 
-      this.eventEmitter.emit('@event:mount')
-
       return elementTempContainer.innerHTML
     }
 
@@ -96,10 +103,6 @@ export default class BaseComponent<
 
   public isCurrentElement(element: HTMLElement) {
     return this.id === element.getAttribute(componentAttributeNameId)
-  }
-
-  public mountComponent() {
-    this.eventEmitter.emit('@event:mount')
   }
 
   public getProps() {

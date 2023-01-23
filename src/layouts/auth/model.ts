@@ -8,7 +8,7 @@ export interface AuthModelType {
   title: Title
   authLink: Link
   form: Form
-  children: [Link]
+  backLink: Link
 }
 export interface AuthModelProps extends BaseLayoutProps {
   title: string
@@ -36,18 +36,16 @@ export default class AuthModel extends BaseModel<
         level: 1,
         children: [title],
       }),
-      authLink: new Link(authLink),
       form: new Form({
         className: 'auth-layout__form',
         fields,
         actionButtons,
       }),
-      children: [
-        new Link({
-          href: '/',
-          children: ['К списку страниц'],
-        }),
-      ],
+      authLink: new Link(authLink),
+      backLink: new Link({
+        href: '/',
+        children: ['К списку страниц'],
+      }),
     }
   }
 }

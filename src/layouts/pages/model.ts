@@ -1,34 +1,51 @@
 import { Title, Link } from 'components/index'
-import { BaseModelType } from 'layouts/LayoutModel'
+import { BaseLayoutProps } from 'layouts/BaseLayout'
 import { RoutesTypes } from 'router/routes'
+import BaseModel from 'layouts/BaseModel'
 
-export interface PagesModelType extends BaseModelType {
+export interface PagesModelType {
+  title: Title
+  links: Link[]
+}
+
+export interface PagesModelProps extends BaseLayoutProps {
   routes: RoutesTypes
 }
 
 const isNotRootLocation = (pathname: string) => pathname !== '/'
 
-const modelConstructor = ({ routes, title }: PagesModelType) => ({
-  title: new Title().create({
-    level: 1,
-    children: [title],
-  }),
-  links: Object.values(routes).reduce((currentRoutes, route) => {
-    if (isNotRootLocation(route.pathname)) {
-      return [
-        ...currentRoutes,
-        new Link().create({
-          className: 'pages__link',
-          href: route.pathname,
-          children: [route.title],
-        }),
-      ]
+export default class PagesModel extends BaseModel<
+  PagesModelProps,
+  PagesModelType
+> {
+  constructor(props: PagesModelProps) {
+    super(props)
+
+    this.configurate()
+  }
+
+  configurate() {
+    const { routes, pageTitle } = this.props
+
+    this.model = {
+      title: new Title({
+        level: 1,
+        children: [pageTitle],
+      }),
+      links: Object.values(routes).reduce((currentRoutes, route) => {
+        if (isNotRootLocation(route.pathname)) {
+          return [
+            ...currentRoutes,
+            new Link({
+              className: 'pages__link',
+              href: route.pathname,
+              children: [route.title],
+            }),
+          ]
+        }
+
+        return currentRoutes
+      }, [] as Link[]),
     }
-
-    return currentRoutes
-  }, [] as string[]),
-})
-
-export type PagesModelConstructorType = ReturnType<typeof modelConstructor>
-
-export default modelConstructor
+  }
+}

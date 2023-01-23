@@ -37,7 +37,11 @@ export default class Router {
   private renderCurrentView() {
     Object.values(views).forEach((View) => {
       if (this.isCurrentRoute(View.pathname)) {
-        View.render()
+        const viewInstance = View.create()
+
+        console.log('view', View)
+
+        viewInstance.render()
       }
     })
   }

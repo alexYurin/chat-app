@@ -1,6 +1,6 @@
 import { Link, Button, Form } from 'components/index'
 import { FieldType } from 'components/Form'
-import { BaseModelType } from 'layouts/LayoutModel'
+import { BaseModelType } from 'layouts/LayoutController'
 
 export interface ProfileModelType extends BaseModelType {
   fields: FieldType[]

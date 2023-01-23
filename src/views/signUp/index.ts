@@ -3,7 +3,9 @@ import { AuthLayout } from 'layouts/index'
 
 const { pathname, title } = routes.signUp
 
-export default new AuthLayout({ pathname, pageTitle: title }).create({
+export default new AuthLayout({
+  pathname,
+  pageTitle: title,
   title,
   fields: [
     {
@@ -65,14 +67,14 @@ export default new AuthLayout({ pathname, pageTitle: title }).create({
   ],
   authLink: {
     href: routes.signIn.pathname,
-    slot: 'Войти',
+    children: ['Войти'],
   },
   actionButtons: [
     {
       button: {
         status: 'primary',
         type: 'submit',
-        slot: 'Зарегистрироваться',
+        children: ['Зарегистрироваться'],
       },
     },
   ],

@@ -1,4 +1,4 @@
-import LayoutModel from 'layouts/LayoutModel'
+import LayoutController from 'layouts/LayoutController'
 
 import BaseModel, { BaseModelType } from 'layouts/BaseModel'
 
@@ -7,25 +7,24 @@ export interface BaseLayoutProps {
   pageTitle: string
 }
 
-export default class BaseLayout<
+export default abstract class BaseLayout<
   LayoutProps extends BaseLayoutProps,
   ModelType extends BaseModelType
 > {
   public layout = ''
+  public pathname = ''
+  public pageTitle = ''
 
-  constructor(
-    private props: LayoutProps,
-    private model: BaseModel<LayoutProps, ModelType>
-  ) {
+  constructor(protected modelInstance: BaseModel<LayoutProps, ModelType>) {
     return this
   }
 
   public create() {
-    return new LayoutModel(
-      this.props.pathname,
-      this.props.pageTitle,
+    return new LayoutController(
+      this.pathname,
+      this.pageTitle,
       this.layout,
-      this.model
+      this.modelInstance
     )
   }
 }

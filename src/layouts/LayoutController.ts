@@ -7,7 +7,7 @@ const SELECTORS = {
   root: '#root',
 }
 
-export default class LayoutModel<
+export default class LayoutController<
   ModelType extends BaseModel<BaseLayoutProps, BaseModelType>
 > extends BaseModule {
   private HTMLRootElement = document.querySelector(
@@ -17,8 +17,8 @@ export default class LayoutModel<
   constructor(
     public pathname: string,
     public pageTitle: string,
-    private layout: string,
-    private model: ModelType
+    protected layout: string,
+    protected modelInstance: ModelType
   ) {
     super()
 
@@ -32,19 +32,17 @@ export default class LayoutModel<
   public render() {
     this.setPageTitle()
 
-    console.log('model', this.model)
-
-    if (Object.keys(this.model).length === 0) {
+    if (Object.keys(this.modelInstance).length === 0) {
       return
     }
 
     this.HTMLRootElement.innerHTML = Renderer.toHTML(
       this.layout,
-      this.model.stringifyComponents()
+      this.modelInstance.createComponents()
     )
 
     setTimeout(() => {
-      this.model.mountComponents()
+      this.modelInstance.mountComponents()
     })
   }
 

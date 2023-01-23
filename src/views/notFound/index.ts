@@ -6,7 +6,6 @@ const { pathname, title } = routes.notFound
 export default new PlaceholderLayout({
   pathname,
   pageTitle: title,
-}).create({
   title,
   description: 'Не туда попали',
 })
