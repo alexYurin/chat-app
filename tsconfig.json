@@ -14,13 +14,13 @@
     "strictNullChecks": true,
     "paths": {
       "static/*": ["./static/*"],
-      "core/*": ["./src/core/*"],
+      "services/*": ["src/services/*"],
       "layouts/*": ["./src/layouts/*"],
       "router/*": ["./src/router/*"],
       "styles/*": ["./src/styles/*"],
       "views/*": ["./src/views/*"],
       "components/*": ["./src/components/*"],
-      "renderer/*": ["./src/renderer/*"],
+      "templators/*": ["src/templators/*"],
       "utils/*": ["./src/utils/*"]
     }
   }

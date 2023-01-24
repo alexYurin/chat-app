@@ -13,11 +13,11 @@
   "alias": {
     "router": "./router",
     "static": "./static",
-    "core": "./src/core",
+    "services": "./src/services",
     "layouts": "./src/layouts",
     "components": "./src/components",
     "views": "./src/views",
-    "renderer": "./src/renderer",
+    "templators": "./src/templators",
     "utils": "./src/utils",
     "styles": "./src/styles"
   },

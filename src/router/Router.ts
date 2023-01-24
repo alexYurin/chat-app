@@ -1,4 +1,4 @@
-import HistoryPusher from 'router/HistoryPusher'
+import { HistoryPusher } from 'services/index'
 import routes from 'router/routes'
 import * as views from 'views/index'
 

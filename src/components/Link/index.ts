@@ -1,8 +1,8 @@
 import BaseComponent, {
   BaseComponentProps,
   BaseComponentOptions,
-} from 'core/BaseComponent'
-import HistoryPusher from 'router/HistoryPusher'
+} from 'components/Base/index'
+import { HistoryPusher } from 'services/index'
 import templateString from 'bundle-text:./template.pug'
 import './styles.scss'
 

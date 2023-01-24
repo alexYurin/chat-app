@@ -1,7 +1,7 @@
 import BaseComponent, {
   BaseComponentProps,
   BaseComponentOptions,
-} from 'core/BaseComponent'
+} from 'components/Base/index'
 import Input, { InputProps } from 'components/Input'
 import Button, { ButtonProps } from 'components/Button'
 import templateString from 'bundle-text:./template.pug'
