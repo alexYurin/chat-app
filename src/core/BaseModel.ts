@@ -1,5 +1,4 @@
-import BaseComponent, { BaseComponentProps } from 'components/Base/index.'
-import { emitWarning } from 'process'
+import BaseComponent, { BaseComponentProps } from 'core/BaseComponent'
 
 export type ViewPropsType = {
   [key: string]: string
@@ -23,7 +22,7 @@ export default abstract class BaseModel<
   public mountComponents() {
     Object.values(this.model).forEach((element) => {
       if (element instanceof BaseComponent) {
-        element.moduleMount()
+        // element.componentMount()
       }
     })
   }
@@ -31,27 +30,6 @@ export default abstract class BaseModel<
   public updateProps<ModelProps>(props: ModelProps) {
     this.props = { ...this.props, ...props }
     this.configurate()
-  }
-
-  private cc(
-    component:
-      | string
-      | string[]
-      | BaseComponent<BaseComponentProps>
-      | BaseComponent<BaseComponentProps>[],
-    props: BaseComponentProps
-  ) {
-    if (Array.isArray(component)) {
-      component.map((element) => {
-        if (element instanceof BaseComponent) {
-          return element.create(props)
-        } else if (Array.isArray(element)) {
-          return this.cc(element, element.props)
-        }
-      })
-    }
-
-    return component
   }
 
   public createComponents(componentProps: BaseComponentProps = {}) {

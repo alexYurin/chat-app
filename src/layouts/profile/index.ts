@@ -1,18 +1,28 @@
 import layout from 'bundle-text:./layout.pug'
-import modelConstructor, {
-  ProfileModelType,
-  ProfileModelConstructorType,
-} from './model'
-import BaseLayout, { BaseLayoutProps } from 'layouts/BaseLayout'
+import ProfileModel, { ProfileModelProps } from './model'
+import { BaseController } from 'core/index'
 import './styles.scss'
 
-export type ProfileLayoutProps = BaseLayoutProps
+export default class ProfileLayout extends BaseController {
+  protected template = layout
 
-export default class ProfileLayout extends BaseLayout<
-  ProfileLayoutProps,
-  ProfileModelType,
-  ProfileModelConstructorType
-> {
-  public layout = layout
-  public modelConstructor = modelConstructor
+  constructor(name: string, props: ProfileModelProps) {
+    super(
+      name,
+      {
+        pathname: props.pathname,
+        screenTitle: props.screenTitle,
+      },
+      {
+        onMount: () => {
+          console.log(`Mounted Layout: ${name}`)
+        },
+        onUpdate: (props) => {
+          console.log(`Updated props Layout: ${name}, ${props}`)
+        },
+      }
+    )
+
+    this.modelInstance = new ProfileModel(props)
+  }
 }

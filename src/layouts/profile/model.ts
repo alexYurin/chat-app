@@ -1,9 +1,24 @@
-import { Link, Button, Form } from 'components/index'
+import { Button, Form, Link } from 'components/index'
 import { FieldType } from 'components/Form'
-import { BaseModelType } from 'layouts/LayoutController'
+import { BaseControllerProps } from 'core/BaseController'
+import BaseModel from 'core/BaseModel'
 import routes from 'router/routes'
 
-export interface ProfileModelType extends BaseModelType {
+export interface ProfileModelType {
+  title: string
+  avatarSrc: string
+  avatarAlt: string
+  avatarFieldName: string
+  form: Form
+  changeDataLink: Link
+  changePasswordLink: Link
+  logoutLink: Link
+  saveButton: Button
+  backLink: Link
+}
+
+export interface ProfileModelProps extends BaseControllerProps {
+  title: string
   fields: FieldType[]
   avatar: {
     src: string
@@ -22,54 +37,63 @@ const triggerFormEdit = (event: Event) => {
   form?.classList.remove('form_readonly')
 }
 
-const modelConstructor = ({ title, fields, avatar }: ProfileModelType) => ({
-  title,
-  avatarSrc: avatar.src,
-  avatarAlt: avatar.alt,
-  avatarFieldName: avatar.fieldName,
-  form: new Form().create({
-    id: 'profile-form',
-    readonly: true,
-    className: 'profile-layout__form',
-    fields,
-    actionButtons: [],
-  }),
-  changeDataLink: new Link(
-    {
-      href: '#',
-    },
-    {
-      listeners: [
+export default class ProfileModel extends BaseModel<
+  ProfileModelProps,
+  ProfileModelType
+> {
+  constructor(props: ProfileModelProps) {
+    super(props)
+
+    this.configurate()
+  }
+
+  configurate() {
+    const { title, fields, avatar } = this.props
+
+    this.model = {
+      title,
+      avatarSrc: avatar.src,
+      avatarAlt: avatar.alt,
+      avatarFieldName: avatar.fieldName,
+      form: new Form({
+        id: 'profile-form',
+        readonly: true,
+        className: 'profile-layout__form',
+        fields,
+        actionButtons: [],
+      }),
+      changeDataLink: new Link(
         {
-          eventType: 'click',
-          callback: triggerFormEdit,
+          href: '#',
+          children: ['Изменить данные'],
         },
-      ],
+        {
+          listeners: [
+            {
+              eventType: 'click',
+              callback: triggerFormEdit,
+            },
+          ],
+        }
+      ),
+      changePasswordLink: new Link({
+        href: routes.profileEditPassword.pathname,
+        children: ['Изменить пароль'],
+      }),
+      logoutLink: new Link({
+        href: '/',
+        children: ['Выйти'],
+      }),
+      saveButton: new Button({
+        form: 'profile-form',
+        status: 'primary',
+        type: 'submit',
+        children: ['Сохранить'],
+      }),
+      backLink: new Link({
+        href: '/',
+        children: ['К списку страниц'],
+      }),
     }
-  ).create({
-    href: '#',
-    children: ['Изменить данные'],
-  }),
-  changePasswordLink: new Link().create({
-    href: routes.profileEditPassword.pathname,
-    children: ['Изменить пароль'],
-  }),
-  logoutLink: new Link().create({
-    href: '/',
-    children: ['Выйти'],
-  }),
-  saveButton: new Button().create({
-    form: 'profile-form',
-    status: 'primary',
-    type: 'submit',
-    children: ['Сохранить'],
-  }),
-  slot: new Link().create({
-    href: '/',
-    children: ['К списку страниц'],
-  }),
-})
-
-export type ProfileModelConstructorType = ReturnType<typeof modelConstructor>
-
-export default modelConstructor
+  }
+}

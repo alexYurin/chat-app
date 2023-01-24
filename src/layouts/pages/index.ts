@@ -1,18 +1,28 @@
 import layout from 'bundle-text:./layout.pug'
-import PagesModel, { PagesModelType, PagesModelProps } from './model'
-import BaseLayout from 'layouts/BaseLayout'
+import PagesModel, { PagesModelProps } from './model'
+import BaseController from 'core/BaseController'
 import './styles.scss'
 
-export default class PagesLayout extends BaseLayout<
-  PagesModelProps,
-  PagesModelType
-> {
-  public layout = layout
+export default class PagesLayout extends BaseController {
+  protected template = layout
 
-  constructor(props: PagesModelProps) {
-    super(new PagesModel(props))
+  constructor(name: string, props: PagesModelProps) {
+    super(
+      name,
+      {
+        pathname: props.pathname,
+        screenTitle: props.screenTitle,
+      },
+      {
+        onMount: () => {
+          console.log(`Mounted Layout: ${name}`)
+        },
+        onUpdate: (props) => {
+          console.log(`Updated props Layout: ${name}, ${props}`)
+        },
+      }
+    )
 
-    this.pathname = props.pathname
-    this.pageTitle = props.pageTitle
+    this.modelInstance = new PagesModel(props)
   }
 }

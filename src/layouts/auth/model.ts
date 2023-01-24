@@ -1,8 +1,8 @@
 import { Title, Form, Link } from 'components/index'
 import { FieldType, ButtonsFieldType } from 'components/Form'
-import { BaseLayoutProps } from 'layouts/BaseLayout'
+import { BaseControllerProps } from 'core/BaseController'
 import { LinkProps } from 'components/Link'
-import BaseModel from 'layouts/BaseModel'
+import BaseModel from 'core/BaseModel'
 
 export interface AuthModelType {
   title: Title
@@ -10,7 +10,8 @@ export interface AuthModelType {
   form: Form
   backLink: Link
 }
-export interface AuthModelProps extends BaseLayoutProps {
+
+export interface AuthModelProps extends BaseControllerProps {
   title: string
   fields: FieldType[]
   actionButtons: ButtonsFieldType[]

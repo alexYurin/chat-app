@@ -3,9 +3,11 @@ import { PlaceholderLayout } from 'layouts/index'
 
 const { pathname, title } = routes.chat
 
-export default new PlaceholderLayout({
+const props = {
   pathname,
-  pageTitle: title,
+  screenTitle: title,
   title,
   description: 'Будет реализован в следующих спринтах 😜',
-})
+}
+
+export default new PlaceholderLayout('chat', props)

@@ -1,17 +1,27 @@
 import layout from 'bundle-text:./layout.pug'
-import modelConstructor, {
-  ProfileModelType,
-  ProfileModelConstructorType,
-} from './model'
-import BaseLayout, { BaseLayoutProps } from 'layouts/BaseLayout'
+import ProfileEditModel, { ProfileEditModelProps } from './model'
+import { BaseController } from 'core/index'
 
-export type ProfileEditPasswordLayoutProps = BaseLayoutProps
+export default class ProfileEditLayout extends BaseController {
+  protected template = layout
 
-export default class ProfileLayout extends BaseLayout<
-  ProfileEditPasswordLayoutProps,
-  ProfileModelType,
-  ProfileModelConstructorType
-> {
-  public layout = layout
-  public modelConstructor = modelConstructor
+  constructor(name: string, props: ProfileEditModelProps) {
+    super(
+      name,
+      {
+        pathname: props.pathname,
+        screenTitle: props.screenTitle,
+      },
+      {
+        onMount: () => {
+          console.log(`Mounted Layout: ${name}`)
+        },
+        onUpdate: (props) => {
+          console.log(`Updated props Layout: ${name}, ${props}`)
+        },
+      }
+    )
+
+    this.modelInstance = new ProfileEditModel(props)
+  }
 }

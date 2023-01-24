@@ -3,9 +3,11 @@ import { PlaceholderLayout } from 'layouts/index'
 
 const { pathname, title } = routes.error
 
-export default new PlaceholderLayout({
+const props = {
   pathname,
-  pageTitle: title,
+  screenTitle: title,
   title,
   description: 'Мы уже фиксим',
-})
+}
+
+export default new PlaceholderLayout('error', props)

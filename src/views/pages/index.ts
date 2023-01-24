@@ -3,9 +3,10 @@ import { PagesLayout } from 'layouts/index'
 
 const { pathname, title } = routes.pages
 
-export default new PagesLayout({
+const props = {
   pathname,
-  pageTitle: title,
-  title,
+  screenTitle: title,
   routes,
-})
+}
+
+export default new PagesLayout('pages', props)

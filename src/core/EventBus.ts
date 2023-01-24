@@ -1,4 +1,4 @@
-export type EventType = '@event:mount' | '@event:update'
+export type EventType = '@event:mount' | '@event:update' | '@event:unmount'
 
 export type EventCallback = (...args: unknown[]) => void
 

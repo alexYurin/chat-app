@@ -3,9 +3,11 @@ import { PlaceholderLayout } from 'layouts/index'
 
 const { pathname, title } = routes.notFound
 
-export default new PlaceholderLayout({
+const props = {
   pathname,
-  pageTitle: title,
+  screenTitle: title,
   title,
   description: 'Не туда попали',
-})
+}
+
+export default new PlaceholderLayout('notFound', props)

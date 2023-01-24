@@ -1,5 +1,5 @@
 import Renderer from 'renderer/Renderer'
-import { BaseModule } from 'core/index'
+import { EventBus } from 'core/index'
 import { identity } from 'utils/index'
 import { v4 as makeUUID } from 'uuid'
 
@@ -15,6 +15,7 @@ export interface BaseComponentOptions {
   listeners?: ComponentListenerPropType[]
   onMount?: <T>(...args: T[]) => void
   onUpdate?: <T>(...args: T[]) => void
+  onUnmount?: <T>(...args: T[]) => void
 }
 
 export interface BaseComponentProps {
@@ -28,26 +29,27 @@ export const componentAttributeNameId = 'data-component-id'
 
 export default abstract class BaseComponent<
   PropsType extends BaseComponentProps
-> extends BaseModule {
+> {
   private id = ''
   protected template = ''
+  private eventEmitter = new EventBus()
+  private unsubscribes: ComponentListenerPropType[] = []
+
+  public isMount = false
 
   constructor(
     protected name: string | null = null,
-    private props: PropsType = {} as PropsType,
-    private options: BaseComponentOptions = {}
+    protected props: PropsType = {} as PropsType,
+    protected options: BaseComponentOptions = {}
   ) {
-    super()
     this.options = { withId: true, ...options }
 
     if (typeof name === 'string') {
-      const customMountCallback = this.options.onMount || identity
-      const customUpdateCallback = this.options.onUpdate || identity
+      this.eventEmitter.on('@event:mount', this.options.onMount || identity)
+      this.eventEmitter.on('@event:update', this.options.onUpdate || identity)
+      this.eventEmitter.on('@event:unmount', this.options.onUnmount || identity)
 
-      this.addListeners()
-
-      this.eventEmitter.on('@event:mount', customMountCallback.bind(this))
-      this.eventEmitter.on('@event:update', customUpdateCallback.bind(this))
+      this.unsubscribes = this.addListeners()
 
       return this
     } else {
@@ -55,24 +57,60 @@ export default abstract class BaseComponent<
     }
   }
 
+  protected componentMount<T>(...args: T[]) {
+    this.isMount = true
+    this.eventEmitter.emit('@event:mount', ...args)
+  }
+
+  protected componentUpdate<T>(...args: T[]) {
+    this.eventEmitter.emit('@event:update', ...args)
+  }
+
+  protected componentUnmount<T>(...args: T[]) {
+    this.eventEmitter.emit('@event:unmount', ...args)
+
+    this.eventEmitter.off('@event:mount', this.options.onMount || identity)
+    this.eventEmitter.off('@event:update', this.options.onUpdate || identity)
+    this.eventEmitter.off('@event:unmount', this.options.onUnmount || identity)
+
+    this.removeListeners()
+  }
+
   private addListeners() {
     const { listeners } = this.options
 
     if (listeners?.length) {
-      listeners.forEach((listener) => {
-        window.addEventListener(listener.eventType, (event: Event) => {
+      return listeners.map((listener) => {
+        const subscribe = (event: Event) => {
           if (
             typeof listener.callback === 'function' &&
             this.isCurrentElement(event.target as HTMLElement)
           ) {
             listener.callback(event)
           }
-        })
-      })
+        }
+
+        window.addEventListener(listener.eventType, subscribe)
+
+        return {
+          eventType: listener.eventType,
+          callback: subscribe,
+        }
+      }, [])
     }
+
+    return []
   }
 
-  public abstract prepareProps(props: PropsType): PropsType
+  private removeListeners() {
+    this.unsubscribes.forEach((unsubscribe) => {
+      window.removeEventListener(unsubscribe.eventType, unsubscribe.callback)
+    })
+  }
+
+  public prepareProps(props: PropsType): PropsType {
+    return props
+  }
 
   public create(props: PropsType = {} as PropsType): string {
     this.props = { ...this.props, ...props }
@@ -109,6 +147,10 @@ export default abstract class BaseComponent<
     return this.props
   }
 
+  public updateProps(props: PropsType) {
+    this.props = props
+  }
+
   public getDOMRef() {
     if (this.id) {
       return document.querySelector(`[${componentAttributeNameId}=${this.id}]`)
@@ -117,3 +159,13 @@ export default abstract class BaseComponent<
     }
   }
 }
+
+// const proxy = new Proxy(BaseComponent, {
+//   set(target, prop, value) {
+//     console.log('set new props!!!!!')
+
+//     return true
+//   },
+// })
+
+// console.log('BaseComponent', proxy)

@@ -1,7 +1,7 @@
 import BaseComponent, {
   BaseComponentProps,
   BaseComponentOptions,
-} from 'components/Base/index.'
+} from 'core/BaseComponent'
 import templateString from 'bundle-text:./template.pug'
 import './styles.scss'
 

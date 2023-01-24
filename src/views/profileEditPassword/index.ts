@@ -4,9 +4,9 @@ import avatarPlaceholderIconSrc from 'data-url:static/images/image-placeholder.s
 
 const { pathname, title } = routes.profileEditPassword
 
-export default new ProfileEditPasswordLayout({
+const props = {
   pathname,
-  pageTitle: title,
+  screenTitle: title,
   title,
   avatar: {
     src: avatarPlaceholderIconSrc,
@@ -39,4 +39,6 @@ export default new ProfileEditPasswordLayout({
       },
     },
   ],
-})
+}
+
+export default new ProfileEditPasswordLayout('profileEdit', props)

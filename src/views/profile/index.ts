@@ -4,9 +4,9 @@ import avatarPlaceholderIconSrc from 'data-url:static/images/image-placeholder.s
 
 const { pathname, title } = routes.profile
 
-export default new ProfileLayout({
+const props = {
   pathname,
-  pageTitle: title,
+  screenTitle: title,
   title,
   avatar: {
     src: avatarPlaceholderIconSrc,
@@ -68,4 +68,6 @@ export default new ProfileLayout({
       },
     },
   ],
-})
+}
+
+export default new ProfileLayout('profile', props)

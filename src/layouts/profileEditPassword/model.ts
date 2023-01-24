@@ -1,8 +1,20 @@
-import { Link, Button, Form } from 'components/index'
+import { Button, Form, Link } from 'components/index'
 import { FieldType } from 'components/Form'
-import { BaseModelType } from 'layouts/LayoutController'
+import { BaseControllerProps } from 'core/BaseController'
+import BaseModel from 'core/BaseModel'
 
-export interface ProfileModelType extends BaseModelType {
+export interface ProfileEditModelType {
+  title: string
+  avatarSrc: string
+  avatarAlt: string
+  avatarFieldName: string
+  form: Form
+  saveButton: Button
+  backLink: Link
+}
+
+export interface ProfileEditModelProps extends BaseControllerProps {
+  title: string
   fields: FieldType[]
   avatar: {
     src: string
@@ -11,30 +23,41 @@ export interface ProfileModelType extends BaseModelType {
   }
 }
 
-const modelConstructor = ({ title, fields, avatar }: ProfileModelType) => ({
-  title,
-  avatarSrc: avatar.src,
-  avatarAlt: avatar.alt,
-  avatarFieldName: avatar.fieldName,
-  form: new Form().create({
-    id: 'profile-form',
-    readonly: false,
-    className: 'profile-layout__form',
-    fields,
-    actionButtons: [],
-  }),
-  saveButton: new Button().create({
-    form: 'profile-form',
-    status: 'primary',
-    type: 'submit',
-    children: ['Сохранить'],
-  }),
-  slot: new Link().create({
-    href: '/',
-    children: ['К списку страниц'],
-  }),
-})
+export default class ProfileEditModel extends BaseModel<
+  ProfileEditModelProps,
+  ProfileEditModelType
+> {
+  constructor(props: ProfileEditModelProps) {
+    super(props)
 
-export type ProfileModelConstructorType = ReturnType<typeof modelConstructor>
+    this.configurate()
+  }
 
-export default modelConstructor
+  configurate() {
+    const { title, fields, avatar } = this.props
+
+    this.model = {
+      title,
+      avatarSrc: avatar.src,
+      avatarAlt: avatar.alt,
+      avatarFieldName: avatar.fieldName,
+      form: new Form({
+        id: 'profile-form',
+        readonly: false,
+        className: 'profile-layout__form',
+        fields,
+        actionButtons: [],
+      }),
+      saveButton: new Button({
+        form: 'profile-form',
+        status: 'primary',
+        type: 'submit',
+        children: ['Сохранить'],
+      }),
+      backLink: new Link({
+        href: '/',
+        children: ['К списку страниц'],
+      }),
+    }
+  }
+}

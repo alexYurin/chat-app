@@ -1,18 +1,28 @@
 import layout from 'bundle-text:./layout.pug'
-import modelConstructor, {
-  PlaceholderModelType,
-  PlaceholderModelConstructorType,
-} from './model'
-import BaseLayout, { BaseLayoutProps } from 'layouts/BaseLayout'
+import PlaceholderModel, { PlaceholderModelProps } from './model'
+import { BaseController } from 'core/index'
 import './styles.scss'
 
-export type PlaceholderLayoutProps = BaseLayoutProps
+export default class PlaceholderLayout extends BaseController {
+  protected template = layout
 
-export default class PlaceholderLayout extends BaseLayout<
-  PlaceholderLayoutProps,
-  PlaceholderModelType,
-  PlaceholderModelConstructorType
-> {
-  public layout = layout
-  public modelConstructor = modelConstructor
+  constructor(name: string, props: PlaceholderModelProps) {
+    super(
+      name,
+      {
+        pathname: props.pathname,
+        screenTitle: props.screenTitle,
+      },
+      {
+        onMount: () => {
+          console.log(`Mounted Layout: ${name}`)
+        },
+        onUpdate: (props) => {
+          console.log(`Updated props Layout: ${name}, ${props}`)
+        },
+      }
+    )
+
+    this.modelInstance = new PlaceholderModel(props)
+  }
 }
