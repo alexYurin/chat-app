@@ -7,16 +7,16 @@ export type Listener<TEventType extends string> = {
 export default class EventBus<TEvent extends string> {
   private listeners: Listener<TEvent> = {}
 
-  static isFoundEvent<TCurrentEvent>(event: TCurrentEvent) {
-    return Array.isArray(this.prototype.listeners[event])
+  public isFoundEvent<TCurrentEvent>(event: TCurrentEvent) {
+    return Array.isArray(this.listeners[event])
   }
 
-  on(event: TEvent, callback: EventCallback) {
+  public on(event: TEvent, callback: EventCallback) {
     this.listeners[event] = [...(this.listeners[event] || []), callback]
   }
 
-  off(event: TEvent, callback: EventCallback) {
-    if (EventBus.isFoundEvent(event)) {
+  public off(event: TEvent, callback: EventCallback) {
+    if (this.isFoundEvent(event)) {
       this.listeners[event] = this.listeners[event]?.filter(
         (listener) => listener !== callback
       )
@@ -25,8 +25,8 @@ export default class EventBus<TEvent extends string> {
     }
   }
 
-  emit<T>(event: TEvent, ...args: T[]) {
-    if (EventBus.isFoundEvent(event)) {
+  public emit<T>(event: TEvent, ...args: T[]) {
+    if (this.isFoundEvent(event)) {
       this.listeners[event]?.forEach((listener) => listener(...args))
     } else {
       throw new Event(`Not found event: ${event}`)

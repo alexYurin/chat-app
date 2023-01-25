@@ -14,10 +14,10 @@ export default class Link extends BaseComponent<LinkProps> {
   public template = templateString
 
   constructor(
-    baseProps: LinkProps = { href: '' },
+    props: LinkProps = { href: '' },
     options: BaseComponentOptions = {}
   ) {
-    super('link', baseProps, {
+    super('link', props, {
       ...options,
       listeners: [
         {

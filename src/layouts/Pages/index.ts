@@ -1,28 +1,55 @@
 import layout from 'bundle-text:./layout.pug'
-import PagesModel, { PagesModelProps } from './model'
-import BaseController from 'core/BaseLayout'
+import BaseLayout, {
+  BaseLayoutProps,
+  BaseLayoutParamsType,
+} from 'layouts/Base/index'
+import { Title, Link } from 'components/index'
+import routes from 'router/routes'
 import './styles.scss'
 
-export default class PagesLayout extends BaseController {
+export interface PagesLayoutProps extends BaseLayoutProps {
+  title: string
+}
+
+export type PagesLayoutMapType = {
+  title: Title
+  links: Link[]
+}
+
+const isNotRootLocation = (pathname: string) => pathname !== '/'
+
+export default class PagesLayout extends BaseLayout<
+  PagesLayoutProps,
+  PagesLayoutMapType
+> {
   protected template = layout
 
-  constructor(name: string, props: PagesModelProps) {
-    super(
-      name,
-      {
-        pathname: props.pathname,
-        screenTitle: props.screenTitle,
-      },
-      {
-        onMount: () => {
-          console.log(`Mounted Layout: ${name}`)
-        },
-        onUpdate: (props) => {
-          console.log(`Updated props Layout: ${name}, ${props}`)
-        },
-      }
-    )
+  constructor(params: BaseLayoutParamsType<PagesLayoutProps>) {
+    super(params)
+  }
 
-    this.modelInstance = new PagesModel(props)
+  init() {
+    const { title } = this.getProps()
+
+    this.map = {
+      title: new Title({
+        level: 1,
+        children: [title],
+      }),
+      links: Object.values(routes).reduce((currentRoutes, route) => {
+        if (isNotRootLocation(route.pathname)) {
+          return [
+            ...currentRoutes,
+            new Link({
+              className: 'pages__link',
+              href: route.pathname,
+              children: [route.title],
+            }),
+          ]
+        }
+
+        return currentRoutes
+      }, [] as Link[]),
+    }
   }
 }

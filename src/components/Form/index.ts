@@ -37,13 +37,13 @@ export default class Form extends BaseComponent<FormProps> {
   public template = templateString
 
   constructor(
-    baseProps: FormProps = {
+    props: FormProps = {
       fields: [],
       actionButtons: [],
     },
     options: BaseComponentOptions = {}
   ) {
-    super('form', baseProps, options)
+    super('form', props, options)
   }
 
   public prepareProps(props: FormProps): FormProps {

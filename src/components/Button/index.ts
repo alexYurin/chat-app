@@ -15,7 +15,7 @@ export interface ButtonProps extends BaseComponentProps {
 export default class Button extends BaseComponent<ButtonProps> {
   public template = templateString
 
-  constructor(baseProps: ButtonProps = {}, options: BaseComponentOptions = {}) {
-    super('button', baseProps, options)
+  constructor(props: ButtonProps = {}, options: BaseComponentOptions = {}) {
+    super('button', props, options)
   }
 }

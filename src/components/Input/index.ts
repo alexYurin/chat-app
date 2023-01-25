@@ -22,11 +22,11 @@ export default class Input extends BaseComponent<InputProps> {
   public template = templateString
 
   constructor(
-    baseProps: InputProps = {
+    props: InputProps = {
       name: '',
     },
     options: BaseComponentOptions = {}
   ) {
-    super('input', baseProps, options)
+    super('input', props, options)
   }
 }

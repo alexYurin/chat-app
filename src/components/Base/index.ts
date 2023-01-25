@@ -29,7 +29,7 @@ export interface BaseComponentProps {
   status?: ComponentStatusType
   id?: string
   className?: string
-  children?: string[]
+  children?: BaseComponent<BaseComponentProps>[] | string[]
 }
 
 export const componentAttributeNameId = 'data-component-id'
@@ -80,6 +80,9 @@ export default abstract class BaseComponent<
 
   protected componentMount<T>(...args: T[]) {
     this.isMount = true
+
+    console.log('children', this.props.children)
+
     this.eventEmitter.emit('@event-component:MOUNT', ...args)
   }
 
@@ -170,6 +173,8 @@ export default abstract class BaseComponent<
 
       const element = elementTempContainer.firstElementChild
       element?.setAttribute(componentAttributeNameId, this.id)
+
+      this.componentMount(element)
 
       return elementTempContainer.innerHTML
     }
