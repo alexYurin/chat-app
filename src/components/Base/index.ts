@@ -189,8 +189,14 @@ export default abstract class BaseComponent<
   }
 
   public isComponentChild(
-    child: BaseComponent<BaseComponentProps> | string
-  ): child is BaseComponent<BaseComponentProps>[] {}
+    children: unknown
+  ): children is BaseComponent<BaseComponentProps>[] {
+    return true
+  }
+
+  public createChildren() {
+
+  }
 
   public isCurrentElement(element: HTMLElement) {
     return this.id === element.getAttribute(componentAttributeNameId)
