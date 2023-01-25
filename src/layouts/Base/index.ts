@@ -8,7 +8,7 @@ const SELECTORS = {
 }
 
 export type BaseLayoutMapType = {
-  title: string | BaseComponent<BaseComponentProps>
+  title?: string | BaseComponent<BaseComponentProps>
 }
 
 export interface BaseLayoutProps extends BaseComponentProps {
@@ -27,7 +27,20 @@ export default abstract class BaseLayout<
   TLayoutMap extends BaseLayoutMapType
 > extends BaseComponent<TLayoutProps> {
   constructor(params: BaseLayoutParamsType<TLayoutProps>) {
-    super(params.name, params.props, params.options)
+    super(params.name, params.props, {
+      ...params.options,
+      onMount: (layout) => {
+        this.eraseRoot()
+
+        if (typeof params.options?.onMount === 'function') {
+          params.options?.onMount(layout)
+        }
+
+        this.HTMLRootElement.appendChild(layout as Element)
+
+        this.componentRender(layout)
+      },
+    })
 
     this.init()
   }
@@ -36,39 +49,20 @@ export default abstract class BaseLayout<
 
   protected map: TLayoutMap = {} as TLayoutMap
 
-  private viewNodes(nodes: [BaseComponent<BaseComponentProps> | string]) {
-    return nodes.map((node) => {
-      if (node instanceof BaseComponent) {
-        return node.create()
-      }
-
-      return node
-    })
-  }
-
-  private createNodes() {
-    return Object.keys(this.map).reduce((nodes, propKey) => {
-      const node = this.map[propKey]
-
-      if (Array.isArray(node)) {
-        return {
-          ...nodes,
-          [propKey]: this.viewNodes(node),
-        }
-      }
-
-      if (node instanceof BaseComponent) {
-        return {
-          ...nodes,
-          [propKey]: node.create(),
-        }
-      }
+  private convertLayoutMapToProps() {
+    return Object.keys(this.map).reduce<TLayoutProps>((props, propKey) => {
+      const propValue = this.map[propKey as keyof BaseLayoutMapType]
 
       return {
-        ...nodes,
-        [propKey]: node,
+        ...props,
+        [propKey]:
+          propValue instanceof BaseComponent ? propValue.create() : propValue,
       }
-    }, {})
+    }, {} as TLayoutProps)
+  }
+
+  private eraseRoot() {
+    this.HTMLRootElement.innerHTML = ''
   }
 
   private HTMLRootElement = document.querySelector(
@@ -76,16 +70,8 @@ export default abstract class BaseLayout<
   ) as HTMLElement
 
   public render() {
-    const props = this.createNodes()
-
-    if (this.isMount) {
-      this.componentUpdate(props)
-    }
-
     document.title = this.props.documentTitle
 
-    this.HTMLRootElement.innerHTML = this.create(props)
-
-    this.componentRender()
+    this.create(this.convertLayoutMapToProps())
   }
 }

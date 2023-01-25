@@ -3,13 +3,16 @@ import { EventBus } from 'services/index'
 import { identity } from 'utils/index'
 import { v4 as makeUUID } from 'uuid'
 
-export type ComponentStatusType = 'primary' | 'success' | 'warning' | 'alert'
+export const COMPONENT_EVENT = {
+  MOUNT: '@event-component:MOUNT',
+  RENDER: '@event-component:RENDER',
+  UPDATE: '@event-component:UPDATE',
+  UNMOUNT: '@event-component:UNMOUNT',
+}
 
-export type EventComponentType =
-  | '@event-component:MOUNT'
-  | '@event-component:RENDER'
-  | '@event-component:UPDATE'
-  | '@event-component:UNMOUNT'
+export type EventComponentType = typeof COMPONENT_EVENT
+
+export type ComponentStatusType = 'primary' | 'success' | 'warning' | 'alert'
 
 export type ComponentListenerPropType = {
   eventType: Event['type']
@@ -40,10 +43,10 @@ export default abstract class BaseComponent<
   protected abstract template: string
 
   private id = ''
-  private eventEmitter = new EventBus<EventComponentType>()
+  private eventEmitter = new EventBus<
+    EventComponentType[keyof EventComponentType]
+  >()
   private unsubscribes: ComponentListenerPropType[] = []
-
-  public isMount = false
 
   constructor(
     protected name: string | null = null,
@@ -79,10 +82,6 @@ export default abstract class BaseComponent<
   }
 
   protected componentMount<T>(...args: T[]) {
-    this.isMount = true
-
-    console.log('children', this.props.children)
-
     this.eventEmitter.emit('@event-component:MOUNT', ...args)
   }
 
@@ -165,6 +164,10 @@ export default abstract class BaseComponent<
         this.id = `_id_${makeUUID()}`
       }
 
+      preparedProps.children = preparedProps.children?.map((child) => {
+        return child instanceof BaseComponent ? child.create() : child
+      })
+
       const elementTempContainer = document.createElement('div')
       elementTempContainer.innerHTML = Templator.compile(
         this.template,
@@ -172,15 +175,22 @@ export default abstract class BaseComponent<
       )
 
       const element = elementTempContainer.firstElementChild
-      element?.setAttribute(componentAttributeNameId, this.id)
 
-      this.componentMount(element)
+      if (element) {
+        element.setAttribute(componentAttributeNameId, this.id)
+
+        this.componentMount(element)
+      }
 
       return elementTempContainer.innerHTML
     }
 
     return ''
   }
+
+  public isComponentChild(
+    child: BaseComponent<BaseComponentProps> | string
+  ): child is BaseComponent<BaseComponentProps>[] {}
 
   public isCurrentElement(element: HTMLElement) {
     return this.id === element.getAttribute(componentAttributeNameId)

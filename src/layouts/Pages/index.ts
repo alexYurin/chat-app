@@ -13,7 +13,7 @@ export interface PagesLayoutProps extends BaseLayoutProps {
 
 export type PagesLayoutMapType = {
   title: Title
-  links: Link[]
+  children: Link[]
 }
 
 const isNotRootLocation = (pathname: string) => pathname !== '/'
@@ -36,7 +36,7 @@ export default class PagesLayout extends BaseLayout<
         level: 1,
         children: [title],
       }),
-      links: Object.values(routes).reduce((currentRoutes, route) => {
+      children: Object.values(routes).reduce((currentRoutes, route) => {
         if (isNotRootLocation(route.pathname)) {
           return [
             ...currentRoutes,
