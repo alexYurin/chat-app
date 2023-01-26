@@ -38,6 +38,7 @@ export interface BaseComponentProps {
 }
 
 export const componentAttributeNameId = 'data-component-id'
+export const componentPlaceholderAttributeNameId = 'data-id'
 
 export default abstract class BaseComponent<
   TPropsType extends BaseComponentProps
@@ -84,14 +85,6 @@ export default abstract class BaseComponent<
     }
   }
 
-  static createComponentChildren(Component: BaseComponent<BaseComponentProps>) {
-    Component.props.children?.forEach((child) => {
-      if (child instanceof BaseComponent) {
-        child.create()
-      }
-    })
-  }
-
   protected dispatchComponentCreate<T>(...args: T[]) {
     this.eventEmitter.emit(COMPONENT_LIFE_CYCLE_EVENT.CREATE, ...args)
   }
@@ -126,17 +119,33 @@ export default abstract class BaseComponent<
   }
 
   private onCreateComponent<T>(...args: T[]) {
-    this.renderComponent()
+    const HTMLRootElement = this.getHTMLRootElement()
+
+    const [element] = args
+
+    if (!(element instanceof HTMLElement)) {
+      return
+    }
+
+    if (HTMLRootElement) {
+      HTMLRootElement.innerHTML = ''
+
+      HTMLRootElement.appendChild(element)
+    } else {
+      document
+        .querySelector(`[${componentPlaceholderAttributeNameId}=${this.id}]`)
+        ?.replaceWith(element)
+    }
 
     if (isFunction(this.options.onCreate)) {
       this.options.onCreate.call(this, ...args)
     }
+
+    this.dispatchComponentMount(element)
   }
 
   private onMountComponent<T>(...args: T[]) {
     this.unsubscribes = this.addEventListeners()
-
-    BaseComponent.createComponentChildren(this)
 
     if (isFunction(this.options.onMount)) {
       this.options.onMount.call(this, ...args)
@@ -150,9 +159,12 @@ export default abstract class BaseComponent<
   }
 
   private onUnmountComponent<T>(...args: T[]) {
-    const HTMLRootElement = this.getRootHTMLComponent() as Element
+    const HTMLRootElement = this.getHTMLRootElement()
 
-    HTMLRootElement.innerHTML = ''
+    if (HTMLRootElement) {
+      HTMLRootElement.innerHTML = ''
+    }
+
     this.removeEventListeners()
 
     if (isFunction(this.options.onUnmount)) {
@@ -160,22 +172,8 @@ export default abstract class BaseComponent<
     }
   }
 
-  private renderComponent() {
-    if (this.DOMElement) {
-      const HTMLRootElement = this.getRootHTMLComponent()
-
-      if (this.DOMElement && HTMLRootElement) {
-        HTMLRootElement.appendChild(this.DOMElement)
-
-        setTimeout(() => this.dispatchComponentMount(this.DOMElement))
-      }
-    }
-  }
-
   private addEventListeners() {
     const { listeners } = this.options
-
-    console.log('lis', listeners)
 
     if (listeners?.length) {
       return listeners.map((listener) => {
@@ -201,35 +199,34 @@ export default abstract class BaseComponent<
     return props
   }
 
-  public create(props: TPropsType = {} as TPropsType): string {
+  public create(props: TPropsType = {} as TPropsType) {
     this.props = { ...this.props, ...props }
 
-    if (Templator) {
-      const elementTempContainer = document.createElement('div')
+    const elementTempContainer = document.createElement('div')
 
-      const preparedProps = this.prepareProps
-        ? this.prepareProps(this.props)
-        : this.props
+    const preparedProps = this.prepareProps
+      ? this.prepareProps(this.props)
+      : this.props
 
-      elementTempContainer.innerHTML = Templator.compile(
-        this.template,
-        preparedProps
-      )
+    elementTempContainer.innerHTML = Templator.compile(
+      this.template,
+      preparedProps
+    )
 
-      this.DOMElement = elementTempContainer.firstElementChild
+    this.DOMElement = elementTempContainer.firstElementChild as HTMLElement
+    this.DOMElement.setAttribute(componentAttributeNameId, this.id)
 
-      console.log('create', this.name, this.DOMElement)
+    this.dispatchComponentCreate(this.DOMElement)
 
-      if (this.DOMElement) {
-        this.DOMElement.setAttribute(componentAttributeNameId, this.id)
+    return this.DOMElement
+  }
 
-        this.dispatchComponentCreate(this.DOMElement)
-      }
+  public createTemplatePlacholder() {
+    return `<div data-id="${this.id}"></div>`
+  }
 
-      return elementTempContainer.innerHTML
-    }
-
-    return ''
+  public getComponentId() {
+    return this.id
   }
 
   public getProps() {
@@ -244,7 +241,7 @@ export default abstract class BaseComponent<
     return this.DOMElement
   }
 
-  public getRootHTMLComponent() {
+  public getHTMLRootElement() {
     return this.props.rootElement instanceof HTMLElement
       ? this.props.rootElement
       : document.querySelector(this.props.rootElement as string)

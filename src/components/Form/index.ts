@@ -50,14 +50,14 @@ export default class Form extends BaseComponent<FormProps> {
     const preparedInputFields = (props.fields || []).map(({ label, input }) => {
       return {
         label,
-        inputTemplate: input ? new Input(input).create() : '',
+        inputTemplate: input ? new Input(input) : '',
       }
     })
 
     const preparedActionButtons = (props.actionButtons || []).map(
       ({ button }) => {
         return {
-          buttonTemplate: button ? new Button(button).create() : '',
+          buttonTemplate: button ? new Button(button) : '',
         }
       }
     )

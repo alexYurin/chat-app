@@ -3,5 +3,5 @@ section.pages.column.center.h100
 
   nav.pages__nav
     ul.pages__list.column.offset-drop.center
-      each child in children || []
-        li.pages__item.row !{child}
+      each link in links || []
+        li.pages__item.row !{link}
