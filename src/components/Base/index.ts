@@ -118,14 +118,8 @@ export default abstract class BaseComponent<
     )
   }
 
-  private onCreateComponent<T>(...args: T[]) {
+  private onCreateComponent(element: HTMLElement) {
     const HTMLRootElement = this.getHTMLRootElement()
-
-    const [element] = args
-
-    if (!(element instanceof HTMLElement)) {
-      return
-    }
 
     if (HTMLRootElement) {
       HTMLRootElement.innerHTML = ''
@@ -138,17 +132,17 @@ export default abstract class BaseComponent<
     }
 
     if (isFunction(this.options.onCreate)) {
-      this.options.onCreate.call(this, ...args)
+      this.options.onCreate.call(this, element)
     }
 
     this.dispatchComponentMount(element)
   }
 
-  private onMountComponent<T>(...args: T[]) {
+  private onMountComponent(element: HTMLElement) {
     this.unsubscribes = this.addEventListeners()
 
     if (isFunction(this.options.onMount)) {
-      this.options.onMount.call(this, ...args)
+      this.options.onMount.call(this, element)
     }
   }
 
@@ -213,12 +207,15 @@ export default abstract class BaseComponent<
       preparedProps
     )
 
-    this.DOMElement = elementTempContainer.firstElementChild as HTMLElement
-    this.DOMElement.setAttribute(componentAttributeNameId, this.id)
+    this.DOMElement = elementTempContainer.firstElementChild
 
-    this.dispatchComponentCreate(this.DOMElement)
+    if (this.DOMElement instanceof HTMLElement) {
+      this.DOMElement.setAttribute(componentAttributeNameId, this.id)
 
-    return this.DOMElement
+      this.dispatchComponentCreate(this.DOMElement)
+
+      return this.DOMElement
+    }
   }
 
   public createTemplatePlacholder() {
