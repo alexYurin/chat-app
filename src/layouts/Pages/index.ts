@@ -31,6 +31,8 @@ export default class PagesLayout extends BaseLayout<
   init() {
     const { title } = this.getProps()
 
+    console.log('this.getHTMLElement()', this.getComponentDomQuery())
+
     this.map = {
       title: new Title({
         level: 1,
@@ -41,6 +43,7 @@ export default class PagesLayout extends BaseLayout<
           return [
             ...currentRoutes,
             new Link({
+              rootElement: this.getComponentDomQuery(),
               className: 'pages__link',
               href: route.pathname,
               children: [route.title],

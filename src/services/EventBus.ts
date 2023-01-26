@@ -1,3 +1,5 @@
+import { isFunction } from 'utils/index'
+
 export type EventCallback = (...args: unknown[]) => void
 
 export type Listener<TEventType extends string> = {
@@ -11,11 +13,17 @@ export default class EventBus<TEvent extends string> {
     return Array.isArray(this.listeners[event])
   }
 
-  public on(event: TEvent, callback: EventCallback) {
-    this.listeners[event] = [...(this.listeners[event] || []), callback]
+  public on(event: TEvent, callback?: EventCallback) {
+    if (isFunction(callback)) {
+      this.listeners[event] = [...(this.listeners[event] || []), callback]
+    }
   }
 
-  public off(event: TEvent, callback: EventCallback) {
+  public off(event: TEvent, callback?: EventCallback) {
+    if (isFunction(callback)) {
+      throw new Event(`Not found callback for event: ${event}`)
+    }
+
     if (this.isFoundEvent(event)) {
       this.listeners[event] = this.listeners[event]?.filter(
         (listener) => listener !== callback

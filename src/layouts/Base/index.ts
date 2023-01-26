@@ -2,6 +2,7 @@ import BaseComponent, {
   BaseComponentProps,
   BaseComponentOptions,
 } from 'components/Base/index'
+import { isFunction } from 'utils/index'
 
 const SELECTORS = {
   root: '#root',
@@ -18,7 +19,7 @@ export interface BaseLayoutProps extends BaseComponentProps {
 
 export type BaseLayoutParamsType<TLayoutProps> = {
   name: string
-  props: TLayoutProps & BaseLayoutProps
+  props: BaseLayoutProps & TLayoutProps
   options?: BaseComponentOptions
 }
 
@@ -27,20 +28,28 @@ export default abstract class BaseLayout<
   TLayoutMap extends BaseLayoutMapType
 > extends BaseComponent<TLayoutProps> {
   constructor(params: BaseLayoutParamsType<TLayoutProps>) {
-    super(params.name, params.props, {
-      ...params.options,
-      onMount: (layout) => {
-        this.eraseRoot()
-
-        if (typeof params.options?.onMount === 'function') {
-          params.options?.onMount(layout)
-        }
-
-        this.HTMLRootElement.appendChild(layout as Element)
-
-        this.componentRender(layout)
+    super(
+      params.name,
+      {
+        ...params.props,
+        rootElement: SELECTORS.root,
       },
-    })
+      {
+        ...params.options,
+        onMount(this: BaseComponent<BaseComponentProps>, ...args) {
+          const HTMLRootElement = this.getRootHTMLComponent()
+
+          if (HTMLRootElement) {
+            console.log('CREATE BASE COMPONENT')
+            // HTMLRootElement.innerHTML = ''
+          }
+
+          if (isFunction(params.options?.onCreate)) {
+            params.options?.onCreate(...args)
+          }
+        },
+      }
+    )
 
     this.init()
   }
@@ -61,17 +70,13 @@ export default abstract class BaseLayout<
     }, {} as TLayoutProps)
   }
 
-  private eraseRoot() {
-    this.HTMLRootElement.innerHTML = ''
-  }
-
-  private HTMLRootElement = document.querySelector(
-    SELECTORS.root
-  ) as HTMLElement
-
   public render() {
-    document.title = this.props.documentTitle
+    const HTMLRootElement = this.getRootHTMLComponent()
 
-    this.create(this.convertLayoutMapToProps())
+    if (HTMLRootElement) {
+      document.title = this.props.documentTitle
+      HTMLRootElement.innerHTML = ''
+      this.create(this.convertLayoutMapToProps())
+    }
   }
 }

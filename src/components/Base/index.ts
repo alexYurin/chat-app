@@ -1,16 +1,17 @@
 import Templator from 'templators/index'
 import { EventBus } from 'services/index'
-import { identity } from 'utils/index'
+import { isFunction } from 'utils/index'
 import { v4 as makeUUID } from 'uuid'
 
-export const COMPONENT_EVENT = {
+export const COMPONENT_LIFE_CYCLE_EVENT = {
+  CREATE: '@event-component:CREATE',
   MOUNT: '@event-component:MOUNT',
-  RENDER: '@event-component:RENDER',
   UPDATE: '@event-component:UPDATE',
   UNMOUNT: '@event-component:UNMOUNT',
-}
+} as const
 
-export type EventComponentType = typeof COMPONENT_EVENT
+export type ComponentLifeCycleEventType =
+  (typeof COMPONENT_LIFE_CYCLE_EVENT)[keyof typeof COMPONENT_LIFE_CYCLE_EVENT]
 
 export type ComponentStatusType = 'primary' | 'success' | 'warning' | 'alert'
 
@@ -22,13 +23,14 @@ export type ComponentListenerPropType = {
 export interface BaseComponentOptions {
   withId?: boolean
   listeners?: ComponentListenerPropType[]
+  onCreate?: <T>(...args: T[]) => void
   onMount?: <T>(...args: T[]) => void
-  onRender?: <T>(...args: T[]) => void
   onUpdate?: <T>(...args: T[]) => void
   onUnmount?: <T>(...args: T[]) => void
 }
 
 export interface BaseComponentProps {
+  rootElement?: HTMLElement | string | null
   status?: ComponentStatusType
   id?: string
   className?: string
@@ -43,10 +45,9 @@ export default abstract class BaseComponent<
   protected abstract template: string
 
   private id = ''
-  private eventEmitter = new EventBus<
-    EventComponentType[keyof EventComponentType]
-  >()
+  private eventEmitter = new EventBus<ComponentLifeCycleEventType>()
   private unsubscribes: ComponentListenerPropType[] = []
+  private DOMElement: Element | null = null
 
   constructor(
     protected name: string | null = null,
@@ -55,25 +56,27 @@ export default abstract class BaseComponent<
   ) {
     this.options = { withId: true, ...options }
 
+    if (this.options.withId) {
+      this.id = `_id_${makeUUID()}`
+    }
+
     if (typeof name === 'string') {
       this.eventEmitter.on(
-        '@event-component:MOUNT',
-        this.options.onMount || identity
+        COMPONENT_LIFE_CYCLE_EVENT.CREATE,
+        this.onCreateComponent.bind(this)
       )
       this.eventEmitter.on(
-        '@event-component:RENDER',
-        this.options.onRender || identity
+        COMPONENT_LIFE_CYCLE_EVENT.MOUNT,
+        this.onMountComponent.bind(this)
       )
       this.eventEmitter.on(
-        '@event-component:UPDATE',
-        this.options.onUpdate || identity
+        COMPONENT_LIFE_CYCLE_EVENT.UPDATE,
+        this.onUpdateComponent.bind(this)
       )
       this.eventEmitter.on(
-        '@event-component:UNMOUNT',
-        this.options.onUnmount || identity
+        COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT,
+        this.onUnmountComponent.bind(this)
       )
-
-      this.unsubscribes = this.addListeners()
 
       return this
     } else {
@@ -81,60 +84,106 @@ export default abstract class BaseComponent<
     }
   }
 
-  protected componentMount<T>(...args: T[]) {
-    this.eventEmitter.emit('@event-component:MOUNT', ...args)
+  static createComponentChildren(Component: BaseComponent<BaseComponentProps>) {
+    Component.props.children?.forEach((child) => {
+      if (child instanceof BaseComponent) {
+        child.create()
+      }
+    })
   }
 
-  protected componentRender<T>(...args: T[]) {
-    this.eventEmitter.emit('@event-component:RENDER', ...args)
+  protected dispatchComponentCreate<T>(...args: T[]) {
+    this.eventEmitter.emit(COMPONENT_LIFE_CYCLE_EVENT.CREATE, ...args)
   }
 
-  protected componentUpdate<T>(...args: T[]) {
-    this.eventEmitter.emit('@event-component:UPDATE', ...args)
+  protected dispatchComponentMount<T>(...args: T[]) {
+    this.eventEmitter.emit(COMPONENT_LIFE_CYCLE_EVENT.MOUNT, ...args)
   }
 
-  protected componentUnmount<T>(...args: T[]) {
-    this.eventEmitter.emit('@event-component:UNMOUNT', ...args)
-
-    this.eventEmitter.off(
-      '@event-component:MOUNT',
-      this.options.onMount || identity
-    )
-    this.eventEmitter.off(
-      '@event-component:RENDER',
-      this.options.onRender || identity
-    )
-    this.eventEmitter.off(
-      '@event-component:UPDATE',
-      this.options.onUpdate || identity
-    )
-    this.eventEmitter.off(
-      '@event-component:UNMOUNT',
-      this.options.onUnmount || identity
-    )
-
-    this.removeListeners()
+  protected dispatchComponentUpdate<T>(...args: T[]) {
+    this.eventEmitter.emit(COMPONENT_LIFE_CYCLE_EVENT.UPDATE, ...args)
   }
 
-  private addListeners() {
+  protected dispatchComponentUnmount<T>(...args: T[]) {
+    this.eventEmitter.emit(COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT, ...args)
+
+    this.eventEmitter.off(
+      COMPONENT_LIFE_CYCLE_EVENT.CREATE,
+      this.onCreateComponent
+    )
+    this.eventEmitter.off(
+      COMPONENT_LIFE_CYCLE_EVENT.MOUNT,
+      this.onMountComponent
+    )
+    this.eventEmitter.off(
+      COMPONENT_LIFE_CYCLE_EVENT.UPDATE,
+      this.onUpdateComponent
+    )
+    this.eventEmitter.off(
+      COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT,
+      this.onUnmountComponent
+    )
+  }
+
+  private onCreateComponent<T>(...args: T[]) {
+    this.renderComponent()
+
+    if (isFunction(this.options.onCreate)) {
+      this.options.onCreate.call(this, ...args)
+    }
+  }
+
+  private onMountComponent<T>(...args: T[]) {
+    this.unsubscribes = this.addEventListeners()
+
+    BaseComponent.createComponentChildren(this)
+
+    if (isFunction(this.options.onMount)) {
+      this.options.onMount.call(this, ...args)
+    }
+  }
+
+  private onUpdateComponent<T>(...args: T[]) {
+    if (isFunction(this.options.onUpdate)) {
+      this.options.onUpdate.call(this, ...args)
+    }
+  }
+
+  private onUnmountComponent<T>(...args: T[]) {
+    const HTMLRootElement = this.getRootHTMLComponent() as Element
+
+    HTMLRootElement.innerHTML = ''
+    this.removeEventListeners()
+
+    if (isFunction(this.options.onUnmount)) {
+      this.options.onUnmount.call(this, ...args)
+    }
+  }
+
+  private renderComponent() {
+    if (this.DOMElement) {
+      const HTMLRootElement = this.getRootHTMLComponent()
+
+      if (this.DOMElement && HTMLRootElement) {
+        HTMLRootElement.appendChild(this.DOMElement)
+
+        setTimeout(() => this.dispatchComponentMount(this.DOMElement))
+      }
+    }
+  }
+
+  private addEventListeners() {
     const { listeners } = this.options
+
+    console.log('lis', listeners)
 
     if (listeners?.length) {
       return listeners.map((listener) => {
-        const subscribe = (event: Event) => {
-          if (
-            typeof listener.callback === 'function' &&
-            this.isCurrentElement(event.target as HTMLElement)
-          ) {
-            listener.callback(event)
-          }
-        }
-
-        window.addEventListener(listener.eventType, subscribe)
+        this.DOMElement?.addEventListener(listener.eventType, listener.callback)
 
         return {
           eventType: listener.eventType,
-          callback: subscribe,
+          callback: listener.callback,
         }
       }, [])
     }
@@ -142,7 +191,7 @@ export default abstract class BaseComponent<
     return []
   }
 
-  private removeListeners() {
+  private removeEventListeners() {
     this.unsubscribes.forEach((unsubscribe) => {
       window.removeEventListener(unsubscribe.eventType, unsubscribe.callback)
     })
@@ -156,50 +205,31 @@ export default abstract class BaseComponent<
     this.props = { ...this.props, ...props }
 
     if (Templator) {
+      const elementTempContainer = document.createElement('div')
+
       const preparedProps = this.prepareProps
         ? this.prepareProps(this.props)
         : this.props
 
-      if (this.options.withId) {
-        this.id = `_id_${makeUUID()}`
-      }
-
-      preparedProps.children = preparedProps.children?.map((child) => {
-        return child instanceof BaseComponent ? child.create() : child
-      })
-
-      const elementTempContainer = document.createElement('div')
       elementTempContainer.innerHTML = Templator.compile(
         this.template,
         preparedProps
       )
 
-      const element = elementTempContainer.firstElementChild
+      this.DOMElement = elementTempContainer.firstElementChild
 
-      if (element) {
-        element.setAttribute(componentAttributeNameId, this.id)
+      console.log('create', this.name, this.DOMElement)
 
-        this.componentMount(element)
+      if (this.DOMElement) {
+        this.DOMElement.setAttribute(componentAttributeNameId, this.id)
+
+        this.dispatchComponentCreate(this.DOMElement)
       }
 
       return elementTempContainer.innerHTML
     }
 
     return ''
-  }
-
-  public isComponentChild(
-    children: unknown
-  ): children is BaseComponent<BaseComponentProps>[] {
-    return true
-  }
-
-  public createChildren() {
-
-  }
-
-  public isCurrentElement(element: HTMLElement) {
-    return this.id === element.getAttribute(componentAttributeNameId)
   }
 
   public getProps() {
@@ -210,11 +240,17 @@ export default abstract class BaseComponent<
     this.props = props
   }
 
-  public getDOMRef() {
-    if (this.id) {
-      return document.querySelector(`[${componentAttributeNameId}=${this.id}]`)
-    } else {
-      throw new Error('Can`t get component before create and paste in DOM')
-    }
+  public getHTMLElement() {
+    return this.DOMElement
+  }
+
+  public getRootHTMLComponent() {
+    return this.props.rootElement instanceof HTMLElement
+      ? this.props.rootElement
+      : document.querySelector(this.props.rootElement as string)
+  }
+
+  public getComponentDomQuery() {
+    return `[${componentAttributeNameId}=${this.id}]`
   }
 }
