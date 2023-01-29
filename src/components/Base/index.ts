@@ -1,6 +1,6 @@
 import Templator from 'templators/index'
-import { EventBus } from 'services/index'
-import { isFunction } from 'utils/index'
+import EventBus, { EventCallback } from 'services/EventBus'
+import { isFunction, identity } from 'utils/index'
 import { v4 as makeUUID } from 'uuid'
 
 export const COMPONENT_LIFE_CYCLE_EVENT = {
@@ -15,26 +15,19 @@ export type ComponentLifeCycleEventType =
 
 export type ComponentStatusType = 'primary' | 'success' | 'warning' | 'alert'
 
-export type ComponentListenerPropType = {
+export type ComponentBrowserEventListenerPropType = {
   eventType: Event['type']
   callback: (event: Event) => void
 }
 
-export interface BaseComponentOptions {
-  withId?: boolean
-  listeners?: ComponentListenerPropType[]
-  onCreate?: <T>(...args: T[]) => void
-  onMount?: <T>(...args: T[]) => void
-  onUpdate?: <T>(...args: T[]) => void
-  onUnmount?: <T>(...args: T[]) => void
-}
-
 export interface BaseComponentProps {
-  rootElement?: HTMLElement | string | null
-  status?: ComponentStatusType
   id?: string
+  status?: ComponentStatusType
+  rootElement?: HTMLElement | string | null
   className?: string
-  children?: BaseComponent<BaseComponentProps>[] | string[]
+  withInternalId?: boolean
+  listeners?: ComponentBrowserEventListenerPropType[]
+  children?: (BaseComponent<BaseComponentProps> | string)[]
 }
 
 export const componentAttributeNameId = 'data-component-id'
@@ -45,76 +38,46 @@ export default abstract class BaseComponent<
 > {
   protected abstract template: string
 
-  private id = ''
+  private internalId = ''
   private eventEmitter = new EventBus<ComponentLifeCycleEventType>()
-  private unsubscribes: ComponentListenerPropType[] = []
+  private browserEventUnsubscribers: ComponentBrowserEventListenerPropType[] =
+    []
   private DOMElement: Element | null = null
 
   constructor(
     protected name: string | null = null,
-    protected props: TPropsType = {} as TPropsType,
-    protected options: BaseComponentOptions = {}
+    protected props: TPropsType = {
+      children: [] as BaseComponentProps['children'],
+    } as TPropsType
   ) {
-    this.options = { withId: true, ...options }
+    if (name && typeof name === 'string') {
+      this.internalId = `_id_${makeUUID()}`
 
-    if (this.options.withId) {
-      this.id = `_id_${makeUUID()}`
-    }
-
-    if (typeof name === 'string') {
-      this.eventEmitter.on(
-        COMPONENT_LIFE_CYCLE_EVENT.CREATE,
-        this.onCreateComponent.bind(this)
-      )
-      this.eventEmitter.on(
-        COMPONENT_LIFE_CYCLE_EVENT.MOUNT,
-        this.onMountComponent.bind(this)
-      )
-      this.eventEmitter.on(
-        COMPONENT_LIFE_CYCLE_EVENT.UPDATE,
-        this.onUpdateComponent.bind(this)
-      )
-      this.eventEmitter.on(
-        COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT,
-        this.onUnmountComponent.bind(this)
-      )
+      this.subscribeToLifeCycleEvents()
 
       return this
     } else {
-      throw new Error(`Invalid component name: ${this.name}`)
+      throw new Error(
+        `Invalid component name: ${this.name || 'empty string name'}`
+      )
     }
   }
 
-  protected dispatchComponentCreate<T>(...args: T[]) {
-    this.eventEmitter.emit(COMPONENT_LIFE_CYCLE_EVENT.CREATE, ...args)
+  private lifeCycleEventHandlers = {
+    [COMPONENT_LIFE_CYCLE_EVENT.CREATE]: this.onCreateComponent.bind(this),
+    [COMPONENT_LIFE_CYCLE_EVENT.MOUNT]: this.onMountComponent.bind(this),
+    [COMPONENT_LIFE_CYCLE_EVENT.UPDATE]: this.onUpdateComponent.bind(this),
+    [COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT]: this.onUnmountComponent.bind(this),
   }
 
-  protected dispatchComponentMount<T>(...args: T[]) {
-    this.eventEmitter.emit(COMPONENT_LIFE_CYCLE_EVENT.MOUNT, ...args)
-  }
-
-  protected dispatchComponentUpdate<T>(...args: T[]) {
-    this.eventEmitter.emit(COMPONENT_LIFE_CYCLE_EVENT.UPDATE, ...args)
-  }
-
-  protected dispatchComponentUnmount<T>(...args: T[]) {
-    this.eventEmitter.emit(COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT, ...args)
-
-    this.eventEmitter.off(
-      COMPONENT_LIFE_CYCLE_EVENT.CREATE,
-      this.onCreateComponent
-    )
-    this.eventEmitter.off(
-      COMPONENT_LIFE_CYCLE_EVENT.MOUNT,
-      this.onMountComponent
-    )
-    this.eventEmitter.off(
-      COMPONENT_LIFE_CYCLE_EVENT.UPDATE,
-      this.onUpdateComponent
-    )
-    this.eventEmitter.off(
-      COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT,
-      this.onUnmountComponent
+  private subscribeToLifeCycleEvents(action: 'on' | 'off' = 'on') {
+    Object.entries(this.lifeCycleEventHandlers).forEach(
+      ([eventName, handler]) => {
+        this.eventEmitter[action](
+          eventName as ComponentLifeCycleEventType,
+          handler as EventCallback
+        )
+      }
     )
   }
 
@@ -122,52 +85,66 @@ export default abstract class BaseComponent<
     const HTMLRootElement = this.getHTMLRootElement()
 
     if (HTMLRootElement) {
+      console.log('onCreate Root Layout', element)
+
       HTMLRootElement.innerHTML = ''
 
       HTMLRootElement.appendChild(element)
     } else {
       document
-        .querySelector(`[${componentPlaceholderAttributeNameId}=${this.id}]`)
+        .querySelector(
+          `[${componentPlaceholderAttributeNameId}=${this.internalId}]`
+        )
         ?.replaceWith(element)
+
+      console.log('onCreate Child Element', element)
     }
 
-    if (isFunction(this.options.onCreate)) {
-      this.options.onCreate.call(this, element)
+    if (isFunction(this.onCreate)) {
+      this.onCreate(element)
     }
 
-    this.dispatchComponentMount(element)
+    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.MOUNT, element)
   }
 
   private onMountComponent(element: HTMLElement) {
-    this.unsubscribes = this.addEventListeners()
+    this.browserEventUnsubscribers = this.addBrowserEventListeners()
 
-    if (isFunction(this.options.onMount)) {
-      this.options.onMount.call(this, element)
+    this.prepareChildren(this.props.children)
+
+    if (isFunction(this.onMount)) {
+      this.onMount(element)
+    }
+
+    console.log('onMount', element)
+  }
+
+  private onUpdateComponent(element: HTMLElement) {
+    if (isFunction(this.onUpdate)) {
+      this.onUpdate(element)
     }
   }
 
-  private onUpdateComponent<T>(...args: T[]) {
-    if (isFunction(this.options.onUpdate)) {
-      this.options.onUpdate.call(this, ...args)
-    }
-  }
-
-  private onUnmountComponent<T>(...args: T[]) {
+  private onUnmountComponent() {
     const HTMLRootElement = this.getHTMLRootElement()
 
     if (HTMLRootElement) {
       HTMLRootElement.innerHTML = ''
     }
 
-    this.removeEventListeners()
+    this.removeBrowserEventListeners()
 
-    if (isFunction(this.options.onUnmount)) {
-      this.options.onUnmount.call(this, ...args)
+    if (isFunction(this.onUnmount)) {
+      this.onUnmount()
     }
+
+    this.subscribeToLifeCycleEvents('off')
+
+    this.DOMElement?.remove()
   }
 
-  private addEventListeners() {
-    const { listeners } = this.options
+  private addBrowserEventListeners() {
+    const { listeners } = this.props
 
     if (listeners?.length) {
       return listeners.map((listener) => {
@@ -183,54 +160,86 @@ export default abstract class BaseComponent<
     return []
   }
 
-  private removeEventListeners() {
-    this.unsubscribes.forEach((unsubscribe) => {
-      window.removeEventListener(unsubscribe.eventType, unsubscribe.callback)
+  private removeBrowserEventListeners() {
+    this.browserEventUnsubscribers.forEach((unsubscriber) => {
+      this.DOMElement?.removeEventListener(
+        unsubscriber.eventType,
+        unsubscriber.callback
+      )
     })
   }
 
-  public prepareProps(props: TPropsType): TPropsType {
-    return props
+  protected dispatch<T>(event: ComponentLifeCycleEventType, ...args: T[]) {
+    this.eventEmitter.emit(event, ...args)
+  }
+
+  protected onCreate = identity
+  protected onMount = identity
+  protected onUpdate = identity
+  protected onUnmount = identity
+
+  protected createTemplatePlaceholder() {
+    return `<div ${componentPlaceholderAttributeNameId}="${this.internalId}"></div>`
+  }
+
+  protected prepareChildren(children: BaseComponentProps['children']) {
+    if (children?.length) {
+      return children.map((child) => {
+        if (child instanceof BaseComponent) {
+          child.create({
+            ...child.props,
+            children: this.prepareChildren(child.props.children),
+          })
+
+          return child.createTemplatePlaceholder()
+        }
+
+        return child
+      })
+    }
+
+    return []
   }
 
   public create(props: TPropsType = {} as TPropsType) {
-    this.props = { ...this.props, ...props }
+    this.props = {
+      ...this.props,
+      ...props,
+    }
 
     const elementTempContainer = document.createElement('div')
 
-    const preparedProps = this.prepareProps
-      ? this.prepareProps(this.props)
-      : this.props
-
     elementTempContainer.innerHTML = Templator.compile(
       this.template,
-      preparedProps
+      this.props
     )
 
     this.DOMElement = elementTempContainer.firstElementChild
 
     if (this.DOMElement instanceof HTMLElement) {
-      this.DOMElement.setAttribute(componentAttributeNameId, this.id)
+      if (this.props.withInternalId) {
+        this.DOMElement.setAttribute(componentAttributeNameId, this.internalId)
+      }
 
-      this.dispatchComponentCreate(this.DOMElement)
+      this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.CREATE, this.DOMElement)
 
       return this.DOMElement
     }
   }
 
-  public createTemplatePlacholder() {
-    return `<div data-id="${this.id}"></div>`
+  public destroy() {
+    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT)
   }
 
-  public getComponentId() {
-    return this.id
+  public getInternalId() {
+    return this.internalId
   }
 
   public getProps() {
     return this.props
   }
 
-  public updateProps(props: TPropsType) {
+  public setProps(props: TPropsType) {
     this.props = props
   }
 
@@ -242,9 +251,5 @@ export default abstract class BaseComponent<
     return this.props.rootElement instanceof HTMLElement
       ? this.props.rootElement
       : document.querySelector(this.props.rootElement as string)
-  }
-
-  public getComponentDomQuery() {
-    return `[${componentAttributeNameId}=${this.id}]`
   }
 }

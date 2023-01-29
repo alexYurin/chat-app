@@ -1,7 +1,4 @@
-import BaseComponent, {
-  BaseComponentProps,
-  BaseComponentOptions,
-} from 'components/Base/index'
+import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import templateString from 'bundle-text:./template.pug'
 import './styles.scss'
 
@@ -13,7 +10,7 @@ export interface TitleProps extends BaseComponentProps {
 export default class Title extends BaseComponent<TitleProps> {
   public template = templateString
 
-  constructor(props: TitleProps = {}, options: BaseComponentOptions = {}) {
-    super('title', props, options)
+  constructor(props: TitleProps = {}) {
+    super('title', props)
   }
 }

@@ -1,7 +1,4 @@
-import BaseComponent, {
-  BaseComponentProps,
-  BaseComponentOptions,
-} from 'components/Base/index'
+import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import Input, { InputProps } from 'components/Input'
 import Button, { ButtonProps } from 'components/Button'
 import templateString from 'bundle-text:./template.pug'
@@ -9,17 +6,11 @@ import './styles.scss'
 
 export type FieldType = {
   label?: string
-  input?: InputProps & {
-    options?: BaseComponentOptions
-  }
-  inputTemplate?: string
+  input: InputProps
 }
 
 export type ButtonsFieldType = {
-  button?: ButtonProps & {
-    options?: BaseComponentOptions
-  }
-  buttonTemplate?: string
+  button?: ButtonProps
 }
 
 export interface FormProps extends BaseComponentProps {
@@ -40,31 +31,30 @@ export default class Form extends BaseComponent<FormProps> {
     props: FormProps = {
       fields: [],
       actionButtons: [],
-    },
-    options: BaseComponentOptions = {}
+    }
   ) {
-    super('form', props, options)
+    super('form', props)
   }
 
-  public prepareProps(props: FormProps): FormProps {
-    const preparedInputFields = (props.fields || []).map(({ label, input }) => {
-      return {
-        label,
-        inputTemplate: input ? new Input(input) : '',
-      }
-    })
+  // public prepareProps(props: FormProps): FormProps {
+  //   const preparedInputFields = (props.fields || []).map(({ label, input }) => {
+  //     return {
+  //       label,
+  //       inputTemplate: input ? new Input(input) : '',
+  //     }
+  //   })
 
-    const preparedActionButtons = (props.actionButtons || []).map(
-      ({ button }) => {
-        return {
-          buttonTemplate: button ? new Button(button) : '',
-        }
-      }
-    )
+  //   const preparedActionButtons = (props.actionButtons || []).map(
+  //     ({ button }) => {
+  //       return {
+  //         buttonTemplate: button ? new Button(button) : '',
+  //       }
+  //     }
+  //   )
 
-    props.fields = preparedInputFields
-    props.actionButtons = preparedActionButtons
+  //   props.fields = preparedInputFields
+  //   props.actionButtons = preparedActionButtons
 
-    return props
-  }
+  //   return props
+  // }
 }

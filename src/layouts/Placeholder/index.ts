@@ -1,45 +1,34 @@
 import layout from 'bundle-text:./layout.pug'
-import BaseLayout, {
-  BaseLayoutProps,
-  BaseLayoutParamsType,
-} from 'layouts/Base/index'
+import BaseLayout from 'layouts/Base/index'
 import { Title, Link } from 'components/index'
 import './styles.scss'
 
-export interface PlaceholderLayoutProps extends BaseLayoutProps {
+export type PlaceholderDataType = {
   title: string
   description: string
 }
 
-export interface PlaceholderLayoutMapType {
-  title: Title
-  description: string
-  backLink: Link
-}
+export type PlaceholderChildrenPropsType = [Title, string, Link]
 
 export default class PlaceholderLayout extends BaseLayout<
-  PlaceholderLayoutProps,
-  PlaceholderLayoutMapType
+  PlaceholderChildrenPropsType,
+  PlaceholderDataType
 > {
   protected template = layout
 
-  constructor(params: BaseLayoutParamsType<PlaceholderLayoutProps>) {
-    super(params)
-  }
-
   init() {
-    const { title, description } = this.getProps()
+    const { title, description } = this.data
 
-    this.map = {
-      title: new Title({
+    this.props.children = [
+      new Title({
         level: 1,
         children: [title],
       }),
       description,
-      backLink: new Link({
+      new Link({
         href: '/',
         children: ['К списку страниц'],
       }),
-    }
+    ]
   }
 }

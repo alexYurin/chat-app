@@ -1,6 +1,5 @@
 import BaseComponent, {
   BaseComponentProps,
-  BaseComponentOptions,
   ComponentStatusType,
 } from 'components/Base/index'
 import templateString from 'bundle-text:./template.pug'
@@ -24,9 +23,8 @@ export default class Input extends BaseComponent<InputProps> {
   constructor(
     props: InputProps = {
       name: '',
-    },
-    options: BaseComponentOptions = {}
+    }
   ) {
-    super('input', props, options)
+    super('input', props)
   }
 }

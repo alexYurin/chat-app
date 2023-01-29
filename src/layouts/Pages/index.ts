@@ -1,42 +1,32 @@
 import layout from 'bundle-text:./layout.pug'
-import BaseLayout, {
-  BaseLayoutProps,
-  BaseLayoutParamsType,
-} from 'layouts/Base/index'
+import BaseLayout from 'layouts/Base/index'
 import { Title, Link } from 'components/index'
 import routes from 'router/routes'
 import './styles.scss'
 
-export interface PagesLayoutProps extends BaseLayoutProps {
+export interface PagesDataType {
   title: string
 }
 
-export type PagesLayoutMapType = {
-  title: Title
-  links: Link[]
-}
+export type PagesChildrenPropsType = [Title, ...Link[]]
 
 const isNotRootLocation = (pathname: string) => pathname !== '/'
 
 export default class PagesLayout extends BaseLayout<
-  PagesLayoutProps,
-  PagesLayoutMapType
+  PagesChildrenPropsType,
+  PagesDataType
 > {
   protected template = layout
 
-  constructor(params: BaseLayoutParamsType<PagesLayoutProps>) {
-    super(params)
-  }
-
   init() {
-    const { title } = this.getProps()
+    const { title } = this.data
 
-    this.map = {
-      title: new Title({
+    this.props.children = [
+      new Title({
         level: 1,
         children: [title],
       }),
-      links: Object.values(routes).reduce((currentRoutes, route) => {
+      ...Object.values(routes).reduce((currentRoutes, route) => {
         if (isNotRootLocation(route.pathname)) {
           return [
             ...currentRoutes,
@@ -50,6 +40,6 @@ export default class PagesLayout extends BaseLayout<
 
         return currentRoutes
       }, [] as Link[]),
-    }
+    ]
   }
 }

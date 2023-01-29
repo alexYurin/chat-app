@@ -1,19 +1,16 @@
 import routes from 'router/routes'
-import { BaseLayoutParamsType } from 'layouts/Base'
-import PlaceholderLayout, {
-  PlaceholderLayoutProps,
-} from 'layouts/Placeholder/index'
+import PlaceholderLayout from 'layouts/Placeholder/index'
 
-const { pathname, title } = routes.error
+const { name, pathname, title } = routes.error
 
-const params: BaseLayoutParamsType<PlaceholderLayoutProps> = {
-  name: 'error',
+export default new PlaceholderLayout({
+  name,
   props: {
     pathname,
     documentTitle: title,
-    title,
-    description: 'Мы уже фиксим',
+    data: {
+      title,
+      description: 'Мы уже фиксим',
+    },
   },
-}
-
-export default new PlaceholderLayout(params)
+})

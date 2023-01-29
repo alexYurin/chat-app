@@ -31,6 +31,7 @@ export default class Router {
 
   private onChangeUrl() {
     this.currentPathname = window.location.pathname
+
     this.renderCurrentView()
   }
 

@@ -1,16 +1,13 @@
 import routes from 'router/routes'
-import { BaseLayoutParamsType } from 'layouts/Base'
-import PagesLayout, { PagesLayoutProps } from 'layouts/Pages/index'
+import PagesLayout from 'layouts/Pages/index'
 
-const { pathname, title } = routes.pages
+const { name, pathname, title } = routes.pages
 
-const params: BaseLayoutParamsType<PagesLayoutProps> = {
-  name: 'pages',
+export default new PagesLayout({
+  name,
   props: {
     documentTitle: title,
-    title,
     pathname,
+    data: { title },
   },
-}
-
-export default new PagesLayout(params)
+})
