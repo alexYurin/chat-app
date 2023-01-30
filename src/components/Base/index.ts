@@ -197,15 +197,11 @@ export default abstract class BaseComponent<
   }
 
   public create() {
-    const preparedChildren = this.prepareChildren([
-      ...(this.props.children || []),
-    ])
-
     const elementTempContainer = document.createElement('div')
 
     elementTempContainer.innerHTML = Templator.compile(this.template, {
       ...this.props,
-      children: preparedChildren,
+      children: this.prepareChildren(this.props.children),
     })
 
     this.DOMElement = elementTempContainer.firstElementChild
