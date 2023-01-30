@@ -1,10 +1,10 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
 import { Form, Button, Link } from 'components/index'
-import { FieldType } from 'components/Form'
+import { FormProps } from 'components/Form'
 
 export interface ProfileEditPasswordDataType {
-  fields: FieldType[]
+  fields: FormProps['fields']
   avatar: {
     src: string
     fieldName: string
@@ -39,7 +39,6 @@ export default class ProfileEditPassordLayout extends BaseLayout<
         readonly: false,
         className: 'profile-layout__form',
         fields,
-        actionButtons: [],
       }),
       new Button({
         form: 'profile-form',

@@ -1,12 +1,12 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
 import { Form, Button, Link } from 'components/index'
-import { FieldType } from 'components/Form'
+import { FormProps } from 'components/Form'
 import routes from 'router/routes'
 import './styles.scss'
 
 export interface ProfileDataType {
-  fields: FieldType[]
+  fields: FormProps['fields']
   avatar: {
     src: string
     fieldName: string
@@ -54,7 +54,6 @@ export default class ProfileLayout extends BaseLayout<
         readonly: true,
         className: 'profile-layout__form',
         fields,
-        actionButtons: [],
       }),
       new Link({
         href: '#',

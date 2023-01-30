@@ -1,14 +1,13 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
 import { Title, Form, Link } from 'components/index'
-import { FieldType, ButtonsFieldType } from 'components/Form'
+import { FormProps } from 'components/Form'
 import { LinkProps } from 'components/Link'
 import './styles.scss'
 
 export interface AutDataType {
   title: string
-  fields: FieldType[]
-  actionButtons: ButtonsFieldType[]
+  fields: FormProps['fields']
   authLink: LinkProps
 }
 
@@ -21,7 +20,7 @@ export default class AuthLayout extends BaseLayout<
   protected template = layout
 
   init() {
-    const { title, authLink, fields, actionButtons } = this.data
+    const { title, authLink, fields } = this.data
 
     this.props.children = [
       new Title({
@@ -32,7 +31,6 @@ export default class AuthLayout extends BaseLayout<
       new Form({
         className: 'auth-layout__form',
         fields,
-        actionButtons,
       }),
       new Link(authLink),
       new Link({

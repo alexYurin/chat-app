@@ -1,3 +1,13 @@
+-
+  const [
+    avatarFieldName,
+    avatarSrc,
+    avatarAlt,
+    form,
+    saveButton,
+    backLink
+  ] = children
+
 section.profile-layout.profile-layout_scaled.column.center.h100
   .profile-layout__content.card.row.row_nowrap
     .profile-layout__column.column.h100
@@ -11,5 +21,4 @@ section.profile-layout.profile-layout_scaled.column.center.h100
       | !{form}
 
   .profile-layout__back-link.center
-    each child in children || []
-      | !{child}
+    | !{backLink}

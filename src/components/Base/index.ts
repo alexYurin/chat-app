@@ -88,12 +88,6 @@ export default abstract class BaseComponent<
       HTMLRootElement.innerHTML = ''
 
       HTMLRootElement.appendChild(element)
-
-      this.props.children?.forEach((child) => {
-        if (child instanceof BaseComponent) {
-          child.create()
-        }
-      })
     } else {
       document
         .querySelector(
@@ -110,6 +104,8 @@ export default abstract class BaseComponent<
   }
 
   private onMountComponent(element: HTMLElement) {
+    BaseComponent.createChildren(this.props.children)
+
     this.browserEventUnsubscribers = this.addBrowserEventListeners()
 
     if (isFunction(this.onMount)) {
@@ -171,29 +167,52 @@ export default abstract class BaseComponent<
     this.eventEmitter.emit(event, ...args)
   }
 
-  protected onCreate = identity
-  protected onMount = identity
-  protected onUpdate = identity
-  protected onUnmount = identity
+  protected onCreate(...args: unknown[]) {
+    identity(args)
+  }
+
+  protected onMount(...args: unknown[]) {
+    identity(args)
+  }
+
+  protected onUpdate(...args: unknown[]) {
+    identity(args)
+  }
+
+  protected onUnmount(...args: unknown[]) {
+    identity(args)
+  }
 
   protected createTemplatePlaceholder() {
     return `<div ${componentPlaceholderAttributeNameId}="${this.internalId}"></div>`
   }
 
-  protected prepareChildren(children: BaseComponentProps['children']) {
-    if (children?.length) {
-      return [...children].map((child) => {
-        if (child instanceof BaseComponent) {
-          child.props.children = this.prepareChildren(child.props.children)
+  static prepareChildren(children: BaseComponentProps['children']) {
+    return children?.map((child) => {
+      if (child instanceof BaseComponent) {
+        child.props.children = BaseComponent.prepareChildren(
+          child.props.children
+        )
 
-          return child.createTemplatePlaceholder()
-        }
+        return child.createTemplatePlaceholder()
+      }
 
-        return child
-      })
-    }
+      return child
+    })
+  }
 
-    return []
+  static createChildren(children: BaseComponentProps['children']) {
+    return children?.map((child) => {
+      if (child instanceof BaseComponent) {
+        child.props.children = BaseComponent.createChildren(
+          child.props.children
+        )
+
+        child.create()
+      }
+
+      return child
+    })
   }
 
   public create() {
@@ -201,7 +220,7 @@ export default abstract class BaseComponent<
 
     elementTempContainer.innerHTML = Templator.compile(this.template, {
       ...this.props,
-      children: this.prepareChildren(this.props.children),
+      children: BaseComponent.prepareChildren(this.props.children),
     })
 
     this.DOMElement = elementTempContainer.firstElementChild
