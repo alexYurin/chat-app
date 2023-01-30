@@ -18,7 +18,7 @@ export default class Link extends BaseComponent<LinkProps> {
     super('link', props)
 
     this.props = {
-      href: '',
+      ...this.props,
       listeners: [
         {
           eventType: 'click',

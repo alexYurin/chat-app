@@ -85,19 +85,21 @@ export default abstract class BaseComponent<
     const HTMLRootElement = this.getHTMLRootElement()
 
     if (HTMLRootElement) {
-      console.log('onCreate Root Layout', element)
-
       HTMLRootElement.innerHTML = ''
 
       HTMLRootElement.appendChild(element)
+
+      this.props.children?.forEach((child) => {
+        if (child instanceof BaseComponent) {
+          child.create()
+        }
+      })
     } else {
       document
         .querySelector(
           `[${componentPlaceholderAttributeNameId}=${this.internalId}]`
         )
         ?.replaceWith(element)
-
-      console.log('onCreate Child Element', element)
     }
 
     if (isFunction(this.onCreate)) {
@@ -110,13 +112,9 @@ export default abstract class BaseComponent<
   private onMountComponent(element: HTMLElement) {
     this.browserEventUnsubscribers = this.addBrowserEventListeners()
 
-    this.prepareChildren(this.props.children)
-
     if (isFunction(this.onMount)) {
       this.onMount(element)
     }
-
-    console.log('onMount', element)
   }
 
   private onUpdateComponent(element: HTMLElement) {
@@ -184,12 +182,9 @@ export default abstract class BaseComponent<
 
   protected prepareChildren(children: BaseComponentProps['children']) {
     if (children?.length) {
-      return children.map((child) => {
+      return [...children].map((child) => {
         if (child instanceof BaseComponent) {
-          child.create({
-            ...child.props,
-            children: this.prepareChildren(child.props.children),
-          })
+          child.props.children = this.prepareChildren(child.props.children)
 
           return child.createTemplatePlaceholder()
         }
@@ -201,18 +196,17 @@ export default abstract class BaseComponent<
     return []
   }
 
-  public create(props: TPropsType = {} as TPropsType) {
-    this.props = {
-      ...this.props,
-      ...props,
-    }
+  public create() {
+    const preparedChildren = this.prepareChildren([
+      ...(this.props.children || []),
+    ])
 
     const elementTempContainer = document.createElement('div')
 
-    elementTempContainer.innerHTML = Templator.compile(
-      this.template,
-      this.props
-    )
+    elementTempContainer.innerHTML = Templator.compile(this.template, {
+      ...this.props,
+      children: preparedChildren,
+    })
 
     this.DOMElement = elementTempContainer.firstElementChild
 
