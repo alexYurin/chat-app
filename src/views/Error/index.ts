@@ -7,7 +7,6 @@ export default new PlaceholderLayout({
   name,
   props: {
     pathname,
-    instanceName: name,
     documentTitle: title,
     data: {
       title,

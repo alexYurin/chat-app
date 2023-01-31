@@ -21,13 +21,11 @@ export default class PlaceholderLayout extends BaseLayout<
 
     this.props.children = [
       new Title({
-        instanceName: 'placeholder-title',
         level: 1,
         children: [title],
       }),
       description,
       new Link({
-        instanceName: 'back-link',
         href: '/',
         children: ['К списку страниц'],
       }),

@@ -18,11 +18,10 @@ export type ComponentStatusType = 'primary' | 'success' | 'warning' | 'alert'
 
 export type ComponentBrowserEventListenerPropType = {
   eventType: Event['type']
-  callback: (event: Event) => void
+  callback: (this: BaseComponent<BaseComponentProps>, event: Event) => void
 }
 
 export interface BaseComponentProps {
-  instanceName: string
   id?: string
   status?: ComponentStatusType
   rootElement?: HTMLElement | string | null
@@ -40,24 +39,22 @@ export default abstract class BaseComponent<
 > {
   protected abstract template: string
 
-  private isFirstRender = true
-  private instanceName = ''
   private internalId = ''
   private eventEmitter = new EventBus<ComponentLifeCycleEventType>()
   private browserEventUnsubscribers: ComponentBrowserEventListenerPropType[] =
     []
   private DOMElement: Element | null = null
+  private isFirstRender = true
 
   constructor(
     protected name: string | null = null,
-    protected props: TPropsType = {
-      children: [] as BaseComponentProps['children'],
-    } as TPropsType
+    protected props: TPropsType
   ) {
     if (name && typeof name === 'string') {
-      this.instanceName = this.props.instanceName
       this.internalId = `_id_${makeUUID()}`
-      this.props = this.makeProxyProps()
+
+      this.props.withInternalId = true
+      this.props = this.makeProxyProps(props)
 
       this.subscribeToLifeCycleEvents()
 
@@ -69,19 +66,24 @@ export default abstract class BaseComponent<
     }
   }
 
-  private makeProxyProps() {
-    return new Proxy(this.props, {
-      set: (props, propName, nextValue) => {
+  private makeProxyProps(props: TPropsType) {
+    return new Proxy(props, {
+      get: (props, propName) => {
+        const newValue = props[propName as keyof TPropsType]
+
+        return typeof newValue === 'function' ? newValue.bind(props) : newValue
+      },
+      set: (props, propName, newValue) => {
         const prevValue = props[propName as keyof TPropsType]
 
         this.dispatch(
           COMPONENT_LIFE_CYCLE_EVENT.UPDATE_PROPS,
           propName,
           prevValue,
-          nextValue
+          newValue
         )
 
-        props[propName as keyof TPropsType] = nextValue
+        props[propName as keyof TPropsType] = newValue
 
         return true
       },
@@ -90,10 +92,14 @@ export default abstract class BaseComponent<
 
   private lifeCycleEventHandlers = {
     [COMPONENT_LIFE_CYCLE_EVENT.COMPILE]: this.compileComponent.bind(this),
+
     [COMPONENT_LIFE_CYCLE_EVENT.RENDER]: this.renderComponent.bind(this),
+
     [COMPONENT_LIFE_CYCLE_EVENT.MOUNT]: this.mountComponent.bind(this),
+
     [COMPONENT_LIFE_CYCLE_EVENT.UPDATE_PROPS]:
       this.updateComponentProps.bind(this),
+
     [COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT]: this.unmountComponent.bind(this),
   }
 
@@ -123,7 +129,6 @@ export default abstract class BaseComponent<
     })
 
     this.isFirstRender = false
-
     this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.RENDER, fragment.content)
 
     return fragment.content
@@ -136,13 +141,21 @@ export default abstract class BaseComponent<
 
     if (HTMLRootElement) {
       HTMLRootElement.replaceChildren(fragment)
-
       DOMElement = HTMLRootElement.firstElementChild
     } else {
       const tempContainer = document.createElement('div')
 
       tempContainer.replaceChildren(fragment)
+
       DOMElement = tempContainer.firstElementChild as Element
+
+      const updatedElement = document.querySelector(
+        `[${componentAttributeNameId}=${this.internalId}]`
+      )
+
+      if (updatedElement) {
+        updatedElement.replaceWith(DOMElement)
+      }
 
       document
         .querySelector(
@@ -176,12 +189,11 @@ export default abstract class BaseComponent<
   private updateComponentProps(
     propName: keyof TPropsType,
     prevValue: unknown,
-    nextValue: unknown
+    newValue: unknown
   ) {
-    // console.log('isFirstRender', this.isFirstRender)
-    // console.log(propName, prevValue, nextValue)
-
-    this.onUpdateProps(propName, prevValue, nextValue)
+    if (!this.isFirstRender) {
+      this.onUpdateProps(propName, prevValue, newValue)
+    }
   }
 
   private unmountComponent() {
@@ -198,16 +210,18 @@ export default abstract class BaseComponent<
     this.onUnmount()
   }
 
-  private addBrowserEventListeners() {
+  private addBrowserEventListeners(): ComponentBrowserEventListenerPropType[] {
     const { listeners } = this.props
 
     if (listeners?.length) {
       return listeners.map((listener) => {
-        this.DOMElement?.addEventListener(listener.eventType, listener.callback)
+        const bindedCallback = listener.callback.bind(this)
+
+        this.DOMElement?.addEventListener(listener.eventType, bindedCallback)
 
         return {
           eventType: listener.eventType,
-          callback: listener.callback,
+          callback: bindedCallback,
         }
       }, [])
     }
@@ -246,50 +260,46 @@ export default abstract class BaseComponent<
     identity(args)
   }
 
-  protected onUpdateProps(...args: unknown[]) {
-    identity(args)
+  protected onUpdateProps(
+    propKey: keyof TPropsType,
+    prevProp: unknown,
+    newProp: unknown
+  ) {
+    propKey
+    prevProp
+    newProp
   }
 
   protected onUnmount(...args: unknown[]) {
     identity(args)
   }
 
-  static findChild(
-    instanceName: string,
-    children: BaseComponentProps['children']
-  ) {
-    return children?.reduce((child, currentChild) => {
-      if (currentChild instanceof BaseComponent) {
-        return currentChild.getInstanceName() === instanceName
-          ? currentChild
-          : BaseComponent.findChild(instanceName, currentChild.getChildren())
+  public setProps(newProps: TPropsType) {
+    Object.entries(newProps).forEach(([propKey, newValue]) => {
+      console.log('UPPPPP', propKey)
+      if (propKey === 'children') {
+        this.dispatch(
+          COMPONENT_LIFE_CYCLE_EVENT.UPDATE_PROPS,
+          propKey,
+          this.props[propKey as keyof TPropsType],
+          newValue
+        )
       }
 
-      return child
-    }, undefined)
-  }
-
-  public getInstanceName() {
-    return this.instanceName
-  }
-
-  public destroy() {
-    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT)
+      this.props[propKey as keyof TPropsType] = newValue
+    })
   }
 
   public getProps() {
     return this.props
   }
 
-  public getChildren() {
-    return this.props.children
+  public destroy() {
+    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT)
   }
 
-  public setProps(props: TPropsType) {
-    this.props = {
-      ...this.props,
-      ...props,
-    }
+  public getChildren() {
+    return this.props.children
   }
 
   public getDOMElement() {

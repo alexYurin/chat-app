@@ -7,9 +7,10 @@ import './styles.scss'
 
 export interface InputProps extends BaseComponentProps {
   status?: ComponentStatusType
-  name: string
+  name?: string
   type?: HTMLInputElement['type']
   form?: string
+  message?: string
   value?: string
   disabled?: boolean
   readonly?: boolean

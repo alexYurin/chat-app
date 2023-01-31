@@ -23,7 +23,6 @@ export default class PagesLayout extends BaseLayout<
 
     this.props.children = [
       new Title({
-        instanceName: 'pages-title',
         level: 1,
         children: [title],
       }),
@@ -32,7 +31,6 @@ export default class PagesLayout extends BaseLayout<
           return [
             ...currentRoutes,
             new Link({
-              instanceName: `pages-link-${route.name}`,
               className: 'pages__link',
               href: route.pathname,
               children: [route.title],

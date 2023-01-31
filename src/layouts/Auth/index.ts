@@ -1,5 +1,5 @@
 import layout from 'bundle-text:./layout.pug'
-import BaseLayout from 'layouts/Base/index'
+import BaseLayout, { BaseLayoutPropsType } from 'layouts/Base/index'
 import { Title, Form, Link } from 'components/index'
 import { FormProps } from 'components/Form'
 import { LinkProps } from 'components/Link'
@@ -20,8 +20,15 @@ export default class AuthLayout extends BaseLayout<
   protected template = layout
 
   protected onMount() {
-    const inputLogin = BaseLayout.findChild('input-login', this.props.children)
-    console.log('inputLogin', inputLogin)
+    console.log('AUTH MOUNT')
+  }
+
+  protected onUpdateProps(
+    propKey: keyof BaseLayoutPropsType<AuthChildrenPropsType, AutDataType>,
+    prevProp: unknown,
+    newProp: unknown
+  ) {
+    console.log('AUTH UPDATE', propKey, prevProp, newProp)
   }
 
   init() {
@@ -29,19 +36,36 @@ export default class AuthLayout extends BaseLayout<
 
     this.props.children = [
       new Title({
-        instanceName: 'auth-title',
         className: 'auth-layout__title',
         level: 1,
         children: [title],
       }),
       new Form({
-        instanceName: 'auth-form',
         className: 'auth-layout__form',
-        fields,
+        fields: fields.map(({ label, input }) => {
+          input.listeners = [
+            {
+              eventType: 'input',
+              callback(event: Event) {
+                const target = event.target as HTMLInputElement
+
+                if (target.name === 'login') {
+                  this.setProps({
+                    value: target.value,
+                  })
+                }
+              },
+            },
+          ]
+
+          return {
+            label,
+            input,
+          }
+        }),
       }),
       new Link(authLink),
       new Link({
-        instanceName: 'back-link',
         href: '/',
         children: ['К списку страниц'],
       }),

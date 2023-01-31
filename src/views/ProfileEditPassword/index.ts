@@ -7,7 +7,6 @@ const { name, pathname, title } = routes.profileEditPassword
 export default new ProfileEditPasswordLayout({
   name,
   props: {
-    instanceName: name,
     pathname,
     documentTitle: title,
     data: {
@@ -18,30 +17,24 @@ export default new ProfileEditPasswordLayout({
       },
       fields: [
         {
-          instanceName: 'field-old-password',
           label: 'Старый пароль',
           input: {
-            instanceName: 'input-old-password',
             name: 'oldPassword',
             type: 'password',
             required: true,
           },
         },
         {
-          instanceName: 'field-password-password',
           label: 'Новый пароль',
           input: {
-            instanceName: 'input-password',
             name: 'password',
             type: 'text',
             required: true,
           },
         },
         {
-          instanceName: 'field-password-confirm',
           label: 'Повторите новый пароль',
           input: {
-            instanceName: 'input-password-configrm',
             name: 'password_confirm',
             type: 'password',
             required: true,

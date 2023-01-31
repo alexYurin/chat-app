@@ -35,21 +35,18 @@ export default class ProfileEditPassordLayout extends BaseLayout<
       avatar.src,
       avatar.alt,
       new Form({
-        instanceName: 'profile-form',
         id: 'profile-form',
         readonly: false,
         className: 'profile-layout__form',
         fields,
       }),
       new Button({
-        instanceName: 'submit-button',
         form: 'profile-form',
         status: 'primary',
         type: 'submit',
         children: ['Сохранить'],
       }),
       new Link({
-        instanceName: 'back-link',
         href: '/',
         children: ['К списку страниц'],
       }),

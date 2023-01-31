@@ -6,7 +6,6 @@ const { name, pathname, title } = routes.pages
 export default new PagesLayout({
   name,
   props: {
-    instanceName: name,
     documentTitle: title,
     pathname,
     data: { title },
