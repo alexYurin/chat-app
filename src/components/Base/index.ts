@@ -1,13 +1,13 @@
 import Templator from 'templators/index'
 import EventBus, { EventCallback } from 'services/EventBus'
-import { isFunction, identity } from 'utils/index'
+import { identity } from 'utils/index'
 import { v4 as makeUUID } from 'uuid'
 
 export const COMPONENT_LIFE_CYCLE_EVENT = {
   COMPILE: '@event-component:COMPILE',
   RENDER: '@event-component:RENDER',
   MOUNT: '@event-component:MOUNT',
-  UPDATE: '@event-component:UPDATE',
+  UPDATE_PROPS: '@event-component:UPDATE_PROPS',
   UNMOUNT: '@event-component:UNMOUNT',
 } as const
 
@@ -22,6 +22,7 @@ export type ComponentBrowserEventListenerPropType = {
 }
 
 export interface BaseComponentProps {
+  instanceName: string
   id?: string
   status?: ComponentStatusType
   rootElement?: HTMLElement | string | null
@@ -39,6 +40,8 @@ export default abstract class BaseComponent<
 > {
   protected abstract template: string
 
+  private isFirstRender = true
+  private instanceName = ''
   private internalId = ''
   private eventEmitter = new EventBus<ComponentLifeCycleEventType>()
   private browserEventUnsubscribers: ComponentBrowserEventListenerPropType[] =
@@ -52,7 +55,9 @@ export default abstract class BaseComponent<
     } as TPropsType
   ) {
     if (name && typeof name === 'string') {
+      this.instanceName = this.props.instanceName
       this.internalId = `_id_${makeUUID()}`
+      this.props = this.makeProxyProps()
 
       this.subscribeToLifeCycleEvents()
 
@@ -64,11 +69,31 @@ export default abstract class BaseComponent<
     }
   }
 
+  private makeProxyProps() {
+    return new Proxy(this.props, {
+      set: (props, propName, nextValue) => {
+        const prevValue = props[propName as keyof TPropsType]
+
+        this.dispatch(
+          COMPONENT_LIFE_CYCLE_EVENT.UPDATE_PROPS,
+          propName,
+          prevValue,
+          nextValue
+        )
+
+        props[propName as keyof TPropsType] = nextValue
+
+        return true
+      },
+    })
+  }
+
   private lifeCycleEventHandlers = {
     [COMPONENT_LIFE_CYCLE_EVENT.COMPILE]: this.compileComponent.bind(this),
     [COMPONENT_LIFE_CYCLE_EVENT.RENDER]: this.renderComponent.bind(this),
     [COMPONENT_LIFE_CYCLE_EVENT.MOUNT]: this.mountComponent.bind(this),
-    [COMPONENT_LIFE_CYCLE_EVENT.UPDATE]: this.updateComponent.bind(this),
+    [COMPONENT_LIFE_CYCLE_EVENT.UPDATE_PROPS]:
+      this.updateComponentProps.bind(this),
     [COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT]: this.unmountComponent.bind(this),
   }
 
@@ -97,6 +122,8 @@ export default abstract class BaseComponent<
       }),
     })
 
+    this.isFirstRender = false
+
     this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.RENDER, fragment.content)
 
     return fragment.content
@@ -115,7 +142,6 @@ export default abstract class BaseComponent<
       const tempContainer = document.createElement('div')
 
       tempContainer.replaceChildren(fragment)
-
       DOMElement = tempContainer.firstElementChild as Element
 
       document
@@ -131,10 +157,7 @@ export default abstract class BaseComponent<
       }
     })
 
-    if (isFunction(this.onRender)) {
-      this.onRender(fragment)
-    }
-
+    this.onRender(fragment)
     this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.MOUNT, DOMElement)
   }
 
@@ -147,15 +170,18 @@ export default abstract class BaseComponent<
       this.DOMElement?.setAttribute(componentAttributeNameId, this.internalId)
     }
 
-    if (isFunction(this.onMount)) {
-      this.onMount(element)
-    }
+    this.onMount(element)
   }
 
-  private updateComponent(element: HTMLElement) {
-    if (isFunction(this.onUpdate)) {
-      this.onUpdate(element)
-    }
+  private updateComponentProps(
+    propName: keyof TPropsType,
+    prevValue: unknown,
+    nextValue: unknown
+  ) {
+    // console.log('isFirstRender', this.isFirstRender)
+    // console.log(propName, prevValue, nextValue)
+
+    this.onUpdateProps(propName, prevValue, nextValue)
   }
 
   private unmountComponent() {
@@ -166,14 +192,10 @@ export default abstract class BaseComponent<
     }
 
     this.removeBrowserEventListeners()
-
-    if (isFunction(this.onUnmount)) {
-      this.onUnmount()
-    }
-
     this.subscribeToLifeCycleEvents('off')
-
     this.DOMElement?.remove()
+
+    this.onUnmount()
   }
 
   private addBrowserEventListeners() {
@@ -224,12 +246,31 @@ export default abstract class BaseComponent<
     identity(args)
   }
 
-  protected onUpdate(...args: unknown[]) {
+  protected onUpdateProps(...args: unknown[]) {
     identity(args)
   }
 
   protected onUnmount(...args: unknown[]) {
     identity(args)
+  }
+
+  static findChild(
+    instanceName: string,
+    children: BaseComponentProps['children']
+  ) {
+    return children?.reduce((child, currentChild) => {
+      if (currentChild instanceof BaseComponent) {
+        return currentChild.getInstanceName() === instanceName
+          ? currentChild
+          : BaseComponent.findChild(instanceName, currentChild.getChildren())
+      }
+
+      return child
+    }, undefined)
+  }
+
+  public getInstanceName() {
+    return this.instanceName
   }
 
   public destroy() {
@@ -240,8 +281,15 @@ export default abstract class BaseComponent<
     return this.props
   }
 
+  public getChildren() {
+    return this.props.children
+  }
+
   public setProps(props: TPropsType) {
-    this.props = props
+    this.props = {
+      ...this.props,
+      ...props,
+    }
   }
 
   public getDOMElement() {

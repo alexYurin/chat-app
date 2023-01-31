@@ -50,12 +50,14 @@ export default class ProfileLayout extends BaseLayout<
       avatar.src,
       avatar.alt,
       new Form({
+        instanceName: 'profile-form',
         id: 'profile-form',
         readonly: true,
         className: 'profile-layout__form',
         fields,
       }),
       new Link({
+        instanceName: 'profile-change-data-link',
         href: '#',
         children: ['Изменить данные'],
         listeners: [
@@ -66,20 +68,24 @@ export default class ProfileLayout extends BaseLayout<
         ],
       }),
       new Link({
+        instanceName: 'profile-change-password-link',
         href: routes.profileEditPassword.pathname,
         children: ['Изменить пароль'],
       }),
       new Link({
+        instanceName: 'profile-change-exit-link',
         href: '/',
         children: ['Выйти'],
       }),
       new Button({
+        instanceName: 'profile-submit-button',
         form: 'profile-form',
         status: 'primary',
         type: 'submit',
         children: ['Сохранить'],
       }),
       new Link({
+        instanceName: 'back-link',
         href: '/',
         children: ['К списку страниц'],
       }),

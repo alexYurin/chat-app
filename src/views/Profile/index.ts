@@ -8,6 +8,7 @@ export default new ProfileLayout({
   name,
   props: {
     pathname,
+    instanceName: name,
     documentTitle: title,
     data: {
       avatar: {
@@ -17,8 +18,10 @@ export default new ProfileLayout({
       },
       fields: [
         {
+          instanceName: 'field-email',
           label: 'Почта',
           input: {
+            instanceName: 'input-email',
             name: 'email',
             type: 'email',
             value: 'pochta@yandex.ru',
@@ -26,8 +29,10 @@ export default new ProfileLayout({
           },
         },
         {
+          instanceName: 'field-login',
           label: 'Логин',
           input: {
+            instanceName: 'input-email',
             name: 'login',
             type: 'text',
             value: 'ivanivanov',
@@ -35,8 +40,10 @@ export default new ProfileLayout({
           },
         },
         {
+          instanceName: 'field-first-name',
           label: 'Имя',
           input: {
+            instanceName: 'input-first-name',
             name: 'first_name',
             type: 'text',
             value: 'Иван',
@@ -44,8 +51,10 @@ export default new ProfileLayout({
           },
         },
         {
+          instanceName: 'field-second-name',
           label: 'Фамилия',
           input: {
+            instanceName: 'input-second-name',
             name: 'second_name',
             type: 'text',
             value: 'Иван',
@@ -53,16 +62,20 @@ export default new ProfileLayout({
           },
         },
         {
+          instanceName: 'field-display-name',
           label: 'Имя в чате',
           input: {
+            instanceName: 'input-display-name',
             name: 'display_name',
             type: 'text',
             value: 'Иванов',
           },
         },
         {
+          instanceName: 'field-phone-name',
           label: 'Телефон',
           input: {
+            instanceName: 'input-phone-name',
             name: 'phone',
             type: 'text',
             value: '+7 (909) 967 30 30',

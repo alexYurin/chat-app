@@ -19,21 +19,29 @@ export default class AuthLayout extends BaseLayout<
 > {
   protected template = layout
 
+  protected onMount() {
+    const inputLogin = BaseLayout.findChild('input-login', this.props.children)
+    console.log('inputLogin', inputLogin)
+  }
+
   init() {
     const { title, authLink, fields } = this.data
 
     this.props.children = [
       new Title({
+        instanceName: 'auth-title',
         className: 'auth-layout__title',
         level: 1,
         children: [title],
       }),
       new Form({
+        instanceName: 'auth-form',
         className: 'auth-layout__form',
         fields,
       }),
       new Link(authLink),
       new Link({
+        instanceName: 'back-link',
         href: '/',
         children: ['К списку страниц'],
       }),
