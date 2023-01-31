@@ -27,8 +27,4 @@ export default class Form extends BaseComponent<FormProps> {
       ...this.props.fields.map((fieldProps) => new FormField(fieldProps)),
     ]
   }
-
-  protected onCreate() {
-    // console.log('formCreate', this.props.children)
-  }
 }

@@ -4,7 +4,8 @@ import { isFunction, identity } from 'utils/index'
 import { v4 as makeUUID } from 'uuid'
 
 export const COMPONENT_LIFE_CYCLE_EVENT = {
-  CREATE: '@event-component:CREATE',
+  COMPILE: '@event-component:COMPILE',
+  RENDER: '@event-component:RENDER',
   MOUNT: '@event-component:MOUNT',
   UPDATE: '@event-component:UPDATE',
   UNMOUNT: '@event-component:UNMOUNT',
@@ -64,10 +65,11 @@ export default abstract class BaseComponent<
   }
 
   private lifeCycleEventHandlers = {
-    [COMPONENT_LIFE_CYCLE_EVENT.CREATE]: this.onCreateComponent.bind(this),
-    [COMPONENT_LIFE_CYCLE_EVENT.MOUNT]: this.onMountComponent.bind(this),
-    [COMPONENT_LIFE_CYCLE_EVENT.UPDATE]: this.onUpdateComponent.bind(this),
-    [COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT]: this.onUnmountComponent.bind(this),
+    [COMPONENT_LIFE_CYCLE_EVENT.COMPILE]: this.compileComponent.bind(this),
+    [COMPONENT_LIFE_CYCLE_EVENT.RENDER]: this.renderComponent.bind(this),
+    [COMPONENT_LIFE_CYCLE_EVENT.MOUNT]: this.mountComponent.bind(this),
+    [COMPONENT_LIFE_CYCLE_EVENT.UPDATE]: this.updateComponent.bind(this),
+    [COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT]: this.unmountComponent.bind(this),
   }
 
   private subscribeToLifeCycleEvents(action: 'on' | 'off' = 'on') {
@@ -81,46 +83,76 @@ export default abstract class BaseComponent<
     )
   }
 
-  private onCreateComponent(element: HTMLElement) {
-    const HTMLRootElement = this.getHTMLRootElement()
+  private compileComponent() {
+    const fragment = document.createElement('template')
+
+    fragment.innerHTML = Templator.compile(this.template, {
+      ...this.props,
+      children: BaseComponent.handleChildren(
+        'createTemplatePlaceholder',
+        this.props.children
+      ),
+    })
+
+    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.RENDER, fragment.content)
+
+    return fragment.content
+  }
+
+  private renderComponent(fragment: DocumentFragment) {
+    const HTMLRootElement = this.getRootElement()
+
+    let DOMElement: Element | null = null
 
     if (HTMLRootElement) {
-      HTMLRootElement.innerHTML = ''
+      HTMLRootElement.replaceChildren(fragment)
 
-      HTMLRootElement.appendChild(element)
+      DOMElement = HTMLRootElement.firstElementChild
     } else {
+      const tempContainer = document.createElement('div')
+
+      tempContainer.replaceChildren(fragment)
+
+      DOMElement = tempContainer.firstElementChild as Element
+
       document
         .querySelector(
           `[${componentPlaceholderAttributeNameId}=${this.internalId}]`
         )
-        ?.replaceWith(element)
+        ?.replaceWith(DOMElement)
     }
 
-    if (isFunction(this.onCreate)) {
-      this.onCreate(element)
+    if (isFunction(this.onRender)) {
+      this.onRender(fragment)
     }
 
-    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.MOUNT, element)
+    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.MOUNT, DOMElement)
   }
 
-  private onMountComponent(element: HTMLElement) {
-    BaseComponent.createChildren(this.props.children)
+  private mountComponent(element: Element) {
+    this.DOMElement = element
+
+    BaseComponent.handleChildren('compileComponent', this.props.children)
 
     this.browserEventUnsubscribers = this.addBrowserEventListeners()
+
+    if (this.props.withInternalId) {
+      this.DOMElement?.setAttribute(componentAttributeNameId, this.internalId)
+    }
 
     if (isFunction(this.onMount)) {
       this.onMount(element)
     }
   }
 
-  private onUpdateComponent(element: HTMLElement) {
+  private updateComponent(element: HTMLElement) {
     if (isFunction(this.onUpdate)) {
       this.onUpdate(element)
     }
   }
 
-  private onUnmountComponent() {
-    const HTMLRootElement = this.getHTMLRootElement()
+  private unmountComponent() {
+    const HTMLRootElement = this.getRootElement()
 
     if (HTMLRootElement) {
       HTMLRootElement.innerHTML = ''
@@ -163,11 +195,17 @@ export default abstract class BaseComponent<
     })
   }
 
-  protected dispatch<T>(event: ComponentLifeCycleEventType, ...args: T[]) {
+  private getRootElement() {
+    return this.props.rootElement instanceof HTMLElement
+      ? this.props.rootElement
+      : document.querySelector(this.props.rootElement as string)
+  }
+
+  protected dispatch(event: ComponentLifeCycleEventType, ...args: unknown[]) {
     this.eventEmitter.emit(event, ...args)
   }
 
-  protected onCreate(...args: unknown[]) {
+  protected onRender(...args: unknown[]) {
     identity(args)
   }
 
@@ -187,61 +225,21 @@ export default abstract class BaseComponent<
     return `<div ${componentPlaceholderAttributeNameId}="${this.internalId}"></div>`
   }
 
-  static prepareChildren(children: BaseComponentProps['children']) {
+  static handleChildren(
+    handlerName: 'compileComponent' | 'createTemplatePlaceholder',
+    children: BaseComponentProps['children']
+  ) {
     return children?.map((child) => {
       if (child instanceof BaseComponent) {
-        child.props.children = BaseComponent.prepareChildren(
-          child.props.children
-        )
-
-        return child.createTemplatePlaceholder()
+        return child[handlerName]()
       }
 
       return child
     })
-  }
-
-  static createChildren(children: BaseComponentProps['children']) {
-    return children?.map((child) => {
-      if (child instanceof BaseComponent) {
-        child.props.children = BaseComponent.createChildren(
-          child.props.children
-        )
-
-        child.create()
-      }
-
-      return child
-    })
-  }
-
-  public create() {
-    const elementTempContainer = document.createElement('div')
-
-    elementTempContainer.innerHTML = Templator.compile(this.template, {
-      ...this.props,
-      children: BaseComponent.prepareChildren(this.props.children),
-    })
-
-    this.DOMElement = elementTempContainer.firstElementChild
-
-    if (this.DOMElement instanceof HTMLElement) {
-      if (this.props.withInternalId) {
-        this.DOMElement.setAttribute(componentAttributeNameId, this.internalId)
-      }
-
-      this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.CREATE, this.DOMElement)
-
-      return this.DOMElement
-    }
   }
 
   public destroy() {
     this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT)
-  }
-
-  public getInternalId() {
-    return this.internalId
   }
 
   public getProps() {
@@ -252,13 +250,7 @@ export default abstract class BaseComponent<
     this.props = props
   }
 
-  public getHTMLElement() {
+  public getDOMElement() {
     return this.DOMElement
-  }
-
-  public getHTMLRootElement() {
-    return this.props.rootElement instanceof HTMLElement
-      ? this.props.rootElement
-      : document.querySelector(this.props.rootElement as string)
   }
 }

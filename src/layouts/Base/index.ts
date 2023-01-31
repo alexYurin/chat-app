@@ -1,4 +1,7 @@
-import BaseComponent, { BaseComponentProps } from 'components/Base/index'
+import BaseComponent, {
+  BaseComponentProps,
+  COMPONENT_LIFE_CYCLE_EVENT,
+} from 'components/Base/index'
 
 export interface BaseLayoutPropsType<
   TChildrenProps extends BaseComponentProps['children'],
@@ -43,6 +46,6 @@ export default abstract class BaseLayout<
   public render() {
     document.title = this.props.documentTitle
 
-    this.create()
+    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.COMPILE)
   }
 }

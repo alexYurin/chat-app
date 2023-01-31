@@ -5,8 +5,6 @@
     [`form_disabled`]: disabled,
   }
 
-  const [inputFields] = children
-
 form(
   id=id
   name=name
@@ -15,7 +13,7 @@ form(
   method=method
   target=target
 ).form
-  each field in inputFields
+  each field in children
     | !{field}
 
 

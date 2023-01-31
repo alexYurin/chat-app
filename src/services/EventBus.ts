@@ -33,7 +33,7 @@ export default class EventBus<TEvent extends string> {
     }
   }
 
-  public emit<T>(event: TEvent, ...args: T[]) {
+  public emit(event: TEvent, ...args: unknown[]) {
     if (this.isFoundEvent(event)) {
       this.listeners[event]?.forEach((listener) => listener(...args))
     } else {
