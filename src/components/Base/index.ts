@@ -88,10 +88,13 @@ export default abstract class BaseComponent<
 
     fragment.innerHTML = Templator.compile(this.template, {
       ...this.props,
-      children: BaseComponent.handleChildren(
-        'createTemplatePlaceholder',
-        this.props.children
-      ),
+      children: this.props.children?.map((child) => {
+        if (child instanceof BaseComponent) {
+          return child.createTemplatePlaceholder()
+        }
+
+        return child
+      }),
     })
 
     this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.RENDER, fragment.content)
@@ -122,6 +125,12 @@ export default abstract class BaseComponent<
         ?.replaceWith(DOMElement)
     }
 
+    this.props.children?.forEach((child) => {
+      if (child instanceof BaseComponent) {
+        child.dispatch(COMPONENT_LIFE_CYCLE_EVENT.COMPILE)
+      }
+    })
+
     if (isFunction(this.onRender)) {
       this.onRender(fragment)
     }
@@ -131,8 +140,6 @@ export default abstract class BaseComponent<
 
   private mountComponent(element: Element) {
     this.DOMElement = element
-
-    BaseComponent.handleChildren('compileComponent', this.props.children)
 
     this.browserEventUnsubscribers = this.addBrowserEventListeners()
 
@@ -201,6 +208,10 @@ export default abstract class BaseComponent<
       : document.querySelector(this.props.rootElement as string)
   }
 
+  private createTemplatePlaceholder() {
+    return `<div ${componentPlaceholderAttributeNameId}="${this.internalId}"></div>`
+  }
+
   protected dispatch(event: ComponentLifeCycleEventType, ...args: unknown[]) {
     this.eventEmitter.emit(event, ...args)
   }
@@ -219,23 +230,6 @@ export default abstract class BaseComponent<
 
   protected onUnmount(...args: unknown[]) {
     identity(args)
-  }
-
-  protected createTemplatePlaceholder() {
-    return `<div ${componentPlaceholderAttributeNameId}="${this.internalId}"></div>`
-  }
-
-  static handleChildren(
-    handlerName: 'compileComponent' | 'createTemplatePlaceholder',
-    children: BaseComponentProps['children']
-  ) {
-    return children?.map((child) => {
-      if (child instanceof BaseComponent) {
-        return child[handlerName]()
-      }
-
-      return child
-    })
   }
 
   public destroy() {
