@@ -4,22 +4,29 @@ const METHODS = {
   PUT: 'PUT',
   PATCH: 'PATCH',
   DELETE: 'DELETE',
+} as const
+
+type RequestOptionsType =
+  | {
+      method: keyof typeof METHODS
+      headers?: Record<string, string>
+      data?: Record<string, unknown>
+      timeout?: number
+    }
+  | Record<string, never>
+
+function queryStringify(data: RequestOptionsType['data']) {
+  if (data) {
+    return Object.entries(data)
+      .map(([key, value]) => `${key}=${encodeURIComponent(value as string)}`)
+      .join('&')
+  }
+
+  return ''
 }
 
-/**
- * Функцию реализовывать здесь необязательно, но может помочь не плодить логику у GET-метода
- * На входе: объект. Пример: {a: 1, b: 2, c: {d: 123}, k: [1, 2, 3]}
- * На выходе: строка. Пример: ?a=1&b=2&c=[object Object]&k=1,2,3
- */
-function queryStringify(data) {
-  // Можно делать трансформацию GET-параметров в отдельной функции
-  return Object.entries(data)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
-}
-
-class HTTPTransport {
-  get(url, options = {}) {
+export default class HTTPRequest {
+  get(url: string, options: RequestOptionsType = {}) {
     url = options.data ? `${url}?${queryStringify(options.data)}` : url
 
     return this.request(
@@ -29,8 +36,7 @@ class HTTPTransport {
     )
   }
 
-  // PUT, POST, DELETE
-  /*post(url, options = {}) {
+  post(url: string, options: RequestOptionsType = {}) {
     return this.request(
       url,
       { ...options, method: METHODS.POST },
@@ -38,7 +44,7 @@ class HTTPTransport {
     )
   }
 
-  put(url, options = {}) {
+  put(url: string, options: RequestOptionsType = {}) {
     return this.request(
       url,
       { ...options, method: METHODS.PUT },
@@ -46,31 +52,30 @@ class HTTPTransport {
     )
   }
 
-  delete(url, options = {}) {
+  delete(url: string, options: RequestOptionsType = {}) {
     return this.request(
       url,
       { ...options, method: METHODS.DELETE },
       options.timeout
     )
-  }*/
+  }
 
-  // options:
-  // headers — obj
-  // data — obj
-  request(
-    url,
-    options = {
-      method: 'GET',
+  request<TResponse>(
+    url: string,
+    options: RequestOptionsType = {
+      method: METHODS.GET,
+      headers: {},
+      data: {},
     },
     timeout = 5000
-  ) {
+  ): Promise<TResponse> {
     const { method, data } = options
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
 
-      const handleError = (xhr) => {
-        console.log(`Ошибка ${xhr.status}: ${xhr.statusText}`)
+      const handleError = (xhr: XMLHttpRequest) => {
+        console.log(`Error ${xhr.status}: ${xhr.statusText}`)
 
         return xhr
       }
@@ -79,7 +84,7 @@ class HTTPTransport {
 
       xhr.timeout = timeout
 
-      Object.entries(options.headers).forEach(([key, value]) => {
+      Object.entries(options.headers || {}).forEach(([key, value]) => {
         xhr.setRequestHeader(key, value)
       })
 
@@ -89,16 +94,16 @@ class HTTPTransport {
 
       xhr.onload = function () {
         if (xhr.status != 200) {
-          return handleError(xhr)
+          return reject(xhr)
         } else {
           return resolve(xhr.response)
         }
       }
 
-      if (method === METHOD.GET || !data) {
+      if (method === METHODS.GET || !data) {
         xhr.send()
       } else {
-        xhr.send(data)
+        xhr.send(JSON.stringify(data))
       }
 
       return xhr

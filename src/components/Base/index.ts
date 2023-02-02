@@ -1,5 +1,6 @@
 import Templator from 'templators/index'
 import EventBus, { EventCallback } from 'services/EventBus'
+import attrs from 'components/Base/attrs'
 import { identity } from 'utils/index'
 import { v4 as makeUUID } from 'uuid'
 
@@ -45,6 +46,7 @@ export default abstract class BaseComponent<
     []
   private DOMElement: Element | null = null
   private isFirstRender = true
+  private static attrs = attrs
 
   constructor(
     protected name: string | null = null,
@@ -76,6 +78,8 @@ export default abstract class BaseComponent<
       set: (props, propName, newValue) => {
         const prevValue = props[propName as keyof TPropsType]
 
+        props[propName as keyof TPropsType] = newValue
+
         this.dispatch(
           COMPONENT_LIFE_CYCLE_EVENT.UPDATE_PROPS,
           propName,
@@ -83,9 +87,10 @@ export default abstract class BaseComponent<
           newValue
         )
 
-        props[propName as keyof TPropsType] = newValue
-
         return true
+      },
+      deleteProperty() {
+        throw new Error('Access denited')
       },
     })
   }
@@ -191,7 +196,26 @@ export default abstract class BaseComponent<
     prevValue: unknown,
     newValue: unknown
   ) {
-    if (!this.isFirstRender) {
+    const isAllowUpdate = !this.isFirstRender && prevValue === newValue
+    const isAttrProp = propName in BaseComponent.attrs
+    const isRequireRender = !(
+      isAttrProp &&
+      typeof propName === 'string' &&
+      typeof newValue === 'string'
+    )
+
+    if (isAllowUpdate) {
+      console.log('update')
+
+      if (isRequireRender) {
+        this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.COMPILE)
+      } else {
+        this.getDOMElement()?.setAttribute(
+          BaseComponent.attrs[propName as keyof typeof BaseComponent.attrs],
+          newValue
+        )
+      }
+
       this.onUpdateProps(propName, prevValue, newValue)
     }
   }
@@ -276,16 +300,6 @@ export default abstract class BaseComponent<
 
   public setProps(newProps: TPropsType) {
     Object.entries(newProps).forEach(([propKey, newValue]) => {
-      console.log('UPPPPP', propKey)
-      if (propKey === 'children') {
-        this.dispatch(
-          COMPONENT_LIFE_CYCLE_EVENT.UPDATE_PROPS,
-          propKey,
-          this.props[propKey as keyof TPropsType],
-          newValue
-        )
-      }
-
       this.props[propKey as keyof TPropsType] = newValue
     })
   }

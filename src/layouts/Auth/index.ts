@@ -50,9 +50,11 @@ export default class AuthLayout extends BaseLayout<
                 const target = event.target as HTMLInputElement
 
                 if (target.name === 'login') {
-                  this.setProps({
-                    value: target.value,
-                  })
+                  setTimeout(() => {
+                    this.setProps({
+                      value: 'test',
+                    })
+                  }, 500)
                 }
               },
             },
