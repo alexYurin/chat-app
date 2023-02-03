@@ -3,9 +3,10 @@ import AuthLayout from 'layouts/Auth/index'
 
 const { name, pathname, title } = routes.signIn
 
-export default new AuthLayout({
-  name,
+export default {
+  Layout: AuthLayout,
   props: {
+    name,
     pathname,
     documentTitle: title,
     data: {
@@ -34,4 +35,4 @@ export default new AuthLayout({
       },
     },
   },
-})
+}

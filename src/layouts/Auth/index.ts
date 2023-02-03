@@ -1,7 +1,9 @@
 import layout from 'bundle-text:./layout.pug'
-import BaseLayout, { BaseLayoutPropsType } from 'layouts/Base/index'
-import { Title, Form, Link } from 'components/index'
+import BaseLayout from 'layouts/Base/index'
+import validation, { RulesType } from 'components/Form/validation'
+import { Title, Form, Input, Link } from 'components/index'
 import { FormProps } from 'components/Form'
+import { InputProps } from 'components/Input'
 import { LinkProps } from 'components/Link'
 import './styles.scss'
 
@@ -19,20 +21,22 @@ export default class AuthLayout extends BaseLayout<
 > {
   protected template = layout
 
-  protected onMount() {
-    console.log('AUTH MOUNT')
-  }
-
-  protected onUpdateProps(
-    propKey: keyof BaseLayoutPropsType<AuthChildrenPropsType, AutDataType>,
-    prevProp: unknown,
-    newProp: unknown
-  ) {
-    console.log('AUTH UPDATE', propKey, prevProp, newProp)
-  }
-
   init() {
     const { title, authLink, fields } = this.data
+
+    function validate(this: Input, event: Event) {
+      console.log(event.type)
+
+      const input = event.target as HTMLInputElement
+
+      const check = validation(input.name as keyof RulesType, input.value)
+
+      const props = check.isValid
+        ? { message: undefined, statis: 'default' }
+        : { status: 'alert', message: check.errorText }
+
+      this.setProps(props as InputProps)
+    }
 
     this.props.children = [
       new Title({
@@ -45,17 +49,15 @@ export default class AuthLayout extends BaseLayout<
         fields: fields.map(({ label, input }) => {
           input.listeners = [
             {
-              eventType: 'input',
+              eventType: 'focus',
               callback(event: Event) {
-                const target = event.target as HTMLInputElement
-
-                if (target.name === 'login') {
-                  setTimeout(() => {
-                    this.setProps({
-                      value: 'test',
-                    })
-                  }, 500)
-                }
+                validate.bind(this as unknown as Input, event)
+              },
+            },
+            {
+              eventType: 'blur',
+              callback(event: Event) {
+                validate.bind(this as unknown as Input, event)
               },
             },
           ]

@@ -20,7 +20,7 @@ export default class EventBus<TEvent extends string> {
   }
 
   public off(event: TEvent, callback?: EventCallback) {
-    if (isFunction(callback)) {
+    if (!isFunction(callback)) {
       throw new Event(`Not found callback for event: ${event}`)
     }
 

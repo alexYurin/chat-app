@@ -2,6 +2,8 @@ import { HistoryPusher } from 'services/index'
 import routes from 'router/routes'
 import * as views from 'views/index'
 
+type ViewType = (typeof views)[keyof typeof views]
+
 const routesCollection = Object.values(routes).map((route) => route.pathname)
 
 const isDefinedPath = (pathname: string) => routesCollection.includes(pathname)
@@ -11,6 +13,7 @@ const isMatchedPaths = (currentPathname: string, pathname: string) =>
 
 export default class Router {
   private currentPathname = window.location.pathname
+  private currentView: ViewType['Layout'] | null = null
 
   constructor() {
     this.addListeners()
@@ -36,9 +39,22 @@ export default class Router {
   }
 
   private renderCurrentView() {
-    Object.values(views).forEach((View) => {
-      if (this.isCurrentRoute(View.getProps().pathname)) {
-        View.render()
+    Object.values(views).forEach((view) => {
+      if (this.isCurrentRoute(view.props.pathname)) {
+        if (this.currentView) {
+          this.currentView.destroy()
+        }
+
+        this.currentView = new view.Layout({
+          name: view.props.name,
+          props: {
+            pathname: view.props.pathname,
+            documentTitle: view.props.documentTitle,
+            data: view.props.data,
+          },
+        })
+
+        this.currentView.render()
       }
     })
   }

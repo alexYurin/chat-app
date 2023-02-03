@@ -91,4 +91,18 @@
       @include mx.themify('background-color', 'drop');
     }
   }
+
+  &_alert {
+    .input__area {
+      @include mx.themify('border-color', 'input-alert');
+
+      &:focus-within {
+        box-shadow: 0 0 0.5rem #{fn.theme-color('dark', 'input-alert')};
+      }
+    }
+
+    .input__message {
+      @include mx.themify('color', 'input-alert');
+    }
+  }
 }

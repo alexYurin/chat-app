@@ -1,6 +1,5 @@
 import Templator from 'templators/index'
 import EventBus, { EventCallback } from 'services/EventBus'
-import attrs from 'components/Base/attrs'
 import { identity } from 'utils/index'
 import { v4 as makeUUID } from 'uuid'
 
@@ -15,11 +14,19 @@ export const COMPONENT_LIFE_CYCLE_EVENT = {
 export type ComponentLifeCycleEventType =
   (typeof COMPONENT_LIFE_CYCLE_EVENT)[keyof typeof COMPONENT_LIFE_CYCLE_EVENT]
 
-export type ComponentStatusType = 'primary' | 'success' | 'warning' | 'alert'
+export type ComponentStatusType =
+  | 'primary'
+  | 'success'
+  | 'warning'
+  | 'alert'
+  | 'default'
 
 export type ComponentBrowserEventListenerPropType = {
   eventType: Event['type']
-  callback: (this: BaseComponent<BaseComponentProps>, event: Event) => void
+  callback: <TPropsType extends BaseComponentProps = BaseComponentProps>(
+    this: BaseComponent<TPropsType>,
+    event: Event
+  ) => void
 }
 
 export interface BaseComponentProps {
@@ -39,14 +46,15 @@ export default abstract class BaseComponent<
   TPropsType extends BaseComponentProps
 > {
   protected abstract template: string
+  protected isMount = false
+  protected isFirstRender = true
+  protected targetQueryForBrowserEvents: null | string = null
 
   private internalId = ''
   private eventEmitter = new EventBus<ComponentLifeCycleEventType>()
   private browserEventUnsubscribers: ComponentBrowserEventListenerPropType[] =
     []
   private DOMElement: Element | null = null
-  private isFirstRender = true
-  private static attrs = attrs
 
   constructor(
     protected name: string | null = null,
@@ -58,7 +66,7 @@ export default abstract class BaseComponent<
       this.props.withInternalId = true
       this.props = this.makeProxyProps(props)
 
-      this.subscribeToLifeCycleEvents()
+      this.registerLifeCycleEvents()
 
       return this
     } else {
@@ -188,6 +196,8 @@ export default abstract class BaseComponent<
       this.DOMElement?.setAttribute(componentAttributeNameId, this.internalId)
     }
 
+    this.isMount = true
+
     this.onMount(element)
   }
 
@@ -196,27 +206,11 @@ export default abstract class BaseComponent<
     prevValue: unknown,
     newValue: unknown
   ) {
-    const isAllowUpdate = !this.isFirstRender && prevValue === newValue
-    const isAttrProp = propName in BaseComponent.attrs
-    const isRequireRender = !(
-      isAttrProp &&
-      typeof propName === 'string' &&
-      typeof newValue === 'string'
-    )
+    const isMustRender =
+      this.onUpdateProps(propName, prevValue, newValue) && !this.isFirstRender
 
-    if (isAllowUpdate) {
-      console.log('update')
-
-      if (isRequireRender) {
-        this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.COMPILE)
-      } else {
-        this.getDOMElement()?.setAttribute(
-          BaseComponent.attrs[propName as keyof typeof BaseComponent.attrs],
-          newValue
-        )
-      }
-
-      this.onUpdateProps(propName, prevValue, newValue)
+    if (isMustRender) {
+      this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.COMPILE)
     }
   }
 
@@ -231,6 +225,8 @@ export default abstract class BaseComponent<
     this.subscribeToLifeCycleEvents('off')
     this.DOMElement?.remove()
 
+    this.isMount = false
+
     this.onUnmount()
   }
 
@@ -238,10 +234,12 @@ export default abstract class BaseComponent<
     const { listeners } = this.props
 
     if (listeners?.length) {
+      const element = this.getEventTarget()
+
       return listeners.map((listener) => {
         const bindedCallback = listener.callback.bind(this)
 
-        this.DOMElement?.addEventListener(listener.eventType, bindedCallback)
+        element?.addEventListener(listener.eventType, bindedCallback)
 
         return {
           eventType: listener.eventType,
@@ -254,8 +252,10 @@ export default abstract class BaseComponent<
   }
 
   private removeBrowserEventListeners() {
+    const element = this.getEventTarget()
+
     this.browserEventUnsubscribers.forEach((unsubscriber) => {
-      this.DOMElement?.removeEventListener(
+      element?.removeEventListener(
         unsubscriber.eventType,
         unsubscriber.callback
       )
@@ -270,6 +270,10 @@ export default abstract class BaseComponent<
 
   private createTemplatePlaceholder() {
     return `<div ${componentPlaceholderAttributeNameId}="${this.internalId}"></div>`
+  }
+
+  protected registerLifeCycleEvents() {
+    this.subscribeToLifeCycleEvents('on')
   }
 
   protected dispatch(event: ComponentLifeCycleEventType, ...args: unknown[]) {
@@ -289,9 +293,11 @@ export default abstract class BaseComponent<
     prevProp: unknown,
     newProp: unknown
   ) {
-    propKey
-    prevProp
-    newProp
+    if (propKey) {
+      return prevProp !== newProp
+    }
+
+    return false
   }
 
   protected onUnmount(...args: unknown[]) {
@@ -316,7 +322,15 @@ export default abstract class BaseComponent<
     return this.props.children
   }
 
-  public getDOMElement() {
-    return this.DOMElement
+  public getDOMElement<T extends Element>() {
+    return this.DOMElement as T
+  }
+
+  public getEventTarget<T extends Element>() {
+    return (
+      this.targetQueryForBrowserEvents
+        ? this.DOMElement?.querySelector(this.targetQueryForBrowserEvents)
+        : this.DOMElement
+    ) as T
   }
 }

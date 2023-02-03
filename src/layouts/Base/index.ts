@@ -44,8 +44,13 @@ export default abstract class BaseLayout<
   protected abstract init(): void
 
   public render() {
-    document.title = this.props.documentTitle
+    const isReMount = !this.isMount && !this.isFirstRender
 
+    if (isReMount) {
+      this.registerLifeCycleEvents()
+    }
+
+    document.title = this.props.documentTitle
     this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.COMPILE)
   }
 }
