@@ -48,4 +48,6 @@
 
 `npm run lint` или `yarn lint` - Запустить линтер **Eslint**.
 
-`npm run format` или `yarn format` Запустить проверку **Prettier**.
+`npm run format` или `yarn format` - Запустить проверку **Prettier**.
+
+`npm run lint:styles` или `yarn lint:styles` - Запустить проверку **Stylelint**
