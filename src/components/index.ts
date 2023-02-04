@@ -1,4 +1,4 @@
-export { default as BaseComponent } from './Base/index.'
+export { default as BaseComponent } from './Base'
 export { default as Button } from './Button'
 export { default as Input } from './Input'
 export { default as Link } from './Link'

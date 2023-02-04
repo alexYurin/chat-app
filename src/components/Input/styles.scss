@@ -13,8 +13,8 @@
     &:-webkit-autofill {
       @include mx.themify('color', 'input-color');
 
-      -webkit-box-shadow: 0 0 0 3rem #{fn.theme-color('dark', 'input-bg')} inset;
       -webkit-text-fill-color: fn.theme-color('dark', 'input-color');
+      box-shadow: 0 0 0 3rem #{fn.theme-color('dark', 'input-bg')} inset;
       font-size: cfg.$base-font-size;
       font-family: cfg.$font-family-default, Verdana, Geneva, Tahoma, sans-serif;
     }
@@ -89,6 +89,20 @@
     .input__area,
     .input__field {
       @include mx.themify('background-color', 'drop');
+    }
+  }
+
+  &_alert {
+    .input__area {
+      @include mx.themify('border-color', 'input-alert');
+
+      &:focus-within {
+        box-shadow: 0 0 0.5rem #{fn.theme-color('dark', 'input-alert')};
+      }
+    }
+
+    .input__message {
+      @include mx.themify('color', 'input-alert');
     }
   }
 }

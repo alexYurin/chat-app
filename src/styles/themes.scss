@@ -14,6 +14,7 @@ $theme-dark: (
   input-bg: color.adjust(clr.$background, $lightness: 5%),
   input-color: color.adjust(clr.$comment, $lightness: 25%),
   input-border: color.adjust(clr.$background, $lightness: 10%),
+  input-alert: color.adjust(clr.$red-100, $lightness: 10%),
   text: color.adjust(clr.$comment, $lightness: 15%),
   drop: transparent,
 ) !default;

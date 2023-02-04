@@ -3,4 +3,6 @@
     [`${className}`]: Boolean(className),
   }
 
-a(href=href class=classNames).link #{slot}
+a(href=href class=classNames).link
+  each child in children || []
+    | !{child}

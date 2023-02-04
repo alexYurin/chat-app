@@ -2,6 +2,36 @@
 @use 'styles/functions' as fn;
 @use 'styles/mixins' as mx;
 
+%flex {
+  display: flex;
+}
+
+%set-scroll {
+  overflow-y: auto;
+  scrollbar-color: #{fn.theme-color('dark', 'primary')} #{fn.theme-color(
+      'dark',
+      'main-bg'
+    )};
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar-track {
+    @include mx.themify('background-color', 'main-bg');
+  }
+
+  &::-webkit-scrollbar-thumb {
+    @include mx.themify('background-color', 'primary');
+  }
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-thumb {
+    border-radius: cfg.$radius;
+  }
+}
+
 .card {
   @include mx.themify('background-color', 'card');
 
@@ -12,11 +42,11 @@
 }
 
 .flex {
-  display: flex;
+  @extend %flex;
 }
 
 .row {
-  @extend .flex;
+  @extend %flex;
   flex-wrap: wrap;
 
   &_nowrap {
@@ -25,12 +55,12 @@
 }
 
 .column {
-  @extend .flex;
+  @extend %flex;
   flex-direction: column;
 }
 
 .center {
-  @extend .flex;
+  @extend %flex;
   justify-content: center;
   align-items: center;
 }
@@ -48,6 +78,14 @@
   padding: 0;
 }
 
+.w100 {
+  width: 100%;
+}
+
 .h100 {
   height: 100%;
+}
+
+.scroll {
+  @extend %set-scroll;
 }

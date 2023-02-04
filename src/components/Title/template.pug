@@ -6,4 +6,6 @@
 
   const tag = tagName || 'h1'
 
-#{tag}(class=classNames).title #{slot}
+#{tag}(class=classNames).title_level
+  each child in children || []
+    | !{child}

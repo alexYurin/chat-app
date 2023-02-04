@@ -12,4 +12,6 @@ button(
   class=classNames
   value=value
   disabled=disabled
-).button #{slot}
+).button
+  each child in children || []
+      | !{child}

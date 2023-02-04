@@ -6,14 +6,21 @@
     "strict": true,
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
     "paths": {
       "static/*": ["./static/*"],
+      "services/*": ["src/services/*"],
       "layouts/*": ["./src/layouts/*"],
       "router/*": ["./src/router/*"],
       "styles/*": ["./src/styles/*"],
       "views/*": ["./src/views/*"],
       "components/*": ["./src/components/*"],
-      "renderer/*": ["./src/renderer/*"],
+      "templators/*": ["src/templators/*"],
       "utils/*": ["./src/utils/*"]
     }
   }

@@ -1,8 +1,5 @@
-import BaseComponent, {
-  BaseComponentProps,
-  BaseComponentOptions,
-} from 'components/Base/index.'
-import HistoryPusher from 'router/HistoryPusher'
+import BaseComponent, { BaseComponentProps } from 'components/Base/index'
+import { HistoryPusher } from 'services/index'
 import templateString from 'bundle-text:./template.pug'
 import './styles.scss'
 
@@ -11,11 +8,17 @@ export interface LinkProps extends BaseComponentProps {
 }
 
 export default class Link extends BaseComponent<LinkProps> {
-  public template = templateString
+  protected template = templateString
 
-  constructor(options: BaseComponentOptions = {}) {
-    super('link', {
-      ...options,
+  constructor(
+    props: LinkProps = {
+      href: '',
+    }
+  ) {
+    super('link', props)
+
+    this.props = {
+      ...this.props,
       listeners: [
         {
           eventType: 'click',
@@ -29,8 +32,8 @@ export default class Link extends BaseComponent<LinkProps> {
             }
           },
         },
-        ...(options.listeners || []),
+        ...(this.props.listeners || []),
       ],
-    })
+    }
   }
 }

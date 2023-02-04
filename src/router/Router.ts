@@ -1,6 +1,10 @@
-import HistoryPusher from 'router/HistoryPusher'
+import { HistoryPusher } from 'services/index'
+import { BaseComponentProps } from 'components/Base'
+import BaseLayout from 'layouts/Base'
 import routes from 'router/routes'
 import * as views from 'views/index'
+
+type ViewType = BaseLayout<BaseComponentProps['children'], any>
 
 const routesCollection = Object.values(routes).map((route) => route.pathname)
 
@@ -11,6 +15,7 @@ const isMatchedPaths = (currentPathname: string, pathname: string) =>
 
 export default class Router {
   private currentPathname = window.location.pathname
+  private currentView: ViewType | null = null
 
   constructor() {
     this.addListeners()
@@ -31,13 +36,31 @@ export default class Router {
 
   private onChangeUrl() {
     this.currentPathname = window.location.pathname
+
     this.renderCurrentView()
   }
 
   private renderCurrentView() {
-    Object.values(views).forEach((View) => {
-      if (this.isCurrentRoute(View.pathname)) {
-        View.render()
+    Object.values(views).forEach((view) => {
+      const { Layout, props } = view
+
+      if (this.isCurrentRoute(props.pathname)) {
+        if (this.currentView) {
+          this.currentView.destroy()
+        }
+
+        const { name, pathname, documentTitle, data } = props
+
+        this.currentView = new Layout({
+          name,
+          props: {
+            pathname,
+            documentTitle,
+            data: data as any,
+          },
+        })
+
+        this.currentView.render()
       }
     })
   }

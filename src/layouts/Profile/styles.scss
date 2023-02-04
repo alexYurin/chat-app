@@ -1,0 +1,103 @@
+@use 'styles/functions' as fn;
+@use 'styles/mixins' as mx;
+@use 'styles/config' as cfg;
+
+.profile-layout {
+  &_editable,
+  &_scaled {
+    .profile-layout__content {
+      box-shadow: 0 0 10rem #{fn.theme-color('dark', 'card-box-shadow-scale')};
+      transform: scale(1.1);
+
+      .profile-layout__button_save {
+        display: flex;
+      }
+    }
+  }
+
+  &_editable {
+    .profile-layout__content {
+      .profile-layout__avatar {
+        cursor: pointer;
+        pointer-events: unset;
+      }
+
+      & ~ .profile-layout__back-link,
+      .profile-layout__link {
+        visibility: hidden;
+      }
+    }
+  }
+
+  &_scaled {
+    .profile-layout__content {
+      & ~ .profile-layout__back-link {
+        margin-top: fn.offset();
+      }
+    }
+  }
+
+  &__form {
+    padding: 0 fn.offset(1);
+    max-height: 60vh;
+  }
+
+  &__column {
+    &:not(:last-child) {
+      margin-right: fn.offset(2);
+    }
+  }
+
+  &__content {
+    margin-bottom: fn.offset();
+    padding-left: fn.offset(6);
+    padding-right: fn.offset(6);
+    max-width: 600px;
+    transition: transform 0.2s linear;
+  }
+
+  &__avatar {
+    @include mx.themify('background-color', 'primary');
+
+    align-self: center;
+    margin-bottom: fn.offset(1.5);
+    padding: fn.offset(0.1);
+    width: 140px;
+    height: 140px;
+    overflow: hidden;
+    pointer-events: none;
+
+    &-file {
+      display: none;
+    }
+
+    &-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  &__button {
+    &_save {
+      display: none;
+      margin-top: auto;
+    }
+  }
+
+  &__link {
+    margin-bottom: fn.offset();
+
+    &:last-child {
+      opacity: 0.6;
+    }
+
+    &_logout {
+      display: flex;
+      align-items: center;
+      margin-top: auto;
+      margin-bottom: 0;
+      height: cfg.$form-item-height;
+    }
+  }
+}

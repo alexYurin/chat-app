@@ -13,15 +13,7 @@ form(
   method=method
   target=target
 ).form
-  if (fields || []).length
-    each field in fields
-      .form__control
-        label.form__label !{field.label}
-        | !{field.inputTemplate}
-
-  if (actionButtons || []).length
-    .form__control.form__control_action
-      each action in actionButtons
-        | !{action.buttonTemplate}
+  each field in children
+    | !{field}
 
 

@@ -1,0 +1,38 @@
+-
+  const [
+    avatarFieldName,
+    avatarSrc,
+    avatarAlt,
+    form,
+    changeDataLink,
+    changePasswordLink,
+    logoutLink,
+    saveButton,
+    backLink
+  ] = children
+
+section.profile-layout.column.center.h100
+  .profile-layout__content.card.row.row_nowrap
+    .profile-layout__column.column.h100
+      label.profile-layout__avatar.circle
+        input(name=avatarFieldName type="file" form="profile-form").profile-layout__avatar-file
+
+        img(src=avatarSrc alt=avatarAlt).profile-layout__avatar-image.circle
+
+      .profile-layout__link
+        | !{changeDataLink}
+
+      .profile-layout__link
+        | !{changePasswordLink}
+
+      .profile-layout__link.profile-layout__link_logout
+        | !{logoutLink}
+
+      .profile-layout__button.profile-layout__button_save
+        | !{saveButton}
+
+    .profile-layout__column.column.h100
+      | !{form}
+
+  .profile-layout__back-link.center
+    | !{backLink}
