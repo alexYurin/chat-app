@@ -1,7 +1,3 @@
-# PR
-
-[Ссылка на PR](https://github.com/alexYurin/middle.messenger.praktikum.yandex/pull/3)
-
 # SPA ChatApp [![Netlify Status](https://api.netlify.com/api/v1/badges/99c21787-a881-4b2c-a8e8-ee602548790a/deploy-status)](https://app.netlify.com/sites/yalex-chat/deploys)
 
 Реализация чата как SPA приложения.
