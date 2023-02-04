@@ -44,10 +44,6 @@ export default class Form extends BaseComponent<FormProps> {
       children
     )
 
-    if (!input.value && (event.type === 'focus' || event.type === 'blur')) {
-      return
-    }
-
     if (currentInputProps?.validation) {
       const check = validation.check(
         currentInputProps.validation as unknown as ValidationProps,
