@@ -1,3 +1,7 @@
+# PR
+
+[Ссылка на PR](https://github.com/alexYurin/middle.messenger.praktikum.yandex/pull/3)
+
 # SPA ChatApp [![Netlify Status](https://api.netlify.com/api/v1/badges/99c21787-a881-4b2c-a8e8-ee602548790a/deploy-status)](https://app.netlify.com/sites/yalex-chat/deploys)
 
 Реализация чата как SPA приложения.
@@ -6,7 +10,7 @@
 
 На данный момент уже реализован роутинг и переход по страницам осуществляеться без перезагрузки.
 Также созданы базовые компоненты, с возможностью добавления к ним обработчиков событий.
-Настроен линтер **Eslint** в связке с **Prettier**.
+Настроен линтер **Eslint** в связке с **Prettier** и **Stylelint**.
 
 Добавлены жизненные циклы компонента и возможность управления рендером. Также у полей формы теперь есть валидация.
 
