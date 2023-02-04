@@ -37,6 +37,11 @@
     }
   }
 
+  &__form {
+    padding: 0 fn.offset(1);
+    max-height: 60vh;
+  }
+
   &__column {
     &:not(:last-child) {
       margin-right: fn.offset(2);
@@ -47,6 +52,7 @@
     margin-bottom: fn.offset();
     padding-left: fn.offset(6);
     padding-right: fn.offset(6);
+    max-width: 600px;
     transition: transform 0.2s linear;
   }
 

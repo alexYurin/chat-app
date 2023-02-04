@@ -1,64 +1,46 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
-import routes from 'router/routes'
-import { HistoryPusher } from 'services/index'
 import { Form, Button, Link } from 'components/index'
 import { FormProps } from 'components/Form'
 import { InputProps } from 'components/Input'
+import { LinkProps } from 'components/Link'
+import './styles.scss'
 
-export interface ProfileEditPasswordDataType {
+export interface ChatDataType {
   fields: FormProps['fields']
-  avatar: {
-    src: string
-    fieldName: string
-    alt: string
-  }
+  submitButtonText: string
+  authLink: LinkProps
 }
 
-export type ProfileEditPasswordPropsType = [
-  string,
-  string,
-  string,
-  Form,
-  Button,
-  Link
-]
+export type ChatForm = Form
+export type ChatSubmitButton = Button
+export type BackLink = Link
 
-export default class ProfileEditPassordLayout extends BaseLayout<
-  ProfileEditPasswordPropsType,
-  ProfileEditPasswordDataType
+export type ChatChildrenPropsType = [ChatForm, ChatSubmitButton, BackLink]
+
+const formId = 'chat-form'
+
+export default class ChatLayout extends BaseLayout<
+  ChatChildrenPropsType,
+  ChatDataType
 > {
   protected template = layout
 
   init() {
-    const { fields, avatar } = this.data
+    const { fields, submitButtonText } = this.data
 
     const validate = (event: Event, currentInputProps: InputProps) => {
       Form.validate(event, currentInputProps, this.props.children)
     }
 
     const onSubmit = (event: Event) => {
-      const isValidForm = Form.onSubmit(event, this.props.children)
-
-      if (isValidForm) {
-        const isRedirect = confirm(
-          'Форма успешно отправлена. Перейти в профиль?'
-        )
-
-        if (isRedirect) {
-          return HistoryPusher.pushTo(routes.profile.pathname)
-        }
-      }
+      Form.onSubmit(event, this.props.children)
     }
 
     this.props.children = [
-      avatar.fieldName,
-      avatar.src,
-      avatar.alt,
       new Form({
-        id: 'profile-form',
-        readonly: false,
-        className: 'profile-layout__form',
+        id: formId,
+        className: 'chat-layout__form',
         fields: fields.map(({ label, input }) => {
           input.listeners = [
             {
@@ -84,10 +66,10 @@ export default class ProfileEditPassordLayout extends BaseLayout<
         ],
       }),
       new Button({
-        form: 'profile-form',
         status: 'primary',
         type: 'submit',
-        children: ['Сохранить'],
+        form: formId,
+        children: [submitButtonText],
       }),
       new Link({
         href: '/',

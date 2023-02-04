@@ -2,13 +2,14 @@ import BaseComponent, {
   BaseComponentProps,
   ComponentStatusType,
 } from 'components/Base/index'
+import { RuleKeyType } from 'components/Form/Validation'
 import templateString from 'bundle-text:./template.pug'
 import './styles.scss'
 
 export interface InputProps extends BaseComponentProps {
   status?: ComponentStatusType
+  type?: string
   name?: string
-  type?: HTMLInputElement['type']
   form?: string
   message?: string
   value?: string
@@ -16,11 +17,13 @@ export interface InputProps extends BaseComponentProps {
   readonly?: boolean
   placeholder?: string
   required?: boolean
+  validation?: RuleKeyType
 }
 
 export default class Input extends BaseComponent<InputProps> {
   protected template = templateString
   protected targetQueryForBrowserEvents = '.input__field'
+  protected disableRenderPropsList = ['status', 'value', 'message']
 
   constructor(
     props: InputProps = {
@@ -35,46 +38,46 @@ export default class Input extends BaseComponent<InputProps> {
     prevValue: unknown,
     newValue: unknown
   ): boolean {
-    if (['status', 'value', 'message'].includes(propKey)) {
-      console.log('update prop', propKey)
+    if (this.disableRenderPropsList.includes(propKey)) {
       switch (propKey) {
         case 'message': {
+          const isDefinedValue = typeof newValue === 'string' && newValue
           const inputMessage =
             this.getDOMElement().querySelector('.input__message')
 
-          if (newValue && typeof newValue === 'string') {
-            if (inputMessage) {
-              inputMessage.textContent = newValue
-            } else {
-              const message = document.createElement('p')
+          if (isDefinedValue && inputMessage) {
+            inputMessage.textContent = newValue
 
-              message.classList.add('input__message')
-              message.textContent = newValue
-
-              this.getDOMElement()?.appendChild(message)
-            }
-          } else {
-            inputMessage?.remove()
+            break
           }
+
+          if (isDefinedValue) {
+            const message = document.createElement('p')
+
+            message.classList.add('input__message')
+            message.textContent = newValue
+
+            this.getDOMElement()?.appendChild(message)
+
+            break
+          }
+
+          inputMessage?.remove()
 
           break
         }
 
         case 'status': {
-          if (typeof newValue === 'string') {
-            const input = this.getDOMElement()
-            const value = `input_${
-              newValue
-                ? newValue
-                : typeof prevValue === 'string'
-                ? prevValue
-                : ''
-            }`
+          const input = this.getDOMElement()
 
-            newValue
-              ? input.classList.add(value)
-              : input.classList.remove(value)
+          input.classList.remove(`input_${prevValue}`)
+
+          if (typeof newValue === 'string' && newValue) {
+            const value = `input_${newValue}`
+
+            input.classList.add(value)
           }
+
           break
         }
 
@@ -82,6 +85,7 @@ export default class Input extends BaseComponent<InputProps> {
           if (typeof newValue === 'string') {
             this.getEventTarget<HTMLInputElement>().value = newValue
           }
+
           break
         }
 

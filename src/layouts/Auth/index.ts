@@ -1,41 +1,59 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
-import validation, { RulesType } from 'components/Form/validation'
-import { Title, Form, Input, Link } from 'components/index'
+import routes from 'router/routes'
+import { HistoryPusher } from 'services/index'
+import { Title, Form, Button, Link } from 'components/index'
 import { FormProps } from 'components/Form'
 import { InputProps } from 'components/Input'
 import { LinkProps } from 'components/Link'
 import './styles.scss'
 
-export interface AutDataType {
+export interface AuthDataType {
   title: string
   fields: FormProps['fields']
+  submitButtonText: string
   authLink: LinkProps
 }
 
-export type AuthChildrenPropsType = [Title, Form, Link, Link]
+export type AuthTitle = Title
+export type AuthForm = Form
+export type AutSwitchFormhLink = Link
+export type AuthSubmitButton = Button
+export type BackLink = Link
+
+export type AuthChildrenPropsType = [
+  AuthTitle,
+  AuthForm,
+  AuthSubmitButton,
+  AutSwitchFormhLink,
+  BackLink
+]
+
+const formId = 'auth-form'
 
 export default class AuthLayout extends BaseLayout<
   AuthChildrenPropsType,
-  AutDataType
+  AuthDataType
 > {
   protected template = layout
 
   init() {
-    const { title, authLink, fields } = this.data
+    const { title, authLink, fields, submitButtonText } = this.data
 
-    function validate(this: Input, event: Event) {
-      console.log(event.type)
+    const validate = (event: Event, currentInputProps: InputProps) => {
+      Form.validate(event, currentInputProps, this.props.children)
+    }
 
-      const input = event.target as HTMLInputElement
+    const onSubmit = (event: Event) => {
+      const isValidForm = Form.onSubmit(event, this.props.children)
 
-      const check = validation(input.name as keyof RulesType, input.value)
+      if (isValidForm) {
+        const isRedirect = confirm('Форма успешно отправлена. Перейти в чат?')
 
-      const props = check.isValid
-        ? { message: undefined, statis: 'default' }
-        : { status: 'alert', message: check.errorText }
-
-      this.setProps(props as InputProps)
+        if (isRedirect) {
+          return HistoryPusher.pushTo(routes.chat.pathname)
+        }
+      }
     }
 
     this.props.children = [
@@ -45,20 +63,17 @@ export default class AuthLayout extends BaseLayout<
         children: [title],
       }),
       new Form({
-        className: 'auth-layout__form',
+        id: formId,
+        className: 'auth-layout__form scroll',
         fields: fields.map(({ label, input }) => {
           input.listeners = [
             {
               eventType: 'focus',
-              callback(event: Event) {
-                validate.bind(this as unknown as Input, event)
-              },
+              callback: (event: Event) => validate(event, input),
             },
             {
               eventType: 'blur',
-              callback(event: Event) {
-                validate.bind(this as unknown as Input, event)
-              },
+              callback: (event: Event) => validate(event, input),
             },
           ]
 
@@ -67,6 +82,18 @@ export default class AuthLayout extends BaseLayout<
             input,
           }
         }),
+        listeners: [
+          {
+            eventType: 'submit',
+            callback: onSubmit,
+          },
+        ],
+      }),
+      new Button({
+        status: 'primary',
+        type: 'submit',
+        form: formId,
+        children: [submitButtonText],
       }),
       new Link(authLink),
       new Link({

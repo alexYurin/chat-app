@@ -1,0 +1,18 @@
+-
+  const [form, submitButton, backLink] = children
+
+section.chat-layout.flex.h100
+  .chat-layout__content
+    aside.chat-layout__contacts.column.center
+      | Нет контактов
+
+    .chat-layout__messages.column.center
+      p Нет сообщений
+      .chat-layout__link.center
+        | !{backLink}
+
+    .chat-layout__input
+      | !{form}
+
+      .chat-layout__submit
+        | !{submitButton}

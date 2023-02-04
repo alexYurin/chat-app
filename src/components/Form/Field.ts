@@ -8,7 +8,7 @@ export interface FormFieldProps extends BaseComponentProps {
 }
 
 export default class FormField extends BaseComponent<FormFieldProps> {
-  public template = templateString
+  protected template = templateString
 
   constructor(props: FormFieldProps) {
     super('field', props)

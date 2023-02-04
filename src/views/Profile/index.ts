@@ -1,4 +1,5 @@
 import routes from 'router/routes'
+import Validation from 'components/Form/Validation'
 import ProfileLayout from 'layouts/Profile/index'
 import avatarPlaceholderIconSrc from 'data-url:static/images/image-placeholder.svg'
 
@@ -23,7 +24,7 @@ export default {
             name: 'email',
             type: 'email',
             value: 'pochta@yandex.ru',
-            required: true,
+            validation: Validation.rules.email,
           },
         },
         {
@@ -32,7 +33,7 @@ export default {
             name: 'login',
             type: 'text',
             value: 'ivanivanov',
-            required: true,
+            validation: Validation.rules.login,
           },
         },
         {
@@ -41,7 +42,7 @@ export default {
             name: 'first_name',
             type: 'text',
             value: 'Иван',
-            required: true,
+            validation: Validation.rules.first_name,
           },
         },
         {
@@ -50,7 +51,7 @@ export default {
             name: 'second_name',
             type: 'text',
             value: 'Иван',
-            required: true,
+            validation: Validation.rules.second_name,
           },
         },
         {
@@ -59,6 +60,7 @@ export default {
             name: 'display_name',
             type: 'text',
             value: 'Иванов',
+            validation: Validation.rules.display_name,
           },
         },
         {
@@ -66,8 +68,8 @@ export default {
           input: {
             name: 'phone',
             type: 'text',
-            value: '+7 (909) 967 30 30',
-            required: true,
+            value: '+79099673030',
+            validation: Validation.rules.phone,
           },
         },
       ],

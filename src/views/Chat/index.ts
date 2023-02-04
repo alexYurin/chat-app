@@ -1,17 +1,29 @@
 import routes from 'router/routes'
-import PlaceholderLayout from 'layouts/Placeholder/index'
+import Validation from 'components/Form/Validation'
+import ChatLayout from 'layouts/Chat/index'
 
 const { name, pathname, title } = routes.chat
 
 export default {
-  Layout: PlaceholderLayout,
+  Layout: ChatLayout,
   props: {
     name,
     pathname,
     documentTitle: title,
     data: {
       title,
-      description: 'Будет реализован в следующих спринтах 😜',
+      fields: [
+        {
+          label: '',
+          input: {
+            name: 'message',
+            type: 'text',
+            value: '',
+            validation: Validation.rules.message,
+          },
+        },
+      ],
+      submitButtonText: 'Отправить',
     },
   },
 }

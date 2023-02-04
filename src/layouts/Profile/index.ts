@@ -1,8 +1,10 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
+import routes from 'router/routes'
+import { HistoryPusher } from 'services/index'
 import { Form, Button, Link } from 'components/index'
 import { FormProps } from 'components/Form'
-import routes from 'router/routes'
+import { InputProps } from 'components/Input'
 import './styles.scss'
 
 export interface ProfileDataType {
@@ -45,6 +47,24 @@ export default class ProfileLayout extends BaseLayout<
   init() {
     const { fields, avatar } = this.data
 
+    const validate = (event: Event, currentInputProps: InputProps) => {
+      Form.validate(event, currentInputProps, this.props.children)
+    }
+
+    const onSubmit = (event: Event) => {
+      const isValidForm = Form.onSubmit(event, this.props.children)
+
+      if (isValidForm) {
+        const isRedirect = confirm(
+          'Форма успешно отправлена. Перейти в профиль?'
+        )
+
+        if (isRedirect) {
+          return HistoryPusher.pushTo(routes.profile.pathname)
+        }
+      }
+    }
+
     this.props.children = [
       avatar.fieldName,
       avatar.src,
@@ -52,8 +72,30 @@ export default class ProfileLayout extends BaseLayout<
       new Form({
         id: 'profile-form',
         readonly: true,
-        className: 'profile-layout__form',
-        fields,
+        className: 'profile-layout__form scroll',
+        fields: fields.map(({ label, input }) => {
+          input.listeners = [
+            {
+              eventType: 'focus',
+              callback: (event: Event) => validate(event, input),
+            },
+            {
+              eventType: 'blur',
+              callback: (event: Event) => validate(event, input),
+            },
+          ]
+
+          return {
+            label,
+            input,
+          }
+        }),
+        listeners: [
+          {
+            eventType: 'submit',
+            callback: onSubmit,
+          },
+        ],
       }),
       new Link({
         href: '#',

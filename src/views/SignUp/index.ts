@@ -1,4 +1,5 @@
 import routes from 'router/routes'
+import Validation from 'components/Form/Validation'
 import AuthLayout from 'layouts/Auth/index'
 
 const { name, pathname, title } = routes.signUp
@@ -17,7 +18,7 @@ export default {
           input: {
             name: 'email',
             type: 'email',
-            required: true,
+            validation: Validation.rules.email,
           },
         },
         {
@@ -25,7 +26,7 @@ export default {
           input: {
             name: 'login',
             type: 'text',
-            required: true,
+            validation: Validation.rules.login,
           },
         },
         {
@@ -33,7 +34,7 @@ export default {
           input: {
             name: 'first_name',
             type: 'text',
-            required: true,
+            validation: Validation.rules.first_name,
           },
         },
         {
@@ -41,7 +42,7 @@ export default {
           input: {
             name: 'second_name',
             type: 'text',
-            required: true,
+            validation: Validation.rules.second_name,
           },
         },
         {
@@ -49,7 +50,7 @@ export default {
           input: {
             name: 'phone',
             type: 'text',
-            required: true,
+            validation: Validation.rules.phone,
           },
         },
         {
@@ -57,7 +58,7 @@ export default {
           input: {
             name: 'password',
             type: 'password',
-            required: true,
+            validation: Validation.rules.password,
           },
         },
         {
@@ -65,10 +66,11 @@ export default {
           input: {
             name: 'password_confirm',
             type: 'password',
-            required: true,
+            validation: Validation.rules.password_confirm,
           },
         },
       ],
+      submitButtonText: 'Зарегистрироваться',
       authLink: {
         href: routes.signIn.pathname,
         children: ['Войти'],

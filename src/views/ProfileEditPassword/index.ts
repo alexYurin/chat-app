@@ -1,4 +1,5 @@
 import routes from 'router/routes'
+import Validation from 'components/Form/Validation'
 import ProfileEditPasswordLayout from 'layouts/ProfileEditPassword/index'
 import avatarPlaceholderIconSrc from 'data-url:static/images/image-placeholder.svg'
 
@@ -22,7 +23,7 @@ export default {
           input: {
             name: 'oldPassword',
             type: 'password',
-            required: true,
+            validation: Validation.rules.password,
           },
         },
         {
@@ -30,7 +31,7 @@ export default {
           input: {
             name: 'password',
             type: 'text',
-            required: true,
+            validation: Validation.rules.password,
           },
         },
         {
@@ -38,7 +39,7 @@ export default {
           input: {
             name: 'password_confirm',
             type: 'password',
-            required: true,
+            validation: Validation.rules.password_confirm,
           },
         },
       ],

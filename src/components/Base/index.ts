@@ -45,16 +45,17 @@ export const componentPlaceholderAttributeNameId = 'data-id'
 export default abstract class BaseComponent<
   TPropsType extends BaseComponentProps
 > {
-  protected abstract template: string
-  protected isMount = false
-  protected isFirstRender = true
-  protected targetQueryForBrowserEvents: null | string = null
-
   private internalId = ''
   private eventEmitter = new EventBus<ComponentLifeCycleEventType>()
   private browserEventUnsubscribers: ComponentBrowserEventListenerPropType[] =
     []
   private DOMElement: Element | null = null
+
+  protected abstract template: string
+  protected isMount = false
+  protected isInitRender = true
+  protected targetQueryForBrowserEvents: null | string = null
+  protected disableRenderPropsList: string[] = []
 
   constructor(
     protected name: string | null = null,
@@ -141,7 +142,7 @@ export default abstract class BaseComponent<
       }),
     })
 
-    this.isFirstRender = false
+    this.isInitRender = false
     this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.RENDER, fragment.content)
 
     return fragment.content
@@ -206,21 +207,15 @@ export default abstract class BaseComponent<
     prevValue: unknown,
     newValue: unknown
   ) {
-    const isMustRender =
-      this.onUpdateProps(propName, prevValue, newValue) && !this.isFirstRender
+    const isMustBeRender =
+      this.onUpdateProps(propName, prevValue, newValue) && !this.isInitRender
 
-    if (isMustRender) {
+    if (isMustBeRender) {
       this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.COMPILE)
     }
   }
 
   private unmountComponent() {
-    const HTMLRootElement = this.getRootElement()
-
-    if (HTMLRootElement) {
-      HTMLRootElement.innerHTML = ''
-    }
-
     this.removeBrowserEventListeners()
     this.subscribeToLifeCycleEvents('off')
     this.DOMElement?.remove()
@@ -304,6 +299,40 @@ export default abstract class BaseComponent<
     identity(args)
   }
 
+  static findParentComponent(
+    target: EventTarget | HTMLElement,
+    children: BaseComponentProps['children']
+  ) {
+    if (target instanceof HTMLElement) {
+      const internalInputId = target
+        ?.closest(`[${componentAttributeNameId}]`)
+        ?.getAttribute(componentAttributeNameId)
+
+      if (internalInputId) {
+        return BaseComponent.findChild(internalInputId as string, children)
+      }
+    }
+
+    return undefined
+  }
+
+  static findChild(
+    internalId: string,
+    children: BaseComponentProps['children']
+  ): BaseComponent<BaseComponentProps> | undefined {
+    return children?.reduce((findedChild, child) => {
+      if (child instanceof BaseComponent) {
+        if (child.internalId === internalId) {
+          findedChild = child
+        } else if (!findedChild) {
+          findedChild = BaseComponent.findChild(internalId, child.getChildren())
+        }
+      }
+
+      return findedChild
+    }, undefined as undefined | BaseComponent<BaseComponentProps>)
+  }
+
   public setProps(newProps: TPropsType) {
     Object.entries(newProps).forEach(([propKey, newValue]) => {
       this.props[propKey as keyof TPropsType] = newValue
@@ -316,6 +345,10 @@ export default abstract class BaseComponent<
 
   public destroy() {
     this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT)
+  }
+
+  public getInternalId() {
+    return this.internalId
   }
 
   public getChildren() {

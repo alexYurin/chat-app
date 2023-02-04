@@ -11,10 +11,6 @@
     &:not(:first-child):not(.form__control_action) {
       margin-top: fn.offset();
     }
-
-    &_action {
-      margin-top: fn.offset(2);
-    }
   }
 
   &__label {

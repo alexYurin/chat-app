@@ -8,7 +8,7 @@ export interface LinkProps extends BaseComponentProps {
 }
 
 export default class Link extends BaseComponent<LinkProps> {
-  public template = templateString
+  protected template = templateString
 
   constructor(
     props: LinkProps = {

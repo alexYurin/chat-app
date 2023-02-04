@@ -1,4 +1,5 @@
 import routes from 'router/routes'
+import Validation from 'components/Form/Validation'
 import AuthLayout from 'layouts/Auth/index'
 
 const { name, pathname, title } = routes.signIn
@@ -17,7 +18,7 @@ export default {
           input: {
             name: 'login',
             type: 'text',
-            required: true,
+            validation: Validation.rules.login,
           },
         },
         {
@@ -25,10 +26,11 @@ export default {
           input: {
             name: 'password',
             type: 'password',
-            required: true,
+            validation: Validation.rules.password,
           },
         },
       ],
+      submitButtonText: 'Вход',
       authLink: {
         href: routes.signUp.pathname,
         children: ['Нет аккаунта?'],

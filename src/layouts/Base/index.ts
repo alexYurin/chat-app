@@ -38,15 +38,15 @@ export default abstract class BaseLayout<
     } as BaseLayoutPropsType<TChildrenProps, TData>)
     this.data = params.props.data
 
-    this.init()
+    this.init.call(this)
   }
 
   protected abstract init(): void
 
   public render() {
-    const isReMount = !this.isMount && !this.isFirstRender
+    const isMustBeRender = !this.isMount && !this.isInitRender
 
-    if (isReMount) {
+    if (isMustBeRender) {
       this.registerLifeCycleEvents()
     }
 
