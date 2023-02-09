@@ -3,42 +3,18 @@ import BaseLayout from 'layouts/Base/index'
 import routes from 'router/routes'
 import { HistoryPusher } from 'services/index'
 import { Title, Form, Button, Link } from 'components/index'
-import { FormProps } from 'components/Form'
 import { InputProps } from 'components/Input'
-import { LinkProps } from 'components/Link'
+import { AuthPropsType } from './types'
+
 import './styles.scss'
-
-export interface AuthDataType {
-  title: string
-  fields: FormProps['fields']
-  submitButtonText: string
-  authLink: LinkProps
-}
-
-export type AuthTitle = Title
-export type AuthForm = Form
-export type AutSwitchFormhLink = Link
-export type AuthSubmitButton = Button
-export type BackLink = Link
-
-export type AuthChildrenPropsType = [
-  AuthTitle,
-  AuthForm,
-  AuthSubmitButton,
-  AutSwitchFormhLink,
-  BackLink
-]
 
 const formId = 'auth-form'
 
-export default class AuthLayout extends BaseLayout<
-  AuthChildrenPropsType,
-  AuthDataType
-> {
+export default class AuthLayout extends BaseLayout<AuthPropsType> {
   protected template = layout
 
   init() {
-    const { title, authLink, fields, submitButtonText } = this.data
+    const { title, authLink, fields, submitButtonText } = this.props
 
     const validate = (event: Event, currentInputProps: InputProps) => {
       Form.validate(event, currentInputProps, this.props.children)
@@ -98,6 +74,7 @@ export default class AuthLayout extends BaseLayout<
       new Link(authLink),
       new Link({
         href: '/',
+        isRoute: true,
         children: ['К списку страниц'],
       }),
     ]

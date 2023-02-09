@@ -1,23 +1,15 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
 import { Title, Link } from 'components/index'
+import { PlaceholderPropsType } from './types'
+
 import './styles.scss'
 
-export type PlaceholderDataType = {
-  title: string
-  description: string
-}
-
-export type PlaceholderChildrenPropsType = [Title, string, Link]
-
-export default class PlaceholderLayout extends BaseLayout<
-  PlaceholderChildrenPropsType,
-  PlaceholderDataType
-> {
+export default class PlaceholderLayout extends BaseLayout<PlaceholderPropsType> {
   protected template = layout
 
   init() {
-    const { title, description } = this.data
+    const { title, description } = this.props
 
     this.props.children = [
       new Title({
@@ -27,6 +19,7 @@ export default class PlaceholderLayout extends BaseLayout<
       description,
       new Link({
         href: '/',
+        isRoute: true,
         children: ['К списку страниц'],
       }),
     ]

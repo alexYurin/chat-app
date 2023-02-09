@@ -3,15 +3,17 @@ import PlaceholderLayout from 'layouts/Placeholder/index'
 
 const { name, pathname, title } = routes.error
 
+const createView = () => {
+  return new PlaceholderLayout(name, {
+    title,
+    description: 'Мы уже фиксим',
+  })
+}
+
+export type ViewErrorType = ReturnType<typeof createView>
+
 export default {
-  Layout: PlaceholderLayout,
-  props: {
-    name,
-    pathname,
-    documentTitle: title,
-    data: {
-      title,
-      description: 'Мы уже фиксим',
-    },
-  },
+  title,
+  pathname,
+  createView,
 }

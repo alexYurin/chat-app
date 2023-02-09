@@ -89,9 +89,8 @@ export default abstract class BaseComponent<
 
         props[propName as keyof TPropsType] = newValue
 
-        this.dispatch(
-          COMPONENT_LIFE_CYCLE_EVENT.UPDATE_PROPS,
-          propName,
+        this.dispatchUpdateProps(
+          propName as keyof TPropsType,
           prevValue,
           newValue
         )
@@ -143,7 +142,7 @@ export default abstract class BaseComponent<
     })
 
     this.isInitRender = false
-    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.RENDER, fragment.content)
+    this.dispatchRender(fragment.content)
 
     return fragment.content
   }
@@ -180,12 +179,12 @@ export default abstract class BaseComponent<
 
     this.props.children?.forEach((child) => {
       if (child instanceof BaseComponent) {
-        child.dispatch(COMPONENT_LIFE_CYCLE_EVENT.COMPILE)
+        child.dispatchCompile()
       }
     })
 
     this.onRender(fragment)
-    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.MOUNT, DOMElement)
+    this.dispatchMount(DOMElement)
   }
 
   private mountComponent(element: Element) {
@@ -207,11 +206,11 @@ export default abstract class BaseComponent<
     prevValue: unknown,
     newValue: unknown
   ) {
-    const isMustBeRender =
+    const isUpdated =
       this.onUpdateProps(propName, prevValue, newValue) && !this.isInitRender
 
-    if (isMustBeRender) {
-      this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.COMPILE)
+    if (isUpdated) {
+      this.dispatchCompile()
     }
   }
 
@@ -267,12 +266,41 @@ export default abstract class BaseComponent<
     return `<div ${componentPlaceholderAttributeNameId}="${this.internalId}"></div>`
   }
 
-  protected registerLifeCycleEvents() {
-    this.subscribeToLifeCycleEvents('on')
-  }
-
   protected dispatch(event: ComponentLifeCycleEventType, ...args: unknown[]) {
     this.eventEmitter.emit(event, ...args)
+  }
+
+  protected dispatchCompile(...args: unknown[]) {
+    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.COMPILE, ...args)
+  }
+
+  protected dispatchRender(...args: unknown[]) {
+    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.RENDER, ...args)
+  }
+
+  protected dispatchMount(...args: unknown[]) {
+    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.MOUNT, ...args)
+  }
+
+  protected dispatchUpdateProps(
+    propName: keyof TPropsType,
+    prevValue: unknown,
+    newValue: unknown
+  ) {
+    this.dispatch(
+      COMPONENT_LIFE_CYCLE_EVENT.MOUNT,
+      propName,
+      prevValue,
+      newValue
+    )
+  }
+
+  protected dispatchUnmount(...args: unknown[]) {
+    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT, ...args)
+  }
+
+  protected registerLifeCycleEvents() {
+    this.subscribeToLifeCycleEvents('on')
   }
 
   protected onRender(...args: unknown[]) {
@@ -344,7 +372,7 @@ export default abstract class BaseComponent<
   }
 
   public destroy() {
-    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT)
+    this.dispatchUnmount()
   }
 
   public getInternalId() {

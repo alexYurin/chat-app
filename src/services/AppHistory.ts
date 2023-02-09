@@ -1,9 +1,11 @@
-export type HistoryPusherOptionsType = {
+export type AppHistoryOptionsType = {
   onChangeURL?: (event: Event) => void
 }
 
-export default class HistoryPusher {
-  constructor(private options: HistoryPusherOptionsType = {}) {
+export default class AppHistory {
+  private appHistory = window.history
+
+  constructor(private options: AppHistoryOptionsType = {}) {
     this.addListeners()
 
     return this
@@ -19,12 +21,12 @@ export default class HistoryPusher {
     window.addEventListener('popstate', this.onChange.bind(this))
   }
 
-  static pushTo(url: string, state = {}, title = '') {
+  public pushTo(url: string) {
     if (window.location.href === url) {
       return
     }
 
-    window.history.pushState(state, title, url)
+    this.appHistory.pushState({}, '', url)
 
     window.dispatchEvent(new Event('popstate'))
   }

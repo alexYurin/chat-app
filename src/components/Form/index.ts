@@ -3,6 +3,7 @@ import Validation, { ValidationProps } from 'components/Form/Validation'
 import { InputProps } from 'components/Input'
 import FormField, { FormFieldProps } from './Field'
 import templateString from 'bundle-text:./template.pug'
+
 import './styles.scss'
 
 export interface FormProps extends BaseComponentProps {

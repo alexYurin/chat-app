@@ -3,35 +3,14 @@ import BaseLayout from 'layouts/Base/index'
 import routes from 'router/routes'
 import { HistoryPusher } from 'services/index'
 import { Form, Button, Link } from 'components/index'
-import { FormProps } from 'components/Form'
 import { InputProps } from 'components/Input'
+import { ProfileEditPasswordPropsType } from './types'
 
-export interface ProfileEditPasswordDataType {
-  fields: FormProps['fields']
-  avatar: {
-    src: string
-    fieldName: string
-    alt: string
-  }
-}
-
-export type ProfileEditPasswordPropsType = [
-  string,
-  string,
-  string,
-  Form,
-  Button,
-  Link
-]
-
-export default class ProfileEditPassordLayout extends BaseLayout<
-  ProfileEditPasswordPropsType,
-  ProfileEditPasswordDataType
-> {
+export default class ProfileEditPassordLayout extends BaseLayout<ProfileEditPasswordPropsType> {
   protected template = layout
 
   init() {
-    const { fields, avatar } = this.data
+    const { fields, avatar } = this.props
 
     const validate = (event: Event, currentInputProps: InputProps) => {
       Form.validate(event, currentInputProps, this.props.children)
@@ -91,6 +70,7 @@ export default class ProfileEditPassordLayout extends BaseLayout<
       }),
       new Link({
         href: '/',
+        isRoute: true,
         children: ['К списку страниц'],
       }),
     ]

@@ -2,8 +2,9 @@ import BaseComponent, {
   BaseComponentProps,
   ComponentStatusType,
 } from 'components/Base/index'
-import { RuleKeyType } from 'components/Form/Validation'
+import { ValidationProps } from 'components/Form/Validation'
 import templateString from 'bundle-text:./template.pug'
+
 import './styles.scss'
 
 export interface InputProps extends BaseComponentProps {
@@ -17,7 +18,7 @@ export interface InputProps extends BaseComponentProps {
   readonly?: boolean
   placeholder?: string
   required?: boolean
-  validation?: RuleKeyType
+  validation?: ValidationProps
 }
 
 export default class Input extends BaseComponent<InputProps> {

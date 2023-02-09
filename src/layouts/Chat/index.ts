@@ -1,33 +1,18 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
 import { Form, Button, Link } from 'components/index'
-import { FormProps } from 'components/Form'
 import { InputProps } from 'components/Input'
-import { LinkProps } from 'components/Link'
+import { ChatPropsType } from './types'
+
 import './styles.scss'
-
-export interface ChatDataType {
-  fields: FormProps['fields']
-  submitButtonText: string
-  authLink: LinkProps
-}
-
-export type ChatForm = Form
-export type ChatSubmitButton = Button
-export type BackLink = Link
-
-export type ChatChildrenPropsType = [ChatForm, ChatSubmitButton, BackLink]
 
 const formId = 'chat-form'
 
-export default class ChatLayout extends BaseLayout<
-  ChatChildrenPropsType,
-  ChatDataType
-> {
+export default class ChatLayout extends BaseLayout<ChatPropsType> {
   protected template = layout
 
   init() {
-    const { fields, submitButtonText } = this.data
+    const { fields, submitButtonText } = this.props
 
     const validate = (event: Event, currentInputProps: InputProps) => {
       Form.validate(event, currentInputProps, this.props.children)
@@ -73,6 +58,7 @@ export default class ChatLayout extends BaseLayout<
       }),
       new Link({
         href: '/',
+        isRoute: true,
         children: ['К списку страниц'],
       }),
     ]

@@ -1,3 +1,3 @@
 export { default as EventBus } from './EventBus'
-export { default as HistoryPusher } from './HistoryPusher'
+export { default as AppHistory } from './AppHistory'
 export { default as HttpRequest } from './HttpRequest'

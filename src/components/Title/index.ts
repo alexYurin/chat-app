@@ -1,5 +1,6 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import templateString from 'bundle-text:./template.pug'
+
 import './styles.scss'
 
 export interface TitleProps extends BaseComponentProps {

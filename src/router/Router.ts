@@ -1,10 +1,9 @@
-import { HistoryPusher } from 'services/index'
+import { AppHistory } from 'services/index'
 import { BaseComponentProps } from 'components/Base'
 import BaseLayout from 'layouts/Base'
 import routes from 'router/routes'
+import Route, { ViewType } from './Route'
 import * as views from 'views/index'
-
-type ViewType = BaseLayout<BaseComponentProps['children'], any>
 
 const routesCollection = Object.values(routes).map((route) => route.pathname)
 
@@ -16,9 +15,10 @@ const isMatchedPaths = (currentPathname: string, pathname: string) =>
 export default class Router {
   private currentPathname = window.location.pathname
   private currentView: ViewType | null = null
+  private routes: Route[] = []
+  private history = History
 
   constructor() {
-    this.addListeners()
     this.init()
 
     return this
@@ -28,7 +28,7 @@ export default class Router {
     const isUnknownRoute = !isDefinedPath(this.currentPathname)
 
     if (isUnknownRoute) {
-      return HistoryPusher.pushTo(routes.notFound.pathname)
+      return AppHistory.pushTo(routes.notFound.pathname)
     }
 
     this.renderCurrentView()
@@ -65,10 +65,22 @@ export default class Router {
     })
   }
 
-  private addListeners() {
-    new HistoryPusher({
+  private getRoute(pathname: string) {
+    return this.routes.find((route) => route.isMatch(pathname))
+  }
+
+  public run() {
+    new AppHistory({
       onChangeURL: this.onChangeUrl.bind(this),
     })
+  }
+
+  public use(name: string, pathname: string, view: ViewType) {
+    const route = new Route(name, pathname, view)
+
+    this.routes = [...this.routes, route]
+
+    return this
   }
 
   public isCurrentRoute(pathname: string) {

@@ -3,30 +3,10 @@ import BaseLayout from 'layouts/Base/index'
 import routes from 'router/routes'
 import { HistoryPusher } from 'services/index'
 import { Form, Button, Link } from 'components/index'
-import { FormProps } from 'components/Form'
 import { InputProps } from 'components/Input'
+import { ProfilePropsType } from './types'
+
 import './styles.scss'
-
-export interface ProfileDataType {
-  fields: FormProps['fields']
-  avatar: {
-    src: string
-    fieldName: string
-    alt: string
-  }
-}
-
-export type ProfileChildrenPropsType = [
-  string,
-  string,
-  string,
-  Form,
-  Link,
-  Link,
-  Link,
-  Button,
-  Link
-]
 
 const triggerFormEdit = (event: Event) => {
   event.preventDefault()
@@ -38,14 +18,11 @@ const triggerFormEdit = (event: Event) => {
   form?.classList.remove('form_readonly')
 }
 
-export default class ProfileLayout extends BaseLayout<
-  ProfileChildrenPropsType,
-  ProfileDataType
-> {
+export default class ProfileLayout extends BaseLayout<ProfilePropsType> {
   protected template = layout
 
   init() {
-    const { fields, avatar } = this.data
+    const { fields, avatar } = this.props
 
     const validate = (event: Event, currentInputProps: InputProps) => {
       Form.validate(event, currentInputProps, this.props.children)
@@ -109,10 +86,12 @@ export default class ProfileLayout extends BaseLayout<
       }),
       new Link({
         href: routes.profileEditPassword.pathname,
+        isRoute: true,
         children: ['Изменить пароль'],
       }),
       new Link({
         href: '/',
+        isRoute: true,
         children: ['Выйти'],
       }),
       new Button({
@@ -123,6 +102,7 @@ export default class ProfileLayout extends BaseLayout<
       }),
       new Link({
         href: '/',
+        isRoute: true,
         children: ['К списку страниц'],
       }),
     ]
