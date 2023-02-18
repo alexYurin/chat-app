@@ -53,8 +53,8 @@ class Router {
     this.dispatchRoute()
   }
 
-  public use(name: string, pathname: string, View: ViewType) {
-    const route = new Route(name, pathname, View)
+  public use(View: ViewType) {
+    const route = new Route(View)
 
     this.routes = [...this.routes, route]
 

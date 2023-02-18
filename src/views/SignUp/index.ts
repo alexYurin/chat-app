@@ -3,10 +3,12 @@ import AuthLayout from 'layouts/Auth/index'
 import SignInView from 'views/SignIn'
 
 export default class SignUpView {
+  static id = 'signUp'
+  static title = 'Регистрация'
   static pathname = '/sign-up'
 
   constructor() {
-    return new AuthLayout('signUp', {
+    return new AuthLayout(SignUpView.id, {
       title: 'Регистрация',
       fields: [
         {

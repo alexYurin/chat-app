@@ -1,10 +1,12 @@
 import PlaceholderLayout from 'layouts/Placeholder/index'
 
 export default class ErrorView {
+  static id = 'error'
+  static title = '500'
   static pathname = '/error'
 
   constructor() {
-    return new PlaceholderLayout('error', {
+    return new PlaceholderLayout(ErrorView.id, {
       title: '500',
       description: 'Мы уже фиксим...',
     })

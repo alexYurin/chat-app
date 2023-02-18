@@ -3,10 +3,12 @@ import ProfileEditPasswordLayout from 'layouts/ProfileEditPassword/index'
 import avatarPlaceholderIconSrc from 'data-url:static/images/image-placeholder.svg'
 
 export default class ProfileEditPasswordView {
+  static id = 'profileEditPassword'
+  static title = 'Профиль (Смена пароля)'
   static pathname = '/profile-edit-password'
 
   constructor() {
-    return new ProfileEditPasswordLayout('profileEditPassowrd', {
+    return new ProfileEditPasswordLayout(ProfileEditPasswordView.id, {
       avatar: {
         src: avatarPlaceholderIconSrc,
         fieldName: 'avatar',

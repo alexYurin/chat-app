@@ -3,10 +3,12 @@ import ProfileLayout from 'layouts/Profile/index'
 import avatarPlaceholderIconSrc from 'data-url:static/images/image-placeholder.svg'
 
 export default class ProfileView {
+  static id = 'profile'
+  static title = 'Профиль (Настройки)'
   static pathname = '/profile'
 
   constructor() {
-    return new ProfileLayout('profile', {
+    return new ProfileLayout(ProfileView.id, {
       avatar: {
         src: avatarPlaceholderIconSrc,
         fieldName: 'avatar',

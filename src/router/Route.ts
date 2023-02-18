@@ -7,11 +7,7 @@ export type ViewType = (typeof views)[keyof typeof views]
 export default class Route {
   private layout: BaseLayout<BaseComponentProps> | null = null
 
-  constructor(
-    private title: string,
-    private pathname: string,
-    private View: ViewType
-  ) {
+  constructor(private View: ViewType) {
     return this
   }
 
@@ -22,10 +18,10 @@ export default class Route {
   }
 
   public render() {
-    this.layout = new this.View()
+    this.layout = new this.View() as BaseLayout<BaseComponentProps>
 
     if (this.layout) {
-      document.title = this.title
+      document.title = this.View.title
 
       this.layout.render()
     }
@@ -36,6 +32,6 @@ export default class Route {
   }
 
   public isMatch(pathname: string) {
-    return this.pathname === pathname
+    return this.View.pathname === pathname
   }
 }
