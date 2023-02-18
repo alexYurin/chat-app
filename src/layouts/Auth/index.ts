@@ -1,7 +1,6 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
-import routes from 'router/routes'
-import { HistoryPusher } from 'services/index'
+import { Router, routes } from 'router/index'
 import { Title, Form, Button, Link } from 'components/index'
 import { InputProps } from 'components/Input'
 import { AuthPropsType } from './types'
@@ -27,7 +26,7 @@ export default class AuthLayout extends BaseLayout<AuthPropsType> {
         const isRedirect = confirm('Форма успешно отправлена. Перейти в чат?')
 
         if (isRedirect) {
-          return HistoryPusher.pushTo(routes.chat.pathname)
+          return Router.navigate(routes.chat.pathname)
         }
       }
     }
@@ -72,11 +71,6 @@ export default class AuthLayout extends BaseLayout<AuthPropsType> {
         children: [submitButtonText],
       }),
       new Link(authLink),
-      new Link({
-        href: '/',
-        isRoute: true,
-        children: ['К списку страниц'],
-      }),
     ]
   }
 }

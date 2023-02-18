@@ -288,7 +288,7 @@ export default abstract class BaseComponent<
     newValue: unknown
   ) {
     this.dispatch(
-      COMPONENT_LIFE_CYCLE_EVENT.MOUNT,
+      COMPONENT_LIFE_CYCLE_EVENT.UPDATE_PROPS,
       propName,
       prevValue,
       newValue

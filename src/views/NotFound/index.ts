@@ -1,19 +1,12 @@
-import routes from 'router/routes'
 import PlaceholderLayout from 'layouts/Placeholder/index'
 
-const { name, pathname, title } = routes.notFound
+export default class NotFoundView {
+  static pathname = '/not-found'
 
-const createView = () => {
-  return new PlaceholderLayout(name, {
-    title,
-    description: 'Не туда попали',
-  })
-}
-
-export type ViewNotFoundType = ReturnType<typeof createView>
-
-export default {
-  pathname,
-  title,
-  createView,
+  constructor() {
+    return new PlaceholderLayout('notFound', {
+      title: '404',
+      description: 'Не туда попали',
+    })
+  }
 }

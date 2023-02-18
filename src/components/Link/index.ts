@@ -2,7 +2,7 @@ import BaseComponent, {
   BaseComponentProps,
   ComponentBrowserEventListenerPropType,
 } from 'components/Base/index'
-import { HistoryPusher } from 'services/index'
+import Router from 'router/Router'
 import templateString from 'bundle-text:./template.pug'
 
 import './styles.scss'
@@ -31,7 +31,7 @@ export default class Link extends BaseComponent<LinkProps> {
         if (target instanceof HTMLAnchorElement) {
           event.preventDefault()
 
-          HistoryPusher.pushTo(target.href)
+          Router.navigate(target.href)
         }
       },
     }

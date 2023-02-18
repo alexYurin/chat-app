@@ -20,7 +20,7 @@ export default class PlaceholderLayout extends BaseLayout<PlaceholderPropsType> 
       new Link({
         href: '/',
         isRoute: true,
-        children: ['К списку страниц'],
+        children: ['Назад'],
       }),
     ]
   }

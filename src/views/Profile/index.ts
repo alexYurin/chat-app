@@ -1,80 +1,73 @@
-import routes from 'router/routes'
 import Validation from 'components/Form/Validation'
 import ProfileLayout from 'layouts/Profile/index'
 import avatarPlaceholderIconSrc from 'data-url:static/images/image-placeholder.svg'
 
-const { name, pathname, title } = routes.profile
+export default class ProfileView {
+  static pathname = '/profile'
 
-const createView = () => {
-  return new ProfileLayout(name, {
-    avatar: {
-      src: avatarPlaceholderIconSrc,
-      fieldName: 'avatar',
-      alt: 'Аватар',
-    },
-    fields: [
-      {
-        label: 'Почта',
-        input: {
-          name: 'email',
-          type: 'email',
-          value: 'pochta@yandex.ru',
-          validation: Validation.rules.email,
-        },
+  constructor() {
+    return new ProfileLayout('profile', {
+      avatar: {
+        src: avatarPlaceholderIconSrc,
+        fieldName: 'avatar',
+        alt: 'Аватар',
       },
-      {
-        label: 'Логин',
-        input: {
-          name: 'login',
-          type: 'text',
-          value: 'ivanivanov',
-          validation: Validation.rules.login,
+      fields: [
+        {
+          label: 'Почта',
+          input: {
+            name: 'email',
+            type: 'email',
+            value: 'pochta@yandex.ru',
+            validation: Validation.rules.email,
+          },
         },
-      },
-      {
-        label: 'Имя',
-        input: {
-          name: 'first_name',
-          type: 'text',
-          value: 'Иван',
-          validation: Validation.rules.first_name,
+        {
+          label: 'Логин',
+          input: {
+            name: 'login',
+            type: 'text',
+            value: 'ivanivanov',
+            validation: Validation.rules.login,
+          },
         },
-      },
-      {
-        label: 'Фамилия',
-        input: {
-          name: 'second_name',
-          type: 'text',
-          value: 'Иван',
-          validation: Validation.rules.second_name,
+        {
+          label: 'Имя',
+          input: {
+            name: 'first_name',
+            type: 'text',
+            value: 'Иван',
+            validation: Validation.rules.first_name,
+          },
         },
-      },
-      {
-        label: 'Имя в чате',
-        input: {
-          name: 'display_name',
-          type: 'text',
-          value: 'Иванов',
-          validation: Validation.rules.display_name,
+        {
+          label: 'Фамилия',
+          input: {
+            name: 'second_name',
+            type: 'text',
+            value: 'Иван',
+            validation: Validation.rules.second_name,
+          },
         },
-      },
-      {
-        label: 'Телефон',
-        input: {
-          name: 'phone',
-          type: 'text',
-          value: '+79099673030',
-          validation: Validation.rules.phone,
+        {
+          label: 'Имя в чате',
+          input: {
+            name: 'display_name',
+            type: 'text',
+            value: 'Иванов',
+            validation: Validation.rules.display_name,
+          },
         },
-      },
-    ],
-  })
-}
-
-export type ViewProfileType = ReturnType<typeof createView>
-
-export default {
-  title,
-  pathname,
-  createView,
+        {
+          label: 'Телефон',
+          input: {
+            name: 'phone',
+            type: 'text',
+            value: '+79099673030',
+            validation: Validation.rules.phone,
+          },
+        },
+      ],
+    })
+  }
 }

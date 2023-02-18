@@ -1,5 +1,9 @@
 import 'styles/index.scss'
 import 'components'
-import Router from 'router/Router'
+import { Router, routes } from 'router/index'
 
-new Router()
+Object.values(routes).forEach((route) => {
+  Router.use(route.title, route.pathname, route.View)
+})
+
+Router.run()

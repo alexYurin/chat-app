@@ -7,14 +7,12 @@ export type AuthTitleType = Title
 export type AuthFormType = Form
 export type AuthSwitchFormLinkType = Link
 export type AuthSubmitButtonType = Button
-export type BackLinkType = Link
 
 export type AuthChildrenPropsType = [
   AuthTitleType,
   AuthFormType,
   AuthSubmitButtonType,
-  AuthSwitchFormLinkType,
-  BackLinkType
+  AuthSwitchFormLinkType
 ]
 
 export interface AuthPropsType extends BaseComponentProps {

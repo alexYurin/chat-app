@@ -1,32 +1,24 @@
-export type AppHistoryOptionsType = {
-  onChangeURL?: (event: Event) => void
-}
+export type HistoryListenerType = (event: Event) => void
 
 export default class AppHistory {
   private appHistory = window.history
 
-  constructor(private options: AppHistoryOptionsType = {}) {
-    this.addListeners()
-
-    return this
+  public getBrowserHistory() {
+    return this.appHistory
   }
 
-  private onChange(event: Event) {
-    if (typeof this.options.onChangeURL === 'function') {
-      this.options.onChangeURL(event)
-    }
+  public addListeners(listeners: HistoryListenerType[] = []) {
+    listeners.forEach((listener) => {
+      window.addEventListener('popstate', listener.bind(this))
+    })
   }
 
-  private addListeners() {
-    window.addEventListener('popstate', this.onChange.bind(this))
-  }
-
-  public pushTo(url: string) {
+  public pushTo(url: string, title = '', state: unknown = {}) {
     if (window.location.href === url) {
       return
     }
 
-    this.appHistory.pushState({}, '', url)
+    this.appHistory.pushState(state, title, url)
 
     window.dispatchEvent(new Event('popstate'))
   }

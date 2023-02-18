@@ -10,7 +10,6 @@ export type ProfileChangeLinkDataType = Link
 export type ProfileChangeLinkPasswordType = Link
 export type ProfileChangeLinkLogoutType = Link
 export type ProfileSubmitType = Button
-export type ProfileBackLinkType = Link
 
 export type ProfileChildrenPropsType = [
   ProfileAvatarFieldNameType,
@@ -20,8 +19,7 @@ export type ProfileChildrenPropsType = [
   ProfileChangeLinkDataType,
   ProfileChangeLinkPasswordType,
   ProfileChangeLinkLogoutType,
-  ProfileSubmitType,
-  ProfileBackLinkType
+  ProfileSubmitType
 ]
 
 export interface ProfilePropsType extends BaseComponentProps {

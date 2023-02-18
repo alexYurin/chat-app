@@ -1,6 +1,6 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
-import { Form, Button, Link } from 'components/index'
+import { Form, Button } from 'components/index'
 import { InputProps } from 'components/Input'
 import { ChatPropsType } from './types'
 
@@ -55,11 +55,6 @@ export default class ChatLayout extends BaseLayout<ChatPropsType> {
         type: 'submit',
         form: formId,
         children: [submitButtonText],
-      }),
-      new Link({
-        href: '/',
-        isRoute: true,
-        children: ['К списку страниц'],
       }),
     ]
   }

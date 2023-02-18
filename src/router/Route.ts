@@ -1,14 +1,16 @@
 import * as views from 'views/index'
+import BaseLayout from 'layouts/Base'
+import { BaseComponentProps } from 'components/Base'
 
 export type ViewType = (typeof views)[keyof typeof views]
 
 export default class Route {
-  private viewInstance: ReturnType<ViewType['createView']> | null = null
+  private layout: BaseLayout<BaseComponentProps> | null = null
 
   constructor(
     private title: string,
     private pathname: string,
-    private view: ViewType
+    private View: ViewType
   ) {
     return this
   }
@@ -20,17 +22,17 @@ export default class Route {
   }
 
   public render() {
-    this.viewInstance = this.view?.createView()
+    this.layout = new this.View()
 
-    if (this.viewInstance) {
+    if (this.layout) {
       document.title = this.title
 
-      this.viewInstance.render()
+      this.layout.render()
     }
   }
 
   public leave() {
-    this.viewInstance?.destroy()
+    this.layout?.destroy()
   }
 
   public isMatch(pathname: string) {

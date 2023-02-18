@@ -1,89 +1,65 @@
 import { AppHistory } from 'services/index'
-import { BaseComponentProps } from 'components/Base'
-import BaseLayout from 'layouts/Base'
-import routes from 'router/routes'
+import routes, { RoutesTypes } from 'router/routes'
 import Route, { ViewType } from './Route'
-import * as views from 'views/index'
+
+type RoutePathType = RoutesTypes[keyof RoutesTypes]['pathname']
 
 const routesCollection = Object.values(routes).map((route) => route.pathname)
+const isDefinedPath = (pathname: string) =>
+  routesCollection.includes(pathname as RoutePathType)
 
-const isDefinedPath = (pathname: string) => routesCollection.includes(pathname)
-
-const isMatchedPaths = (currentPathname: string, pathname: string) =>
-  currentPathname === pathname
-
-export default class Router {
+class Router {
   private currentPathname = window.location.pathname
-  private currentView: ViewType | null = null
+  private currentRoute: Route | null = null
   private routes: Route[] = []
-  private history = History
+  private history = new AppHistory()
 
-  constructor() {
-    this.init()
-
-    return this
-  }
-
-  private init() {
-    const isUnknownRoute = !isDefinedPath(this.currentPathname)
-
-    if (isUnknownRoute) {
-      return AppHistory.pushTo(routes.notFound.pathname)
-    }
-
-    this.renderCurrentView()
-  }
-
-  private onChangeUrl() {
+  private onRoute() {
     this.currentPathname = window.location.pathname
 
-    this.renderCurrentView()
+    this.dispatchRoute()
   }
 
-  private renderCurrentView() {
-    Object.values(views).forEach((view) => {
-      const { Layout, props } = view
+  private dispatchRoute() {
+    const route = this.getRoute(this.currentPathname)
 
-      if (this.isCurrentRoute(props.pathname)) {
-        if (this.currentView) {
-          this.currentView.destroy()
-        }
+    if (!route) {
+      return this.navigate(routes.notFound.pathname)
+    }
 
-        const { name, pathname, documentTitle, data } = props
+    if (this.currentRoute) {
+      this.currentRoute.leave()
+    }
 
-        this.currentView = new Layout({
-          name,
-          props: {
-            pathname,
-            documentTitle,
-            data: data as any,
-          },
-        })
-
-        this.currentView.render()
-      }
-    })
+    this.currentRoute = route
+    this.currentRoute.navigate(this.currentPathname)
   }
 
   private getRoute(pathname: string) {
     return this.routes.find((route) => route.isMatch(pathname))
   }
 
-  public run() {
-    new AppHistory({
-      onChangeURL: this.onChangeUrl.bind(this),
-    })
+  public navigate(pathname: string) {
+    this.history.pushTo(pathname)
   }
 
-  public use(name: string, pathname: string, view: ViewType) {
-    const route = new Route(name, pathname, view)
+  public run() {
+    this.history.addListeners([this.onRoute.bind(this)])
+
+    if (!isDefinedPath(this.currentPathname)) {
+      return this.history.pushTo(routes.notFound.pathname)
+    }
+
+    this.dispatchRoute()
+  }
+
+  public use(name: string, pathname: string, View: ViewType) {
+    const route = new Route(name, pathname, View)
 
     this.routes = [...this.routes, route]
 
     return this
   }
-
-  public isCurrentRoute(pathname: string) {
-    return isMatchedPaths(this.currentPathname, pathname)
-  }
 }
+
+export default new Router()
