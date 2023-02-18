@@ -2,13 +2,14 @@ import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
 import { Form, Button } from 'components/index'
 import { InputProps } from 'components/Input'
+import { connect } from 'services/Store'
 import { ChatPropsType } from './types'
 
 import './styles.scss'
 
 const formId = 'chat-form'
 
-export default class ChatLayout extends BaseLayout<ChatPropsType> {
+class ChatLayout extends BaseLayout<ChatPropsType> {
   protected template = layout
 
   init() {
@@ -59,3 +60,7 @@ export default class ChatLayout extends BaseLayout<ChatPropsType> {
     ]
   }
 }
+
+const withUser = connect((state) => ({ user: state.user }))
+
+export default withUser<ChatPropsType>(ChatLayout)

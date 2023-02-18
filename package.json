@@ -19,7 +19,8 @@
     "views": "./src/views",
     "templators": "./src/templators",
     "utils": "./src/utils",
-    "styles": "./src/styles"
+    "styles": "./src/styles",
+    "types": "./src/types"
   },
   "engines": {
     "node": ">=12"

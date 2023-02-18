@@ -21,7 +21,8 @@
       "views/*": ["./src/views/*"],
       "components/*": ["./src/components/*"],
       "templators/*": ["src/templators/*"],
-      "utils/*": ["./src/utils/*"]
+      "utils/*": ["./src/utils/*"],
+      "types/*": ["./src/types/*"]
     }
   }
 }

@@ -1,5 +1,6 @@
 import Templator from 'templators/index'
 import EventBus, { EventCallback } from 'services/EventBus'
+import { StateType } from 'services/Store'
 import { identity } from 'utils/index'
 import { v4 as makeUUID } from 'uuid'
 
@@ -29,7 +30,7 @@ export type ComponentBrowserEventListenerPropType = {
   ) => void
 }
 
-export interface BaseComponentProps {
+export interface BaseComponentProps extends StateType {
   id?: string
   status?: ComponentStatusType
   rootElement?: HTMLElement | string | null
@@ -51,7 +52,7 @@ export default abstract class BaseComponent<
     []
   private DOMElement: Element | null = null
 
-  protected abstract template: string
+  protected template = ''
   protected isMount = false
   protected isInitRender = true
   protected targetQueryForBrowserEvents: null | string = null
