@@ -1,6 +1,6 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
-import { Form, Input, Button, Avatar, Image } from 'components/index'
+import { Form, Input, Button, Avatar, Image, Loader } from 'components/index'
 import { InputProps } from 'components/Input'
 import { connect } from 'services/Store'
 import { ChatPropsType } from './types'
@@ -32,7 +32,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         ? 'remove'
         : 'add'
 
-      const buttonText = action === 'add' ? 'Изменить данные' : 'Отенить'
+      const buttonText = action === 'add' ? 'Изменить данные' : 'Отменить'
 
       triggerButton.textContent = buttonText
       form?.classList[action]('form_readonly')
@@ -78,6 +78,10 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
 
     this.props.children = [
+      new Loader({
+        className: 'chat-layout__profile-loader',
+        isVisible: true,
+      }),
       new Image({
         src: editAvatarIconSrc,
         alt: 'edit-avatar-icon',

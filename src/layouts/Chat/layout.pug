@@ -1,5 +1,6 @@
 -
   const [
+    profileLoader,
     editAvatarIcon,
     avatarSettings,
     avatar,
@@ -27,6 +28,9 @@ section.chat-layout.flex.h100
   label(for="chat-profile-trigger").chat-layout__overlay
 
   section.chat-layout__profile
+    .chat-layout__profile-overlay
+      | !{profileLoader}
+
     .chat-layout__profile-avatar
       label(for="user_avatar").chat-layout__trigger.chat-layout__trigger_avatar.center
         | !{editAvatarIcon}
@@ -35,7 +39,7 @@ section.chat-layout.flex.h100
         | !{avatarInput}
 
     .chat-layout__form-container.chat-layout__form-container_profile.column
-      h2.chat-layout__form-title.title.title_level_2 Данные Профиля
+      h2.chat-layout__form-title.title.title_level_1 Данные Профиля
 
       | !{profileForm}
 
@@ -49,7 +53,7 @@ section.chat-layout.flex.h100
         | !{profileSubmitButton}
 
     .chat-layout__form-container.chat-layout__form-container_password.column
-      h2.chat-layout__form-title.title.title_level_2 Смена Пароля
+      h2.chat-layout__form-title.title.title_level_1 Смена Пароля
 
       | !{passwordForm}
 

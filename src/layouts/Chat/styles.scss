@@ -5,6 +5,13 @@
 $profile-section-width: 400px;
 $profile-section--avatar-height: 20vh;
 
+%absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .chat-layout {
   flex: 1 0 100%;
   position: relative;
@@ -18,8 +25,8 @@ $profile-section--avatar-height: 20vh;
       align-items: center;
       top: fn.offset();
       right: fn.offset();
-      padding: fn.offset(0.4) fn.offset(0.6);
-      border-radius: cfg.$radius;
+      padding: fn.offset(0.3) fn.offset(0.5) fn.offset(0.3) fn.offset(0.3);
+      border-radius: cfg.$radius * 1.2;
       font-weight: 600;
       transition: box-shadow 0.2s ease-in-out;
       cursor: pointer;
@@ -30,8 +37,8 @@ $profile-section--avatar-height: 20vh;
 
       .avatar {
         margin-right: fn.offset(0.5);
-        width: 25px;
-        height: 25px;
+        width: 30px;
+        height: 30px;
       }
     }
 
@@ -150,6 +157,19 @@ $profile-section--avatar-height: 20vh;
     z-index: cfg.$z-index-content;
   }
 
+  &__profile-overlay {
+    @extend .chat-layout__overlay;
+
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  &__profile-loader {
+    @extend %absolute-center;
+
+    z-index: cfg.$z-index-content;
+  }
+
   &__profile-avatar {
     position: relative;
     overflow: hidden;
@@ -196,12 +216,10 @@ $profile-section--avatar-height: 20vh;
   }
 
   &__profile-edit-icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 10%;
-    height: 10%;
-    transform: translate(-50%, -50%);
+    @extend %absolute-center;
+
+    width: 15%;
+    height: 15%;
   }
 
   &__input {
@@ -222,7 +240,7 @@ $profile-section--avatar-height: 20vh;
     position: absolute;
     top: $profile-section--avatar-height;
     left: 0;
-    padding: fn.offset(2) fn.offset();
+    padding: fn.offset(3) fn.offset() fn.offset(2);
     width: 100%;
     height: calc(100vh - #{$profile-section--avatar-height});
 
@@ -245,7 +263,8 @@ $profile-section--avatar-height: 20vh;
   &__form-title.title {
     @include mx.themify('color', 'primary');
 
-    margin-bottom: fn.offset(2);
+    margin-bottom: calc(#{fn.offset(3)} - 2rem);
+    font-weight: 200;
   }
 
   &__form-submit {

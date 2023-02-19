@@ -1,0 +1,45 @@
+@use 'styles/functions' as fn;
+
+.loader {
+  display: none;
+  width: fn.offset(3.6);
+  height: fn.offset(3.6);
+
+  &_visible {
+    display: inline-flex;
+    pointer-events: none;
+    cursor: default;
+  }
+
+  &__item {
+    display: flex;
+    position: absolute;
+    width: fn.offset(3.6);
+    height: fn.offset(3.6);
+    border: #{fn.offset(0.2)} solid transparent;
+    border-radius: 50%;
+    animation: roll 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: #{fn.theme-color('dark', 'primary')} transparent transparent transparent;
+    animation-delay: -0.3s;
+
+    &:first-child {
+      animation-delay: -0.45s;
+    }
+
+    &:last-child {
+      animation-delay: -0.15s;
+    }
+
+    & {
+    }
+  }
+}
+
+@keyframes roll {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
