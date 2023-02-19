@@ -8,6 +8,8 @@ $theme-dark: (
   card: color.adjust(clr.$background, $blackness: 5%, $alpha: -0.9),
   card-box-shadow: color.adjust(clr.$purple-100, $alpha: -0.9),
   card-box-shadow-scale: color.adjust(clr.$purple-100, $alpha: -0.6),
+  overlay-bg: color.adjust(clr.$background, $blackness: 15%, $alpha: -0.2),
+  chat-sidebar-bg: color.adjust(clr.$background, $lightness: 10%),
   link: color.adjust(clr.$purple-100, $blackness: 10%),
   link-hover: color.adjust(clr.$purple-100, $lightness: 5%),
   button-bg: color.adjust(clr.$primary, $blackness: 5%, $alpha: -0.1),

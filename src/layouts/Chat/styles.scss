@@ -2,8 +2,95 @@
 @use 'styles/config' as cfg;
 @use 'styles/functions' as fn;
 
+$profile-section-width: 400px;
+$profile-section--avatar-height: 20vh;
+
 .chat-layout {
   flex: 1 0 100%;
+  position: relative;
+  overflow: hidden;
+
+  &__trigger {
+    &_profile {
+      @include mx.themify('background-color', 'chat-sidebar-bg');
+
+      position: absolute;
+      align-items: center;
+      top: fn.offset();
+      right: fn.offset();
+      padding: fn.offset(0.4) fn.offset(0.6);
+      border-radius: cfg.$radius;
+      font-weight: 600;
+      transition: box-shadow 0.2s ease-in-out;
+      cursor: pointer;
+
+      &:hover {
+        box-shadow: 0 0 0.5rem #{fn.theme-color('dark', 'primary')};
+      }
+
+      .avatar {
+        margin-right: fn.offset(0.5);
+        width: 25px;
+        height: 25px;
+      }
+    }
+
+    &_avatar {
+      @include mx.themify('background-color', 'overlay-bg');
+
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      z-index: cfg.$base-z-index;
+      transition: opacity 0.2s linear;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 1;
+
+        & ~ .chat-layout__profile-avatar-content {
+          filter: blur(8px);
+        }
+
+        & ~ .chat-layout__profile-avatar-content .avatar {
+          border-radius: cfg.$radius;
+          transform: scale(0.95);
+        }
+      }
+    }
+  }
+
+  &__trigger-input {
+    display: none;
+
+    &_profile {
+      &:checked {
+        & ~ .chat-layout__overlay {
+          opacity: 0.5;
+          transform: scale(1);
+        }
+
+        & ~ .chat-layout__profile {
+          transform: translateX(0);
+        }
+
+        & ~ .chat-layout__content {
+          filter: blur(6px);
+        }
+      }
+    }
+
+    &_password {
+      &:checked ~ .chat-layout__profile {
+        .chat-layout__form-container_password {
+          transform: translateX(0);
+        }
+      }
+    }
+  }
 
   &__content {
     display: grid;
@@ -14,6 +101,22 @@
     grid-template-rows: 1fr 60px;
     width: 100%;
     height: 100%;
+    transition: filter 0.2s linear;
+  }
+
+  &__overlay {
+    @include mx.themify('background-color', 'overlay-bg');
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: scale(0);
+    z-index: cfg.$z-index-overlay;
+    transition: opacity 0.2s ease-in-out;
+    cursor: pointer;
   }
 
   &__contacts {
@@ -34,6 +137,73 @@
     grid-area: messages;
   }
 
+  &__profile {
+    @include mx.themify('background-color', 'chat-sidebar-bg');
+
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: $profile-section-width;
+    height: 100vh;
+    transform: translateX($profile-section-width);
+    transition: transform 0.2s ease-in-out;
+    z-index: cfg.$z-index-content;
+  }
+
+  &__profile-avatar {
+    position: relative;
+    overflow: hidden;
+  }
+
+  &__profile-form.form_readonly {
+    .form__control {
+      flex-flow: row nowrap;
+      align-items: center;
+    }
+
+    .form__label {
+      margin-right: fn.offset(0.5);
+      margin-bottom: 0;
+      white-space: nowrap;
+
+      &::after {
+        content: ':';
+      }
+    }
+
+    .input__message {
+      display: none;
+    }
+  }
+
+  &__profile-form:not(.form_readonly) {
+    & ~ .chat-layout__form-submit .chat-layout__trigger_password {
+      display: none;
+    }
+  }
+
+  &__profile-avatar-content {
+    height: $profile-section--avatar-height;
+    transition: filter 0.1s linear;
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.2s ease-in-out;
+      border-radius: unset;
+    }
+  }
+
+  &__profile-edit-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10%;
+    height: 10%;
+    transform: translate(-50%, -50%);
+  }
+
   &__input {
     grid-area: input;
     display: flex;
@@ -41,6 +211,57 @@
   }
 
   &__form {
+    &.form_readonly ~ .chat-layout__form-submit .chat-layout__submit-button {
+      display: none;
+    }
+  }
+
+  &__form-container {
+    @include mx.themify('background-color', 'chat-sidebar-bg');
+
+    position: absolute;
+    top: $profile-section--avatar-height;
+    left: 0;
+    padding: fn.offset(2) fn.offset();
+    width: 100%;
+    height: calc(100vh - #{$profile-section--avatar-height});
+
+    &_password {
+      transform: translateX(100%);
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .form {
+      margin-left: fn.offset(-1);
+      padding: 0 fn.offset();
+      width: calc(100% + #{fn.offset()} * 2);
+    }
+
+    .button {
+      width: 100%;
+    }
+  }
+
+  &__form-title.title {
+    @include mx.themify('color', 'primary');
+
+    margin-bottom: fn.offset(2);
+  }
+
+  &__form-submit {
+    margin-top: auto;
+    padding-top: fn.offset(2);
+
+    .button {
+      font-size: 1.4rem;
+
+      &:not(:first-child) {
+        margin-top: fn.offset();
+      }
+    }
+  }
+
+  &__message-form {
     width: 100%;
 
     .form__label {

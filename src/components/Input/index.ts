@@ -9,6 +9,7 @@ import './styles.scss'
 
 export interface InputProps extends BaseComponentProps {
   status?: ComponentStatusType
+  isCustom?: boolean
   type?: string
   name?: string
   form?: string
@@ -18,6 +19,7 @@ export interface InputProps extends BaseComponentProps {
   readonly?: boolean
   placeholder?: string
   required?: boolean
+  accept?: string
   validation?: ValidationProps
 }
 

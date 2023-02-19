@@ -3,6 +3,7 @@ import EventBus from 'services/EventBus'
 import { UserType } from 'types/user'
 
 export type StateType = {
+  isLoading?: boolean
   user?: UserType | null
 }
 
@@ -19,6 +20,7 @@ class Store extends EventBus<StoreEventType> {
     super()
 
     this.state = {
+      isLoading: false,
       user: null,
     }
   }

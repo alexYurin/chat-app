@@ -1,7 +1,5 @@
 export { default as ChatView } from './Chat'
 export { default as ErrorView } from './Error'
 export { default as NotFoundView } from './NotFound'
-export { default as ProfileView } from './Profile'
-export { default as ProfileEditPasswordView } from './ProfileEditPassword'
 export { default as SignInView } from './SignIn'
 export { default as SignUpView } from './SignUp'

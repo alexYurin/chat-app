@@ -1,8 +1,72 @@
 -
-  const [form, submitButton, backLink] = children
+  const [
+    editAvatarIcon,
+    avatarSettings,
+    avatar,
+    avatarInput,
+    profileForm,
+    passwordForm,
+    messageForm,
+    profileToggleChangeButton,
+    profileSubmitButton,
+    passwordSubmitButton,
+    messageSubmitButton,
+  ] = children
 
 section.chat-layout.flex.h100
+  input(
+    id="chat-profile-trigger"
+    type="checkbox"
+  ).chat-layout__trigger-input.chat-layout__trigger-input_profile
+
+  input(
+    id="chat-password-trigger"
+    type="checkbox"
+  ).chat-layout__trigger-input.chat-layout__trigger-input_password
+
+  label(for="chat-profile-trigger").chat-layout__overlay
+
+  section.chat-layout__profile
+    .chat-layout__profile-avatar
+      label(for="user_avatar").chat-layout__trigger.chat-layout__trigger_avatar.center
+        | !{editAvatarIcon}
+      .chat-layout__profile-avatar-content
+        | !{avatarSettings}
+        | !{avatarInput}
+
+    .chat-layout__form-container.chat-layout__form-container_profile.column
+      h2.chat-layout__form-title.title.title_level_2 Данные Профиля
+
+      | !{profileForm}
+
+      .chat-layout__form-submit.column
+        | !{profileToggleChangeButton}
+
+        label(
+          for="chat-password-trigger"
+        ).chat-layout__trigger.chat-layout__trigger_password.button Изменить Пароль
+
+        | !{profileSubmitButton}
+
+    .chat-layout__form-container.chat-layout__form-container_password.column
+      h2.chat-layout__form-title.title.title_level_2 Смена Пароля
+
+      | !{passwordForm}
+
+      .chat-layout__form-submit.column
+        label(
+          for="chat-password-trigger"
+        ).chat-layout__trigger.chat-layout__trigger_password.button Отменить
+
+        | !{passwordSubmitButton}
+
   .chat-layout__content
+    label(
+      for="chat-profile-trigger"
+    ).chat-layout__trigger.chat-layout__trigger_profile.row.row_nowrap
+      | !{avatar}
+      | Профиль
+
     aside.chat-layout__contacts.column.center
       | Нет контактов
 
@@ -10,7 +74,7 @@ section.chat-layout.flex.h100
       p Нет сообщений
 
     .chat-layout__input
-      | !{form}
+      | !{messageForm}
 
       .chat-layout__submit
-        | !{submitButton}
+        | !{messageSubmitButton}
