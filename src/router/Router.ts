@@ -17,10 +17,10 @@ class Router {
   private onRoute() {
     this.currentPathname = window.location.pathname
 
-    this.dispatchRoute()
+    this.setRoute()
   }
 
-  private dispatchRoute() {
+  private setRoute() {
     const route = this.getRoute(this.currentPathname)
 
     if (!route) {
@@ -35,7 +35,7 @@ class Router {
     this.currentRoute.navigate(this.currentPathname)
   }
 
-  private getRoute(pathname: string) {
+  public getRoute(pathname: string) {
     return this.routes.find((route) => route.isMatch(pathname))
   }
 
@@ -50,7 +50,7 @@ class Router {
       return this.history.pushTo(routes.notFound.pathname)
     }
 
-    this.dispatchRoute()
+    this.setRoute()
   }
 
   public use(View: ViewType) {
@@ -59,6 +59,14 @@ class Router {
     this.routes = [...this.routes, route]
 
     return this
+  }
+
+  public forward() {
+    this.history.forward()
+  }
+
+  public back() {
+    this.history.back()
   }
 }
 

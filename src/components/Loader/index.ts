@@ -5,12 +5,13 @@ import './styles.scss'
 
 export interface LoaderProps extends BaseComponentProps {
   isVisible?: boolean
+  withOverlay?: boolean
 }
 
 export default class Loader extends BaseComponent<LoaderProps> {
   protected template = templateString
 
   constructor(props: LoaderProps = {}) {
-    super('image', props)
+    super('loader', props)
   }
 }

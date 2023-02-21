@@ -164,12 +164,6 @@ $profile-section--avatar-height: 20vh;
     transform: scale(1);
   }
 
-  &__profile-loader {
-    @extend %absolute-center;
-
-    z-index: cfg.$z-index-content;
-  }
-
   &__profile-avatar {
     position: relative;
     overflow: hidden;

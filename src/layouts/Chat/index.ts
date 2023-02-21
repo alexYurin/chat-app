@@ -14,6 +14,32 @@ const formPasswordId = 'chat-password-form'
 
 class ChatLayout extends BaseLayout<ChatPropsType> {
   protected template = layout
+  protected disableRenderPropsList = ['isLoadingProfile']
+
+  protected onUpdateProps(
+    propKey: keyof ChatPropsType,
+    prevValue: unknown,
+    newValue: unknown
+  ): boolean {
+    if (this.disableRenderPropsList.includes(propKey)) {
+      switch (propKey) {
+        case 'isLoadingProfile': {
+          const isVisible = newValue
+          const loader = document.querySelector('.chat-layout__profile-loader')
+          const action = isVisible ? 'add' : 'remove'
+
+          loader?.classList[action]('loader_visible')
+
+          break
+        }
+
+        default:
+          break
+      }
+    }
+
+    return false
+  }
 
   init() {
     const {
@@ -22,6 +48,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       profileFields,
       passwordFields,
       messageFields,
+      isLoadingProfile,
     } = this.props
 
     const triggerProfileFormEdit = (event: Event) => {
@@ -77,10 +104,23 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       Form.onSubmit(event, this.props.children)
     }
 
+    setTimeout(() => {
+      this.setProps({
+        isLoadingProfile: true,
+      } as ChatPropsType)
+
+      setTimeout(() => {
+        this.setProps({
+          isLoadingProfile: false,
+        } as ChatPropsType)
+      }, 2000)
+    }, 4000)
+
     this.props.children = [
       new Loader({
         className: 'chat-layout__profile-loader',
-        isVisible: true,
+        isVisible: isLoadingProfile,
+        withOverlay: true,
       }),
       new Image({
         src: editAvatarIconSrc,

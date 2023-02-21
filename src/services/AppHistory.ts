@@ -22,4 +22,12 @@ export default class AppHistory {
 
     window.dispatchEvent(new Event('popstate'))
   }
+
+  public forward() {
+    this.appHistory.forward()
+  }
+
+  public back() {
+    this.appHistory.back()
+  }
 }
