@@ -38,7 +38,9 @@ class Router {
   }
 
   public navigate(pathname: string) {
-    this.history.pushTo(pathname)
+    const nextParh = this.controller.navigator(pathname)
+
+    this.history.pushTo(nextParh)
   }
 
   public async run() {

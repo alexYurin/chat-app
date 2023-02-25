@@ -20,7 +20,7 @@ class PlaceholderLayout extends BaseLayout<PlaceholderPropsType> {
       store.set('error', null)
     }
 
-    Router.back()
+    Router.navigate(routes.signIn.pathname)
   }
 
   init() {
