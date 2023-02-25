@@ -11,7 +11,7 @@ export default class Route {
     return this
   }
 
-  public navigate(pathname: string) {
+  public runRender(pathname: string) {
     if (this.isMatch(pathname)) {
       this.render()
     }

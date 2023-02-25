@@ -5,6 +5,10 @@ import { UserType } from 'types/user'
 export type StateType = {
   isLoading?: boolean
   user?: UserType | null
+  error?: {
+    status: number
+    message: string
+  } | null
 }
 
 export const STORE_EVENT = {
@@ -22,6 +26,7 @@ class Store extends EventBus<StoreEventType> {
     this.state = {
       isLoading: false,
       user: null,
+      error: null,
     }
   }
 
@@ -54,7 +59,7 @@ export function connect(mapStateToProps: (state: StateType) => StateType) {
         store.on(STORE_EVENT.UPDATE, () => {
           const newState = mapStateToProps(store.getState())
 
-          if (state === newState) {
+          if (state !== newState) {
             this.setProps({ ...newState } as TPropsType)
           }
 

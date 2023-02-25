@@ -6,6 +6,7 @@ import { AvatarProps } from 'components/Avatar'
 
 export type ChatProfileLoaderType = Loader
 export type ChatProfileEditAvatarIconType = Image
+export type ChatProfileLogoutType = Button
 export type ChatProfileAvatarSettingsType = Avatar
 export type ChatProfileAvatarType = Avatar
 export type ChatProfileInputAvatarType = Input
@@ -20,6 +21,7 @@ export type ChatSubmitMessageButtonType = Button
 export type ChatChildrenPropsType = [
   ChatProfileLoaderType,
   ChatProfileEditAvatarIconType,
+  ChatProfileLogoutType,
   ChatProfileAvatarSettingsType,
   ChatProfileAvatarType,
   ChatProfileInputAvatarType,

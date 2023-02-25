@@ -333,36 +333,47 @@ export default abstract class BaseComponent<
     children: BaseComponentProps['children']
   ) {
     if (target instanceof HTMLElement) {
-      const internalInputId = target
+      const internalId = target
         ?.closest(`[${componentAttributeNameId}]`)
         ?.getAttribute(componentAttributeNameId)
 
-      if (internalInputId) {
-        return BaseComponent.findChild(internalInputId as string, children)
+      if (internalId) {
+        return BaseComponent.findChild(internalId as string, children)
       }
     }
 
     return undefined
   }
 
-  static findChild(
-    internalId: string,
+  static findChild<TComponentType extends BaseComponent<BaseComponentProps>>(
+    targetOrInternalId: HTMLElement | string,
     children: BaseComponentProps['children']
-  ): BaseComponent<BaseComponentProps> | undefined {
+  ): TComponentType | undefined {
     return children?.reduce((findedChild, child) => {
       if (child instanceof BaseComponent) {
+        const internalId = (
+          targetOrInternalId instanceof HTMLElement
+            ? targetOrInternalId.getAttribute(componentAttributeNameId)
+            : targetOrInternalId
+        ) as string
+
         if (child.internalId === internalId) {
-          findedChild = child
+          findedChild = child as TComponentType
         } else if (!findedChild) {
-          findedChild = BaseComponent.findChild(internalId, child.getChildren())
+          findedChild = BaseComponent.findChild(
+            internalId,
+            child.getChildren()
+          ) as TComponentType
         }
       }
 
       return findedChild
-    }, undefined as undefined | BaseComponent<BaseComponentProps>)
+    }, undefined as undefined | TComponentType)
   }
 
-  public setProps(newProps: TPropsType) {
+  public setProps<TComponentPropsType extends TPropsType>(
+    newProps: Partial<TComponentPropsType>
+  ) {
     Object.entries(newProps).forEach(([propKey, newValue]) => {
       this.props[propKey as keyof TPropsType] = newValue
     })

@@ -2,6 +2,7 @@ import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
 import { Form, Input, Button, Avatar, Image, Loader } from 'components/index'
 import { InputProps } from 'components/Input'
+import { LoaderProps } from 'components/Loader'
 import { connect } from 'services/Store'
 import { ChatPropsType } from './types'
 
@@ -24,11 +25,19 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     if (this.disableRenderPropsList.includes(propKey)) {
       switch (propKey) {
         case 'isLoadingProfile': {
-          const isVisible = newValue
-          const loader = document.querySelector('.chat-layout__profile-loader')
-          const action = isVisible ? 'add' : 'remove'
+          const isVisible = newValue as boolean
+          const loader = document.querySelector(
+            '.chat-layout__profile-loader'
+          ) as HTMLElement
 
-          loader?.classList[action]('loader_visible')
+          const loaderComponent = BaseLayout.findChild<Loader>(
+            loader,
+            this.props.children
+          )
+
+          loaderComponent?.setProps<LoaderProps>({
+            isVisible,
+          })
 
           break
         }
@@ -71,17 +80,13 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
 
     const createInputListeners = (inputProps: InputProps) => [
       {
-        eventType: 'focus',
-        callback: (event: Event) => validate(event, inputProps),
-      },
-      {
         eventType: 'blur',
         callback: (event: Event) => validate(event, inputProps),
       },
     ]
 
     const onProfileSubmit = (event: Event) => {
-      const isValidForm = Form.onSubmit(event, this.props.children)
+      const isValidForm = Form.preSubmitValidate(event, this.props.children)
 
       if (isValidForm) {
         const isRedirect = confirm(
@@ -91,7 +96,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
 
     const onPasswordSubmit = (event: Event) => {
-      const isValidForm = Form.onSubmit(event, this.props.children)
+      const isValidForm = Form.preSubmitValidate(event, this.props.children)
 
       if (isValidForm) {
         const isRedirect = confirm(
@@ -101,20 +106,8 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
 
     const onMessageSubmit = (event: Event) => {
-      Form.onSubmit(event, this.props.children)
+      Form.preSubmitValidate(event, this.props.children)
     }
-
-    setTimeout(() => {
-      this.setProps({
-        isLoadingProfile: true,
-      } as ChatPropsType)
-
-      setTimeout(() => {
-        this.setProps({
-          isLoadingProfile: false,
-        } as ChatPropsType)
-      }, 2000)
-    }, 4000)
 
     this.props.children = [
       new Loader({
@@ -126,6 +119,12 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         src: editAvatarIconSrc,
         alt: 'edit-avatar-icon',
         className: 'chat-layout__profile-edit-icon',
+      }),
+      new Button({
+        status: 'primary',
+        type: 'button',
+        className: 'chat-layout__profile-logout-button',
+        children: ['Выйти'],
       }),
       new Avatar(avatar),
       new Avatar(avatar),

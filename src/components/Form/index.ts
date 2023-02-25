@@ -60,11 +60,18 @@ export default class Form extends BaseComponent<FormProps> {
     }
   }
 
-  static onSubmit(event: Event, children: BaseComponentProps['children']) {
+  static preSubmitValidate<TFormValues = Record<string, string>>(
+    event: Event,
+    children: BaseComponentProps['children']
+  ) {
     event.preventDefault()
 
     const validation = new Validation()
     const form = event.target as HTMLFormElement
+
+    const fields = {
+      values: {},
+    }
 
     const invalidFields = Array.from(form.elements).reduce(
       (invalidFields, element) => {
@@ -73,6 +80,11 @@ export default class Form extends BaseComponent<FormProps> {
             element as EventTarget,
             children
           )
+
+          fields.values = {
+            ...fields.values,
+            [`${element.name}`]: element.value,
+          }
 
           const inputProps = InputInstance?.getProps() as InputProps
 
@@ -119,14 +131,9 @@ export default class Form extends BaseComponent<FormProps> {
 
     const isValidForm = invalidFields.length === 0
 
-    console.log('***** Form State *****')
-
-    if (isValidForm) {
-      console.log('%c Form sended', 'color: #50fa7b')
-    } else {
-      console.log('%c Form not sended', 'color: #ff5555')
+    return {
+      isValidForm,
+      values: fields.values as TFormValues,
     }
-
-    return isValidForm
   }
 }

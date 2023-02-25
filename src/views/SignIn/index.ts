@@ -22,7 +22,7 @@ export default class SignInView {
         {
           label: 'Пароль',
           input: {
-            name: 'pasword',
+            name: 'password',
             type: 'password',
             validation: Validation.rules.password,
           },

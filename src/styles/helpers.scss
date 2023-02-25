@@ -35,7 +35,7 @@
 .card {
   @include mx.themify('background-color', 'card');
 
-  padding: fn.offset(2) fn.offset(2) fn.offset(1.5);
+  padding: fn.offset(1.2) fn.offset(1.8) fn.offset(2);
   border-radius: cfg.$radius;
   box-shadow: 0 0 8.5rem #{fn.theme-color('dark', 'card-box-shadow')};
   transition: box-shadow 0.2s linear;

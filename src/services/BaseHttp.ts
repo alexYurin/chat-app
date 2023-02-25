@@ -6,14 +6,12 @@ const METHODS = {
   DELETE: 'DELETE',
 } as const
 
-type RequestOptionsType =
-  | {
-      method: keyof typeof METHODS
-      headers?: Record<string, string>
-      data?: Record<string, unknown>
-      timeout?: number
-    }
-  | Record<string, never>
+type RequestOptionsType<TData = Record<string, string | number> | FormData> = {
+  method?: keyof typeof METHODS
+  headers?: Record<string, string>
+  data?: TData
+  timeout?: number
+}
 
 function queryStringify(data: RequestOptionsType['data']) {
   if (data) {
@@ -25,35 +23,39 @@ function queryStringify(data: RequestOptionsType['data']) {
   return ''
 }
 
-export default class HTTPRequest {
-  get(url: string, options: RequestOptionsType = {}) {
+export default class BaseHTTP {
+  constructor(private baseURL?: string) {
+    return this
+  }
+
+  get<TResponse>(url: string, options: RequestOptionsType = {}) {
     url = options.data ? `${url}?${queryStringify(options.data)}` : url
 
-    return this.request(
+    return this.request<TResponse>(
       url,
       { ...options, method: METHODS.GET },
       options.timeout
     )
   }
 
-  post(url: string, options: RequestOptionsType = {}) {
-    return this.request(
+  post<TResponse>(url: string, options: RequestOptionsType = {}) {
+    return this.request<TResponse>(
       url,
       { ...options, method: METHODS.POST },
       options.timeout
     )
   }
 
-  put(url: string, options: RequestOptionsType = {}) {
-    return this.request(
+  put<TResponse>(url: string, options: RequestOptionsType = {}) {
+    return this.request<TResponse>(
       url,
       { ...options, method: METHODS.PUT },
       options.timeout
     )
   }
 
-  delete(url: string, options: RequestOptionsType = {}) {
-    return this.request(
+  delete<TResponse>(url: string, options: RequestOptionsType = {}) {
+    return this.request<TResponse>(
       url,
       { ...options, method: METHODS.DELETE },
       options.timeout
@@ -80,7 +82,9 @@ export default class HTTPRequest {
         return xhr
       }
 
-      xhr.open(method, url)
+      xhr.open(method || 'GET', `${this.baseURL || ''}/${url}`)
+
+      xhr.withCredentials = true
 
       xhr.timeout = timeout
 
@@ -93,11 +97,10 @@ export default class HTTPRequest {
       xhr.ontimeout = reject || handleError
 
       xhr.onload = function () {
-        if (xhr.status != 200) {
-          return reject(xhr)
-        } else {
-          return resolve(xhr.response)
-        }
+        const isSuccess = xhr.status === 200 || xhr.status === 201
+        const response = JSON.parse(xhr.response)
+
+        return isSuccess ? resolve(response) : reject(xhr)
       }
 
       if (method === METHODS.GET || !data) {

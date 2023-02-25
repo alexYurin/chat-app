@@ -2,6 +2,7 @@
   const [
     profileLoader,
     editAvatarIcon,
+    logoutButton,
     avatarSettings,
     avatar,
     avatarInput,
@@ -38,7 +39,9 @@ section.chat-layout.flex.h100
         | !{avatarInput}
 
     .chat-layout__form-container.chat-layout__form-container_profile.column
-      h2.chat-layout__form-title.title.title_level_1 Данные Профиля
+      h2.chat-layout__form-title.title.title_level_1.row.row_nowrap
+        | Данные Профиля
+        | !{logoutButton}
 
       | !{profileForm}
 

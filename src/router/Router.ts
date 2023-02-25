@@ -1,21 +1,19 @@
 import { AppHistory } from 'services/index'
-import routes, { RoutesTypes } from 'router/routes'
+import routes from 'router/routes'
 import Route, { ViewType } from './Route'
+import RouterController from './controller'
 
-type RoutePathType = RoutesTypes[keyof RoutesTypes]['pathname']
-
-const routesCollection = Object.values(routes).map((route) => route.pathname)
-const isDefinedPath = (pathname: string) =>
-  routesCollection.includes(pathname as RoutePathType)
+const INIT_APP_DELAY = 400
 
 class Router {
   private currentPathname = window.location.pathname
   private currentRoute: Route | null = null
   private routes: Route[] = []
   private history = new AppHistory()
+  private controller = new RouterController(routes)
 
   private onRoute() {
-    this.currentPathname = window.location.pathname
+    this.currentPathname = this.controller.navigator(window.location.pathname)
 
     this.setRoute()
   }
@@ -32,7 +30,7 @@ class Router {
     }
 
     this.currentRoute = route
-    this.currentRoute.navigate(this.currentPathname)
+    this.currentRoute.runRender(this.currentPathname)
   }
 
   public getRoute(pathname: string) {
@@ -43,14 +41,15 @@ class Router {
     this.history.pushTo(pathname)
   }
 
-  public run() {
+  public async run() {
+    await this.controller.checkUser()
+
     this.history.addListeners([this.onRoute.bind(this)])
 
-    if (!isDefinedPath(this.currentPathname)) {
-      return this.history.pushTo(routes.notFound.pathname)
-    }
-
-    this.setRoute()
+    setTimeout(() => {
+      this.onRoute()
+      this.navigate(this.currentPathname)
+    }, INIT_APP_DELAY)
   }
 
   public use(View: ViewType) {

@@ -1,8 +1,10 @@
 -
-  const [title, form, submitButton, authLink] = children
+  const [loader, title, form, submitButton, authLink] = children
 
 section.auth-layout.column.center.h100
   .auth-layout__content.card.column.center
+    | !{loader}
+
     | !{title}
 
     | !{form}

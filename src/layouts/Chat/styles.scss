@@ -254,9 +254,19 @@ $profile-section--avatar-height: 20vh;
     }
   }
 
+  &__profile-logout-button.button {
+    margin-left: auto;
+    padding: 0 fn.offset();
+    min-width: unset;
+    width: auto;
+    height: 32px;
+    border-radius: calc(#{cfg.$radius} * 1.5);
+  }
+
   &__form-title.title {
     @include mx.themify('color', 'primary');
 
+    align-items: center;
     margin-bottom: calc(#{fn.offset(3)} - 2rem);
     font-weight: 200;
   }
