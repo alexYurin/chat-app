@@ -35,7 +35,7 @@ export default class RouterController {
     }
   }
 
-  public navigator(pathname: string) {
+  public getCurrentPathname(pathname: string) {
     const { user, error } = store.getState()
     const isDefinedPath = this.isDefinedPath(pathname)
     const isFakeErrorParh = pathname === this.routes.error.pathname && !error

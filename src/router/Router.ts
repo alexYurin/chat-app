@@ -13,7 +13,9 @@ class Router {
   private controller = new RouterController(routes)
 
   private onRoute() {
-    this.currentPathname = this.controller.navigator(window.location.pathname)
+    this.currentPathname = this.controller.getCurrentPathname(
+      window.location.pathname
+    )
 
     this.setRoute()
   }
@@ -38,9 +40,9 @@ class Router {
   }
 
   public navigate(pathname: string) {
-    const nextParh = this.controller.navigator(pathname)
+    const currentPathname = this.controller.getCurrentPathname(pathname)
 
-    this.history.pushTo(nextParh)
+    this.history.pushTo(currentPathname)
   }
 
   public async run() {
