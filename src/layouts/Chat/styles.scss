@@ -28,11 +28,12 @@ $profile-section--avatar-height: 30vh;
       padding: fn.offset(0.3) fn.offset(0.5) fn.offset(0.3) fn.offset(0.3);
       border-radius: cfg.$radius * 1.2;
       font-weight: 600;
-      transition: box-shadow 0.2s ease-in-out;
+      transition: box-shadow 0.2s ease-in-out, transform 0.2s linear;
       cursor: pointer;
 
       &:hover {
-        box-shadow: 0 0 0.5rem #{fn.theme-color('dark', 'primary')};
+        box-shadow: 0 0 2.5rem #{fn.theme-color('dark', 'primary')};
+        transform: scale(1.05);
       }
 
       .avatar {
@@ -73,6 +74,10 @@ $profile-section--avatar-height: 30vh;
     display: none;
 
     &_profile {
+      &:checked ~ .chat-layout__profile {
+        box-shadow: 0 0 5.4rem #{fn.theme-color('dark', 'primary')};
+      }
+
       &:checked {
         & ~ .chat-layout__overlay {
           opacity: 0.5;
@@ -91,6 +96,8 @@ $profile-section--avatar-height: 30vh;
 
     &_password {
       &:checked ~ .chat-layout__profile {
+        box-shadow: 0 0 3.2rem #{fn.theme-color('dark', 'primary')};
+
         .chat-layout__form-container_password {
           transform: translateX(0);
         }
@@ -152,7 +159,7 @@ $profile-section--avatar-height: 30vh;
     width: $profile-section-width;
     height: 100vh;
     transform: translateX($profile-section-width);
-    transition: transform 0.2s ease-in-out;
+    transition: transform 0.2s ease-in-out, box-shadow 0.3s 0.09s ease-in-out;
     z-index: cfg.$z-index-content;
   }
 
