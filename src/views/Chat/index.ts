@@ -29,7 +29,7 @@ export default class ChatView {
           input: {
             name: 'email',
             type: 'email',
-            value: 'pochta@yandex.ru',
+            placeholder: 'Нет данных',
             validation: Validation.rules.email,
           },
         },
@@ -38,7 +38,7 @@ export default class ChatView {
           input: {
             name: 'login',
             type: 'text',
-            value: 'ivanivanov',
+            placeholder: 'Нет данных',
             validation: Validation.rules.login,
           },
         },
@@ -47,7 +47,7 @@ export default class ChatView {
           input: {
             name: 'first_name',
             type: 'text',
-            value: 'Иван',
+            placeholder: 'Нет данных',
             validation: Validation.rules.first_name,
           },
         },
@@ -56,7 +56,7 @@ export default class ChatView {
           input: {
             name: 'second_name',
             type: 'text',
-            value: 'Иван',
+            placeholder: 'Нет данных',
             validation: Validation.rules.second_name,
           },
         },
@@ -65,7 +65,7 @@ export default class ChatView {
           input: {
             name: 'display_name',
             type: 'text',
-            value: 'Иванов',
+            placeholder: 'Нет данных',
             validation: Validation.rules.display_name,
           },
         },
@@ -74,7 +74,7 @@ export default class ChatView {
           input: {
             name: 'phone',
             type: 'text',
-            value: '+79099673030',
+            placeholder: 'Нет данных',
             validation: Validation.rules.phone,
           },
         },

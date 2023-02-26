@@ -13,7 +13,7 @@ type RequestOptionsType<TData = Record<string, string | number> | FormData> = {
   timeout?: number
 }
 
-function queryStringify(data: RequestOptionsType['data']) {
+const queryStringify = (data: RequestOptionsType['data']) => {
   if (data) {
     return Object.entries(data)
       .map(([key, value]) => `${key}=${encodeURIComponent(value as string)}`)
@@ -21,6 +21,10 @@ function queryStringify(data: RequestOptionsType['data']) {
   }
 
   return ''
+}
+
+const isFormData = (data: unknown): data is FormData => {
+  return data instanceof FormData
 }
 
 export default class BaseHTTP {
@@ -113,7 +117,7 @@ export default class BaseHTTP {
       if (method === METHODS.GET || !data) {
         xhr.send()
       } else {
-        xhr.send(JSON.stringify(data))
+        xhr.send(isFormData(data) ? data : JSON.stringify(data))
       }
 
       return xhr

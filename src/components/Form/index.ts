@@ -101,10 +101,7 @@ export default class Form extends BaseComponent<FormProps> {
           if (check.isValid && element.value) {
             console.log(`%c Field "${element.name}" is valid`, 'color: #50fa7b')
           } else {
-            console.log(
-              `%c Not valid field "${element.name}"`,
-              'color: #ff5555'
-            )
+            console.log(`%c Invalid field "${element.name}"`, 'color: #ff5555')
 
             invalidFields = [...invalidFields, element]
           }

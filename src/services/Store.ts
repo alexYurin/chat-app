@@ -1,6 +1,7 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base'
 import EventBus from 'services/EventBus'
 import { UserType } from 'types/user'
+import { isEquals } from 'utils/index'
 
 export type StateType = {
   isLoading?: boolean
@@ -59,7 +60,7 @@ export function connect(mapStateToProps: (state: StateType) => StateType) {
         store.on(STORE_EVENT.UPDATE, () => {
           const newState = mapStateToProps(store.getState())
 
-          if (state !== newState) {
+          if (!isEquals(state, newState)) {
             this.setProps({ ...newState } as TPropsType)
           }
 

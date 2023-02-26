@@ -3,6 +3,7 @@ import EventBus, { EventCallback } from 'services/EventBus'
 import { StateType } from 'services/Store'
 import { identity } from 'utils/index'
 import { v4 as makeUUID } from 'uuid'
+import { isEquals } from 'utils/index'
 
 export const COMPONENT_LIFE_CYCLE_EVENT = {
   COMPILE: '@event-component:COMPILE',
@@ -318,7 +319,7 @@ export default abstract class BaseComponent<
     newProp: unknown
   ) {
     if (propKey) {
-      return prevProp !== newProp
+      return !isEquals(prevProp, newProp)
     }
 
     return false
@@ -402,7 +403,8 @@ export default abstract class BaseComponent<
   public getEventTarget<T extends Element>() {
     return (
       this.targetQueryForBrowserEvents
-        ? this.DOMElement?.querySelector(this.targetQueryForBrowserEvents)
+        ? this.DOMElement?.querySelector(this.targetQueryForBrowserEvents) ||
+          this.DOMElement
         : this.DOMElement
     ) as T
   }

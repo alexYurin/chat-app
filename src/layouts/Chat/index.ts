@@ -1,6 +1,7 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
 import ChatController from './controller'
+import { first } from 'utils/index'
 import {
   Form,
   Input,
@@ -14,6 +15,7 @@ import { InputProps } from 'components/Input'
 import { LoaderProps } from 'components/Loader'
 import { connect } from 'services/Store'
 import { ChatPropsType } from './types'
+import { isEquals } from 'utils/index'
 
 import editAvatarIconSrc from 'data-url:static/images/edit.svg'
 import './styles.scss'
@@ -21,6 +23,8 @@ import './styles.scss'
 const formMessageId = 'chat-message-form'
 const formProfileId = 'chat-profile-form'
 const formPasswordId = 'chat-password-form'
+
+const RESOURCES_URL = process.env.RESOURCES_URL as string
 
 class ChatLayout extends BaseLayout<ChatPropsType> {
   protected template = layout
@@ -34,6 +38,15 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   ): boolean {
     if (this.disableRenderPropsList.includes(propKey)) {
       switch (propKey) {
+        case 'user': {
+          if (isEquals(prevValue, newValue)) {
+            return false
+          }
+
+          this.init()
+
+          return true
+        }
         case 'isLoading': {
           if (this.props.isLoadingProfile) {
             break
@@ -71,8 +84,11 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     return false
   }
 
-  protected withLoadingProfile<THandlerReturn>(
-    handler: (...args: unknown[]) => Promise<THandlerReturn>,
+  protected withLoadingProfile<
+    THandlerArgs = unknown[],
+    THandlerReturn = unknown
+  >(
+    handler: (...args: THandlerArgs[]) => Promise<THandlerReturn>,
     ...args: unknown[]
   ) {
     return async () => {
@@ -92,6 +108,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
 
   init() {
     const {
+      user,
       avatar,
       avatarInput,
       profileFields,
@@ -99,6 +116,11 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       messageFields,
       isLoadingProfile,
     } = this.props
+
+    const avatarProps = {
+      ...avatar,
+      src: user?.avatar ? `${RESOURCES_URL}${user?.avatar}` : avatar.src,
+    }
 
     const triggerProfileFormEdit = (event: Event) => {
       const triggerButton = event.target as HTMLButtonElement
@@ -149,6 +171,20 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       Form.preSubmitValidate(event, this.props.children)
     }
 
+    const onChangeAvatar = async (event: Event) => {
+      const inputFile = event.target
+
+      if (inputFile instanceof HTMLInputElement && inputFile.files) {
+        const file = first(Array.from(inputFile.files)) as File
+        const changeAvatar = this.withLoadingProfile(
+          this.controller.changeAvatar,
+          file
+        )
+
+        await changeAvatar()
+      }
+    }
+
     const onLogout = async () => {
       const logout = this.withLoadingProfile(this.controller.logout)
 
@@ -178,15 +214,26 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
           },
         ],
       }),
-      new Avatar(avatar),
-      new Avatar(avatar),
-      new Input(avatarInput),
+      new Avatar(avatarProps),
+      new Avatar(avatarProps),
+      new Input({
+        ...avatarInput,
+        listeners: [
+          {
+            eventType: 'change',
+            callback: onChangeAvatar,
+          },
+        ],
+      }),
       new Form({
         id: formProfileId,
         readonly: true,
         className: 'chat-layout__profile-form chat-layout__form scroll',
         fields: profileFields.map(({ label, input }) => {
           input.listeners = createInputListeners(input)
+          input.value = user
+            ? (user[input.name as keyof typeof user] as string)
+            : undefined
 
           return {
             label,

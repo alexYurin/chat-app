@@ -4,10 +4,10 @@ import { FormValuesType } from './index'
 import { Router, routes } from 'router/index'
 import { store } from 'services/index'
 
-const signInApi = new AuthSignInApi()
-const signUpApi = new AuthSignUpApi()
+const authSignInApi = new AuthSignInApi()
+const authSignUpApi = new AuthSignUpApi()
 const authUserApi = new AuthUserApi()
-const logoutApi = new AuthLogoutApi()
+const authLogoutApi = new AuthLogoutApi()
 
 const isSignInValues = (
   values: FormValuesType
@@ -21,8 +21,8 @@ class AuthController {
 
     try {
       const response = await (isSignInValues(values)
-        ? signInApi.mutate(values)
-        : signUpApi.mutate(values))
+        ? authSignInApi.mutate(values)
+        : authSignUpApi.mutate(values))
 
       await this.checkUser()
 
@@ -67,7 +67,7 @@ class AuthController {
     store.set('isLoading', true)
 
     try {
-      const response = await logoutApi.mutate()
+      const response = await authLogoutApi.mutate()
 
       store.set('user', null)
 

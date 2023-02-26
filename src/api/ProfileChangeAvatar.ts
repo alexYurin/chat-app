@@ -7,7 +7,7 @@ export type ProfileChangeAvatarResponseType = UserType
 
 export default class ProfileChangeAvatarApi extends BaseApi {
   mutate(payload: ProfileChangeAvatarRequestParamsType) {
-    return this.put<ProfileChangeAvatarResponseType>('user/provile/avatar', {
+    return this.put<ProfileChangeAvatarResponseType>('user/profile/avatar', {
       data: payload,
     })
   }
