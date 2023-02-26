@@ -1,6 +1,15 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
-import { Form, Input, Button, Avatar, Image, Loader } from 'components/index'
+import ChatController from './controller'
+import {
+  Form,
+  Input,
+  Button,
+  Avatar,
+  Image,
+  Loader,
+  BaseComponent,
+} from 'components/index'
 import { InputProps } from 'components/Input'
 import { LoaderProps } from 'components/Loader'
 import { connect } from 'services/Store'
@@ -15,7 +24,8 @@ const formPasswordId = 'chat-password-form'
 
 class ChatLayout extends BaseLayout<ChatPropsType> {
   protected template = layout
-  protected disableRenderPropsList = ['isLoadingProfile']
+  protected disableRenderPropsList = ['user', 'isLoading', 'isLoadingProfile']
+  private controller = new ChatController()
 
   protected onUpdateProps(
     propKey: keyof ChatPropsType,
@@ -24,6 +34,13 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   ): boolean {
     if (this.disableRenderPropsList.includes(propKey)) {
       switch (propKey) {
+        case 'isLoading': {
+          if (this.props.isLoadingProfile) {
+            break
+          }
+
+          break
+        }
         case 'isLoadingProfile': {
           const isVisible = newValue as boolean
           const loader = document.querySelector(
@@ -43,11 +60,34 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         }
 
         default:
+          console.log(
+            `Unhandled prop "${propKey}" in skip re-render with values: ${prevValue}, ${newValue}`
+          )
+
           break
       }
     }
 
     return false
+  }
+
+  protected withLoadingProfile<THandlerReturn>(
+    handler: (...args: unknown[]) => Promise<THandlerReturn>,
+    ...args: unknown[]
+  ) {
+    return async () => {
+      this.setProps({
+        isLoadingProfile: true,
+      })
+
+      const response = await handler(...args)
+
+      this.setProps({
+        isLoadingProfile: false,
+      })
+
+      return response
+    }
   }
 
   init() {
@@ -109,6 +149,12 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       Form.preSubmitValidate(event, this.props.children)
     }
 
+    const onLogout = async () => {
+      const logout = this.withLoadingProfile(this.controller.logout)
+
+      await logout()
+    }
+
     this.props.children = [
       new Loader({
         className: 'chat-layout__profile-loader',
@@ -125,6 +171,12 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         type: 'button',
         className: 'chat-layout__profile-logout-button',
         children: ['Выйти'],
+        listeners: [
+          {
+            eventType: 'click',
+            callback: onLogout,
+          },
+        ],
       }),
       new Avatar(avatar),
       new Avatar(avatar),
@@ -219,6 +271,9 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   }
 }
 
-const withUser = connect((state) => ({ user: state.user }))
+const withState = connect((state) => ({
+  user: state.user,
+  isLoading: state.isLoading,
+}))
 
-export default withUser<ChatPropsType>(ChatLayout)
+export default withState<ChatPropsType>(ChatLayout as typeof BaseComponent)

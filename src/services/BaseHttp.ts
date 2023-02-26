@@ -98,9 +98,16 @@ export default class BaseHTTP {
 
       xhr.onload = function () {
         const isSuccess = xhr.status === 200 || xhr.status === 201
-        const response = JSON.parse(xhr.response)
 
-        return isSuccess ? resolve(response) : reject(xhr)
+        if (isSuccess) {
+          try {
+            return resolve(JSON.parse(xhr.response))
+          } catch {
+            return resolve(xhr.response)
+          }
+        }
+
+        return reject(xhr)
       }
 
       if (method === METHODS.GET || !data) {

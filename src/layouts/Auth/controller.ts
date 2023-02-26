@@ -1,4 +1,4 @@
-import { AuthSignInApi, AuthSignUpApi } from './api'
+import { AuthSignInApi, AuthSignUpApi, AuthUserApi, AuthLogoutApi } from './api'
 import { AuthSignInRequestParamsType } from './api/SignIn'
 import { FormValuesType } from './index'
 import { Router, routes } from 'router/index'
@@ -6,6 +6,8 @@ import { store } from 'services/index'
 
 const signInApi = new AuthSignInApi()
 const signUpApi = new AuthSignUpApi()
+const authUserApi = new AuthUserApi()
+const logoutApi = new AuthLogoutApi()
 
 const isSignInValues = (
   values: FormValuesType
@@ -21,6 +23,8 @@ class AuthController {
       const response = await (isSignInValues(values)
         ? signInApi.mutate(values)
         : signUpApi.mutate(values))
+
+      await this.checkUser()
 
       Router.navigate(routes.chat.pathname)
 
@@ -38,6 +42,43 @@ class AuthController {
       Router.navigate(routes.error.pathname)
 
       return error
+    } finally {
+      store.set('isLoading', false)
+    }
+  }
+
+  public async checkUser() {
+    try {
+      const response = await authUserApi.fetch()
+
+      store.set('user', response)
+
+      return response
+    } catch (error) {
+      if (error instanceof XMLHttpRequest) {
+        const response = JSON.parse(error.response)
+
+        return response
+      }
+    }
+  }
+
+  public async logout() {
+    store.set('isLoading', true)
+
+    try {
+      const response = await logoutApi.mutate()
+
+      store.set('user', null)
+
+      Router.navigate(routes.signIn.pathname)
+      return response
+    } catch (error) {
+      if (error instanceof XMLHttpRequest) {
+        const response = JSON.parse(error.response)
+
+        return response
+      }
     } finally {
       store.set('isLoading', false)
     }

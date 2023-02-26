@@ -78,8 +78,8 @@ export default abstract class BaseComponent<
     }
   }
 
-  private makeProxyProps(props: TPropsType) {
-    return new Proxy(props, {
+  private makeProxyProps(proxyProps: TPropsType) {
+    return new Proxy(proxyProps, {
       get: (props, propName) => {
         const newValue = props[propName as keyof TPropsType]
 

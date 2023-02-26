@@ -56,6 +56,10 @@ class Router {
     }, INIT_APP_DELAY)
   }
 
+  public async checkUser() {
+    return await this.controller.checkUser()
+  }
+
   public use(View: ViewType) {
     const route = new Route(View)
 

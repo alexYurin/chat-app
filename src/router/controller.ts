@@ -1,10 +1,8 @@
+import AuthController from 'layouts/Auth/controller'
 import { RoutesTypes } from 'router/routes'
-import { AuthUserApi } from 'layouts/Auth/api'
 import { store } from 'services/index'
 
 type RoutePathType = RoutesTypes[keyof RoutesTypes]['pathname']
-
-const authUserApi = new AuthUserApi()
 
 export default class RouterController {
   private routesCollection: string[] = []
@@ -20,19 +18,7 @@ export default class RouterController {
   }
 
   public async checkUser() {
-    try {
-      const response = await authUserApi.fetch()
-
-      store.set('user', response)
-
-      return response
-    } catch (error) {
-      if (error instanceof XMLHttpRequest) {
-        const response = JSON.parse(error.response)
-
-        return response
-      }
-    }
+    return await new AuthController().checkUser()
   }
 
   public getCurrentPathname(pathname: string) {

@@ -1,6 +1,6 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
-import { Title, Link } from 'components/index'
+import { Title, Link, BaseComponent } from 'components/index'
 import { store } from 'services/index'
 import { connect } from 'services/Store'
 import { Router, routes } from 'router/index'
@@ -53,4 +53,6 @@ const withError = connect((state) => ({
   error: state.error,
 }))
 
-export default withError<PlaceholderPropsType>(PlaceholderLayout)
+export default withError<PlaceholderPropsType>(
+  PlaceholderLayout as typeof BaseComponent
+)

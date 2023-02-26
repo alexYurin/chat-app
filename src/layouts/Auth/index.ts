@@ -2,7 +2,14 @@ import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
 import AuthController from './controller'
 import { connect } from 'services/Store'
-import { Title, Form, Loader, Button, Link } from 'components/index'
+import {
+  Title,
+  Form,
+  Loader,
+  Button,
+  Link,
+  BaseComponent,
+} from 'components/index'
 import { AuthSignInRequestParamsType } from './api/SignIn'
 import { AuthSignUpRequestParamsType } from './api/SignUp'
 import { InputProps } from 'components/Input'
@@ -123,4 +130,4 @@ const withState = connect((state) => ({
   isLoading: state.isLoading,
 }))
 
-export default withState<AuthPropsType>(AuthLayout)
+export default withState<AuthPropsType>(AuthLayout as typeof BaseComponent)
