@@ -1,5 +1,5 @@
 import { AuthSignInApi, AuthSignUpApi, AuthUserApi, AuthLogoutApi } from './api'
-import { AuthSignInRequestParamsType } from './api/SignIn'
+import { AuthSignUpRequestParamsType } from './api/SignUp'
 import { FormValuesType } from './index'
 import { Router, routes } from 'router/index'
 import { store } from 'services/index'
@@ -9,10 +9,10 @@ const authSignUpApi = new AuthSignUpApi()
 const authUserApi = new AuthUserApi()
 const authLogoutApi = new AuthLogoutApi()
 
-const isSignInValues = (
+const isSignUpValues = (
   values: FormValuesType
-): values is AuthSignInRequestParamsType => {
-  return (values as AuthSignInRequestParamsType).login !== undefined
+): values is AuthSignUpRequestParamsType => {
+  return (values as AuthSignUpRequestParamsType).email !== undefined
 }
 
 class AuthController {
@@ -20,9 +20,9 @@ class AuthController {
     store.set('isLoading', true)
 
     try {
-      const response = await (isSignInValues(values)
-        ? authSignInApi.mutate(values)
-        : authSignUpApi.mutate(values))
+      const response = await (isSignUpValues(values)
+        ? authSignUpApi.mutate(values)
+        : authSignInApi.mutate(values))
 
       await this.checkUser()
 

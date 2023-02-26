@@ -55,6 +55,10 @@ class AuthLayout extends BaseLayout<AuthPropsType> {
         }
 
         default:
+          console.log(
+            `Unhandled prop "${propKey}" in skip re-render with values: ${prevValue}, ${newValue}`
+          )
+
           break
       }
     }

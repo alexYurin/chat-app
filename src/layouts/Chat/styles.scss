@@ -43,7 +43,7 @@ $profile-section--avatar-height: 30vh;
     }
 
     &_avatar {
-      @include mx.themify('background-color', 'overlay-bg');
+      @include mx.themify('background-color', 'avatar-bg-overlay');
 
       position: absolute;
       top: 0;
@@ -59,12 +59,11 @@ $profile-section--avatar-height: 30vh;
         opacity: 1;
 
         & ~ .chat-layout__profile-avatar-content {
-          filter: blur(8px);
+          filter: blur(4px);
         }
 
         & ~ .chat-layout__profile-avatar-content .avatar {
-          border-radius: cfg.$radius;
-          transform: scale(0.95);
+          transform: scale(1.05);
         }
       }
     }

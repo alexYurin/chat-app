@@ -31,7 +31,7 @@ export default class Link extends BaseComponent<LinkProps> {
         if (target instanceof HTMLAnchorElement) {
           event.preventDefault()
 
-          Router.navigate(target.href)
+          Router.navigate(target.pathname)
         }
       },
     }
