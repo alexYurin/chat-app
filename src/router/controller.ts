@@ -30,8 +30,6 @@ export default class RouterController {
       pathname === this.routes.signIn.pathname ||
       pathname === this.routes.signUp.pathname
 
-    console.log(pathname)
-
     if (!isDefinedPath || isFakeErrorParh) {
       return this.routes.notFound.pathname
     }

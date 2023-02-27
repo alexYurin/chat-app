@@ -7,8 +7,11 @@ export type ProfileChangeResponseType = UserType
 
 export default class ProfileChangeApi extends BaseApi {
   mutate(payload: ProfileChangeRequestParamsType) {
-    return this.put<ProfileChangeResponseType>('user/provile', {
+    return this.put<ProfileChangeResponseType>('user/profile', {
       data: payload,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
   }
 }

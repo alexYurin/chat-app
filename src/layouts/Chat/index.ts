@@ -147,23 +147,43 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       },
     ]
 
-    const onProfileSubmit = (event: Event) => {
-      const isValidForm = Form.preSubmitValidate(event, this.props.children)
+    const onProfileSubmit = async (event: Event) => {
+      const { isValidForm, values } = Form.preSubmitValidate(
+        event,
+        this.props.children
+      )
 
       if (isValidForm) {
-        const isRedirect = confirm(
-          'Форма успешно отправлена. Перейти в профиль?'
+        const changeProfile = this.withLoadingProfile(
+          this.controller.changeProfile,
+          values
         )
+
+        await changeProfile()
       }
     }
 
-    const onPasswordSubmit = (event: Event) => {
-      const isValidForm = Form.preSubmitValidate(event, this.props.children)
+    const onPasswordSubmit = async (event: Event) => {
+      const { isValidForm, values } = Form.preSubmitValidate(
+        event,
+        this.props.children
+      )
 
       if (isValidForm) {
-        const isRedirect = confirm(
-          'Форма успешно отправлена. Перейти в профиль?'
+        const changePassword = this.withLoadingProfile(
+          this.controller.changePassword,
+          values
         )
+
+        const response = await changePassword()
+
+        if (response === 'OK') {
+          const passwordTrigger = document.querySelector(
+            '#chat-password-trigger'
+          ) as HTMLInputElement
+
+          passwordTrigger.checked = false
+        }
       }
     }
 

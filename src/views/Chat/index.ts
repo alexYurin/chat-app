@@ -91,8 +91,8 @@ export default class ChatView {
         {
           label: 'Новый пароль',
           input: {
-            name: 'password',
-            type: 'text',
+            name: 'newPassword',
+            type: 'password',
             validation: Validation.rules.password,
           },
         },

@@ -9,6 +9,9 @@ export default class ProfileChangeApi extends BaseApi {
   mutate(payload: ProfileChangePasswordRequestParamsType) {
     return this.put('user/password', {
       data: payload,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
   }
 }
