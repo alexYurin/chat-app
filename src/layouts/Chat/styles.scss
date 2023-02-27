@@ -4,6 +4,7 @@
 
 $profile-section-width: 400px;
 $profile-section--avatar-height: 30vh;
+$message-input-height: 60px;
 
 %absolute-center {
   position: absolute;
@@ -96,8 +97,6 @@ $profile-section--avatar-height: 30vh;
 
     &_password {
       &:checked ~ .chat-layout__profile {
-        box-shadow: 0 0 3.2rem #{fn.theme-color('dark', 'primary')};
-
         .chat-layout__form-container_password {
           transform: translateX(0);
         }
@@ -112,9 +111,16 @@ $profile-section--avatar-height: 30vh;
       'contacts input';
     grid-template-columns: 400px 1fr;
     grid-template-rows: 1fr 60px;
+    grid-template-rows: 1fr;
     width: 100%;
     height: 100%;
     transition: filter 0.2s linear;
+
+    &_input_active {
+      .chat-layout__input {
+        margin-bottom: 0;
+      }
+    }
   }
 
   &__overlay {
@@ -225,7 +231,11 @@ $profile-section--avatar-height: 30vh;
   &__input {
     grid-area: input;
     display: flex;
+    margin-bottom: -$message-input-height;
     flex-flow: row nowrap;
+    align-items: center;
+    height: $message-input-height;
+    transition: margin-bottom 0.2s linear;
   }
 
   &__form {
@@ -267,6 +277,16 @@ $profile-section--avatar-height: 30vh;
     width: auto;
     height: 32px;
     border-radius: calc(#{cfg.$radius} * 1.5);
+  }
+
+  &__messages {
+  }
+
+  &__messages-text {
+    font-size: 1.8rem;
+    max-width: 360px;
+    text-align: center;
+    font-weight: 300;
   }
 
   &__form-title.title {
@@ -314,5 +334,13 @@ $profile-section--avatar-height: 30vh;
 
   &__link {
     margin-top: fn.offset();
+  }
+
+  &__service-text {
+    padding: 0 fn.offset(1.4);
+    max-width: $profile-section-width;
+    font-size: 1.8rem;
+    text-align: center;
+    font-weight: 300;
   }
 }

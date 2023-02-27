@@ -74,10 +74,12 @@ section.chat-layout.flex.h100
       | Профиль
 
     aside.chat-layout__contacts.column.center
-      | Нет контактов
+      span.chat-layout__service-text| Нет контактов
+      ul.chat-layout__contacts-list
+        li.chat-layout__contact
 
     .chat-layout__messages.column.center
-      p Нет сообщений
+      span.chat-layout__service-text Выберете собеседника или создайте новый чат
 
     .chat-layout__input
       | !{messageForm}
