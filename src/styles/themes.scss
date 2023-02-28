@@ -15,11 +15,15 @@ $theme-dark: (
   link: color.adjust(clr.$purple-100, $blackness: 10%),
   link-hover: color.adjust(clr.$purple-100, $lightness: 5%),
   button-bg: color.adjust(clr.$primary, $blackness: 5%, $alpha: -0.1),
+  contact-bg: color.adjust(clr.$background, $lightness: 6%),
+  contact-bg-hover: color.adjust(clr.$background, $lightness: 10%),
+  contact-bg-active: color.adjust(clr.$background, $lightness: 15%),
   input-bg: color.adjust(clr.$background, $lightness: 5%),
   input-color: color.adjust(clr.$comment, $lightness: 25%),
   input-border: color.adjust(clr.$background, $lightness: 10%),
   input-alert: color.adjust(clr.$red-100, $lightness: 10%),
   text: color.adjust(clr.$comment, $lightness: 15%),
+  text-dark: color.adjust(clr.$comment, $blackness: 45%),
   drop: transparent,
 ) !default;
 

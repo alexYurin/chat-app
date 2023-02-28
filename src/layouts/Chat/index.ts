@@ -11,6 +11,7 @@ import {
   Loader,
   BaseComponent,
 } from 'components/index'
+import { ChatContactList } from './components'
 import { InputProps } from 'components/Input'
 import { LoaderProps } from 'components/Loader'
 import { connect } from 'services/Store'
@@ -47,6 +48,17 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
 
           return true
         }
+
+        case 'contacts': {
+          this.setProps({
+            isVisibleContacts: this.props.contacts.length > 0,
+          })
+
+          return true
+
+          break
+        }
+
         case 'isLoading': {
           if (this.props.isLoadingProfile) {
             break
@@ -54,6 +66,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
 
           break
         }
+
         case 'isLoadingProfile': {
           const isVisible = newValue as boolean
           const loader = document.querySelector(
@@ -85,7 +98,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   }
 
   protected withLoadingProfile<
-    THandlerArgs = unknown[],
+    THandlerArgs = unknown,
     THandlerReturn = unknown
   >(
     handler: (...args: THandlerArgs[]) => Promise<THandlerReturn>,
@@ -106,9 +119,99 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
   }
 
-  init() {
+  private validate(event: Event, currentInputProps: InputProps) {
+    Form.validate(event, currentInputProps, this.props.children)
+  }
+
+  private triggerProfileFormEdit(event: Event) {
+    const triggerButton = event.target as HTMLButtonElement
+
+    const form = document.querySelector('.chat-layout__profile-form')
+    const action = form?.classList.contains('form_readonly') ? 'remove' : 'add'
+
+    const buttonText = action === 'add' ? 'Изменить данные' : 'Отменить'
+
+    triggerButton.textContent = buttonText
+    form?.classList[action]('form_readonly')
+  }
+
+  private createInputListeners(inputProps: InputProps) {
+    return [
+      {
+        eventType: 'blur',
+        callback: (event: Event) => this.validate(event, inputProps),
+      },
+    ]
+  }
+
+  private async onProfileSubmit(event: Event) {
+    const { isValidForm, values } = Form.preSubmitValidate(
+      event,
+      this.props.children
+    )
+
+    if (isValidForm) {
+      const changeProfile = this.withLoadingProfile(
+        this.controller.changeProfile,
+        values
+      )
+
+      await changeProfile()
+    }
+  }
+
+  private async onPasswordSubmit(event: Event) {
+    const { isValidForm, values } = Form.preSubmitValidate(
+      event,
+      this.props.children
+    )
+
+    if (isValidForm) {
+      const changePassword = this.withLoadingProfile(
+        this.controller.changePassword,
+        values
+      )
+
+      const response = await changePassword()
+
+      if (response === 'OK') {
+        const passwordTrigger = document.querySelector(
+          '#chat-password-trigger'
+        ) as HTMLInputElement
+
+        passwordTrigger.checked = false
+      }
+    }
+  }
+
+  private onMessageSubmit(event: Event) {
+    Form.preSubmitValidate(event, this.props.children)
+  }
+
+  onChangeAvatar = async (event: Event) => {
+    const inputFile = event.target
+
+    if (inputFile instanceof HTMLInputElement && inputFile.files) {
+      const file = first(Array.from(inputFile.files)) as File
+      const changeAvatar = this.withLoadingProfile(
+        this.controller.changeAvatar,
+        file
+      )
+
+      await changeAvatar()
+    }
+  }
+
+  onLogout = async () => {
+    const logout = this.withLoadingProfile(this.controller.logout)
+
+    await logout()
+  }
+
+  protected init() {
     const {
       user,
+      contacts,
       avatar,
       avatarInput,
       profileFields,
@@ -122,96 +225,39 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       src: user?.avatar ? `${RESOURCES_URL}${user?.avatar}` : avatar.src,
     }
 
-    const triggerProfileFormEdit = (event: Event) => {
-      const triggerButton = event.target as HTMLButtonElement
-
-      const form = document.querySelector('.chat-layout__profile-form')
-      const action = form?.classList.contains('form_readonly')
-        ? 'remove'
-        : 'add'
-
-      const buttonText = action === 'add' ? 'Изменить данные' : 'Отменить'
-
-      triggerButton.textContent = buttonText
-      form?.classList[action]('form_readonly')
-    }
-
-    const validate = (event: Event, currentInputProps: InputProps) => {
-      Form.validate(event, currentInputProps, this.props.children)
-    }
-
-    const createInputListeners = (inputProps: InputProps) => [
+    const cx = [
       {
-        eventType: 'blur',
-        callback: (event: Event) => validate(event, inputProps),
+        isActive: false,
+        name: 'Test Name',
+        avatar: avatar,
+        unread: 5,
+        lastMessage: {
+          date: '10.09',
+          text: 'Last message Text',
+        },
+      },
+      {
+        isActive: false,
+        name: 'Test Name 2',
+        avatar: avatar,
+        lastMessage: {
+          date: '25.03',
+          text: 'Last message Text 2',
+        },
       },
     ]
 
-    const onProfileSubmit = async (event: Event) => {
-      const { isValidForm, values } = Form.preSubmitValidate(
-        event,
-        this.props.children
-      )
-
-      if (isValidForm) {
-        const changeProfile = this.withLoadingProfile(
-          this.controller.changeProfile,
-          values
-        )
-
-        await changeProfile()
-      }
-    }
-
-    const onPasswordSubmit = async (event: Event) => {
-      const { isValidForm, values } = Form.preSubmitValidate(
-        event,
-        this.props.children
-      )
-
-      if (isValidForm) {
-        const changePassword = this.withLoadingProfile(
-          this.controller.changePassword,
-          values
-        )
-
-        const response = await changePassword()
-
-        if (response === 'OK') {
-          const passwordTrigger = document.querySelector(
-            '#chat-password-trigger'
-          ) as HTMLInputElement
-
-          passwordTrigger.checked = false
-        }
-      }
-    }
-
-    const onMessageSubmit = (event: Event) => {
-      Form.preSubmitValidate(event, this.props.children)
-    }
-
-    const onChangeAvatar = async (event: Event) => {
-      const inputFile = event.target
-
-      if (inputFile instanceof HTMLInputElement && inputFile.files) {
-        const file = first(Array.from(inputFile.files)) as File
-        const changeAvatar = this.withLoadingProfile(
-          this.controller.changeAvatar,
-          file
-        )
-
-        await changeAvatar()
-      }
-    }
-
-    const onLogout = async () => {
-      const logout = this.withLoadingProfile(this.controller.logout)
-
-      await logout()
-    }
-
     this.props.children = [
+      new Button({
+        status: 'primary',
+        type: 'button',
+        children: ['Создать чат'],
+        className: 'chat-layout__contacts-add-button',
+      }),
+      new ChatContactList({
+        contacts: cx,
+        className: 'chat-layout__contacts-list scroll',
+      }),
       new Loader({
         className: 'chat-layout__profile-loader',
         isVisible: isLoadingProfile,
@@ -250,7 +296,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         readonly: true,
         className: 'chat-layout__profile-form chat-layout__form scroll',
         fields: profileFields.map(({ label, input }) => {
-          input.listeners = createInputListeners(input)
+          input.listeners = this.createInputListeners(input)
           input.value = user
             ? (user[input.name as keyof typeof user] as string)
             : undefined
@@ -263,7 +309,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         listeners: [
           {
             eventType: 'submit',
-            callback: onProfileSubmit,
+            callback: this.onProfileSubmit,
           },
         ],
       }),
@@ -271,7 +317,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         id: formPasswordId,
         className: 'chat-layout__password-form chat-layout__form scroll',
         fields: passwordFields.map(({ label, input }) => {
-          input.listeners = createInputListeners(input)
+          input.listeners = this.createInputListeners(input)
 
           return {
             label,
@@ -281,7 +327,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         listeners: [
           {
             eventType: 'submit',
-            callback: onPasswordSubmit,
+            callback: this.onPasswordSubmit,
           },
         ],
       }),
@@ -289,7 +335,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         id: formMessageId,
         className: 'chat-layout__message-form chat-layout__form',
         fields: messageFields.map(({ label, input }) => {
-          input.listeners = createInputListeners(input)
+          input.listeners = this.createInputListeners(input)
 
           return {
             label,
@@ -299,7 +345,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         listeners: [
           {
             eventType: 'submit',
-            callback: onMessageSubmit,
+            callback: this.onMessageSubmit,
           },
         ],
       }),
@@ -309,7 +355,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         listeners: [
           {
             eventType: 'click',
-            callback: triggerProfileFormEdit,
+            callback: this.triggerProfileFormEdit,
           },
         ],
       }),
@@ -338,9 +384,6 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   }
 }
 
-const withState = connect((state) => ({
-  user: state.user,
-  isLoading: state.isLoading,
-}))
+const withState = connect((state) => state)
 
 export default withState<ChatPropsType>(ChatLayout as typeof BaseComponent)

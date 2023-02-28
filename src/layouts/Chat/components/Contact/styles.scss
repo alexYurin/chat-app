@@ -1,0 +1,92 @@
+@use 'styles/mixins' as mx;
+@use 'styles/config' as cfg;
+@use 'styles/functions' as fn;
+
+.contact {
+  @include mx.themify('background-color', 'contact-bg');
+
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  padding: fn.offset(0.6) fn.offset(0.5);
+  transition: background-color 0.2s ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    @include mx.themify('background-color', 'contact-bg-hover');
+  }
+
+  &_active {
+    @include mx.themify('background-color', 'contact-bg-active');
+
+    cursor: default;
+
+    &:hover {
+      @include mx.themify('background-color', 'contact-bg-active');
+    }
+  }
+
+  &,
+  .contact__body {
+    width: 100%;
+  }
+
+  &__avatar.avatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  &__body {
+    display: grid;
+    grid-template-areas:
+      'name date'
+      'message unread';
+    grid-template-columns: 1fr 60px;
+    align-items: center;
+    column-gap: fn.offset(0.5);
+    row-gap: fn.offset(0.5);
+    margin-left: fn.offset(0.5);
+  }
+
+  &__name,
+  &__message {
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &__name {
+    grid-area: name;
+    font-weight: 600;
+    font-size: 1.5rem;
+  }
+
+  &__message {
+    grid-area: message;
+    margin: 0;
+  }
+
+  &__date {
+    grid-area: date;
+    text-align: right;
+    font-size: 1.2rem;
+  }
+
+  &__unread {
+    @include mx.themify('background-color', 'primary');
+    @include mx.themify('color', 'text-dark');
+
+    grid-area: unread;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    justify-self: flex-end;
+    padding: fn.offset(0.2);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+}

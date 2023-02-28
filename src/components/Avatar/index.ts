@@ -5,7 +5,7 @@ import avatarPlaceholderSrc from 'data-url:static/images/avatar-placeholder.svg'
 import './styles.scss'
 
 export interface AvatarProps extends BaseComponentProps {
-  src: string
+  src?: string
   alt: string
   size?: number
 }

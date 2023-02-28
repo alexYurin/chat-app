@@ -1,0 +1,18 @@
+-
+  const [avatar, name, lastMessageText, lastMessageDate, unread] = children
+
+  const classNames = {
+    [`${className}`]: Boolean(className),
+    'contact_active': isActive,
+  }
+
+.contact(class=classNames)
+  | !{avatar}
+
+  .contact__body
+    span.contact__name !{name}
+    p.contact__message !{lastMessageText}
+    time(datetime=lastMessageDate).contact__date !{lastMessageDate}
+
+    if (unread)
+      span.contact__unread !{unread}

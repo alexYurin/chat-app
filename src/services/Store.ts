@@ -6,6 +6,8 @@ import { isEquals } from 'utils/index'
 export type StateType = {
   isLoading?: boolean
   user?: UserType | null
+  contacts?: UserType[]
+  messages?: unknown[]
   error?: {
     status: number
     message: string
@@ -26,6 +28,8 @@ class Store extends EventBus<StoreEventType> {
 
     this.state = {
       isLoading: false,
+      contacts: [],
+      messages: [],
       user: null,
       error: null,
     }

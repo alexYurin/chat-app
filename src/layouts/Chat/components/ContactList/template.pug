@@ -1,0 +1,9 @@
+-
+  const classNames = {
+    [`${className}`]: Boolean(className),
+  }
+
+ul(class=classNames).contact-list
+  each contact in children
+    li.contact-list__item
+      | !{contact}

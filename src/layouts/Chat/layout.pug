@@ -1,5 +1,7 @@
 -
   const [
+    addContactButton,
+    contactList,
     profileLoader,
     editAvatarIcon,
     logoutButton,
@@ -14,6 +16,11 @@
     passwordSubmitButton,
     messageSubmitButton,
   ] = children
+
+  const chatContentClassNames = {
+    'chat-layout__content_input_active': isVisibleMessageInput,
+    'chat-layout__content_contacts': isVisibleContacts,
+  }
 
 section.chat-layout.flex.h100
   input(
@@ -66,17 +73,18 @@ section.chat-layout.flex.h100
 
         | !{passwordSubmitButton}
 
-  .chat-layout__content
+  .chat-layout__content(class=chatContentClassNames)
     label(
       for="chat-profile-trigger"
     ).chat-layout__trigger.chat-layout__trigger_profile.row.row_nowrap
       | !{avatar}
       | Профиль
 
-    aside.chat-layout__contacts.column.center
+    aside.chat-layout__contacts.column
+      | !{addContactButton}
+      | !{contactList}
+
       span.chat-layout__service-text| Нет контактов
-      ul.chat-layout__contacts-list
-        li.chat-layout__contact
 
     .chat-layout__messages.column.center
       span.chat-layout__service-text Выберете собеседника или создайте новый чат
