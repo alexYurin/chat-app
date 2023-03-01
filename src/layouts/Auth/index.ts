@@ -10,8 +10,10 @@ import {
   Link,
   BaseComponent,
 } from 'components/index'
-import { AuthSignInRequestParamsType } from './api/SignIn'
-import { AuthSignUpRequestParamsType } from './api/SignUp'
+import {
+  AuthSignInRequestParamsType,
+  AuthSignUpRequestParamsType,
+} from 'api/Auth'
 import { InputProps } from 'components/Input'
 import { LoaderProps } from 'components/Loader'
 import { AuthPropsType } from './types'
