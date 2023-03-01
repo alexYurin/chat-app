@@ -22,7 +22,7 @@ export type AuthSignUpResponseType = {
 }
 
 export default class AuthApi extends BaseApi {
-  fetchUser() {
+  public fetchUser() {
     return this.get<AuthUserResponseType>('auth/user', {
       headers: {
         'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ export default class AuthApi extends BaseApi {
     })
   }
 
-  signIn(payload: AuthSignInRequestParamsType) {
+  public signIn(payload: AuthSignInRequestParamsType) {
     return this.post('auth/signin', {
       data: payload,
       headers: {
@@ -39,7 +39,7 @@ export default class AuthApi extends BaseApi {
     })
   }
 
-  signUp(payload: AuthSignUpRequestParamsType) {
+  public signUp(payload: AuthSignUpRequestParamsType) {
     return this.post<AuthSignUpResponseType>('auth/signup', {
       data: payload,
       headers: {
@@ -48,7 +48,7 @@ export default class AuthApi extends BaseApi {
     })
   }
 
-  logout() {
+  public logout() {
     return this.post('auth/logout')
   }
 }

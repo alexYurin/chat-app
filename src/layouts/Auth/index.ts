@@ -66,23 +66,23 @@ class AuthLayout extends BaseLayout<AuthPropsType> {
     return false
   }
 
-  public init() {
+  private validate(event: Event, currentInputProps: InputProps) {
+    Form.validate(event, currentInputProps, this.props.children)
+  }
+
+  private onSubmit(event: Event) {
+    const { isValidForm, values } = Form.preSubmitValidate<FormValuesType>(
+      event,
+      this.props.children
+    )
+
+    if (isValidForm) {
+      this.controller.setAuth(values)
+    }
+  }
+
+  protected init() {
     const { isLoading, title, authLink, fields, submitButtonText } = this.props
-
-    const validate = (event: Event, currentInputProps: InputProps) => {
-      Form.validate(event, currentInputProps, this.props.children)
-    }
-
-    const onSubmit = (event: Event) => {
-      const { isValidForm, values } = Form.preSubmitValidate<FormValuesType>(
-        event,
-        this.props.children
-      )
-
-      if (isValidForm) {
-        this.controller.setAuth(values)
-      }
-    }
 
     this.props.children = [
       new Loader({
@@ -102,7 +102,7 @@ class AuthLayout extends BaseLayout<AuthPropsType> {
           input.listeners = [
             {
               eventType: 'blur',
-              callback: (event: Event) => validate(event, input),
+              callback: (event: Event) => this.validate(event, input),
             },
           ]
 
@@ -114,7 +114,7 @@ class AuthLayout extends BaseLayout<AuthPropsType> {
         listeners: [
           {
             eventType: 'submit',
-            callback: onSubmit,
+            callback: this.onSubmit.bind(this),
           },
         ],
       }),

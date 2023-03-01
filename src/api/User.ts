@@ -14,7 +14,7 @@ export type UserFindRequestParamsType = {
 export type UserFindResponseType = UserType[]
 
 export default class UserApi extends BaseApi {
-  detail(payload: UserDetailRequestParamsType) {
+  public detail(payload: UserDetailRequestParamsType) {
     return this.get<UserDetailResponseType>(`user/${payload.userId}`, {
       data: payload,
       headers: {
@@ -23,7 +23,7 @@ export default class UserApi extends BaseApi {
     })
   }
 
-  find(payload: UserFindRequestParamsType) {
+  public find(payload: UserFindRequestParamsType) {
     return this.post<UserFindResponseType>('user/search', {
       data: payload,
       headers: {

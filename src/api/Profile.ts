@@ -15,7 +15,7 @@ export type ProfileChangePasswordRequestParamsType = {
 }
 
 export default class ProfileApi extends BaseApi {
-  change(payload: ProfileChangeRequestParamsType) {
+  public change(payload: ProfileChangeRequestParamsType) {
     return this.put<ProfileChangeResponseType>('user/profile', {
       data: payload,
       headers: {
@@ -24,13 +24,13 @@ export default class ProfileApi extends BaseApi {
     })
   }
 
-  changeAvatar(payload: ProfileChangeAvatarRequestParamsType) {
+  public changeAvatar(payload: ProfileChangeAvatarRequestParamsType) {
     return this.put<ProfileChangeAvatarResponseType>('user/profile/avatar', {
       data: payload,
     })
   }
 
-  changePassword(payload: ProfileChangePasswordRequestParamsType) {
+  public changePassword(payload: ProfileChangePasswordRequestParamsType) {
     return this.put('user/password', {
       data: payload,
       headers: {

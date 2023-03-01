@@ -23,7 +23,7 @@ class PlaceholderLayout extends BaseLayout<PlaceholderPropsType> {
     Router.navigate(routes.signIn.pathname)
   }
 
-  init() {
+  protected init() {
     const { title, description, error } = this.props
 
     const titleText = error?.status || title
