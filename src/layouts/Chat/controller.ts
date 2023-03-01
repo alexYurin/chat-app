@@ -1,17 +1,11 @@
-import AuthController from 'layouts/Auth/controller'
-import {
-  ProfileChangeApi,
-  ProfileChangeAvatarApi,
-  ProfileChangePasswordApi,
-} from 'api/index'
-import { ProfileChangePasswordRequestParamsType } from 'api/ProfileChangePassword'
+import { AuthApi } from 'api/index'
+import ProfileApi, { ProfileChangePasswordRequestParamsType } from 'api/Profile'
 import { Router, routes } from 'router/index'
 import { store } from 'services/index'
 import { UserType } from 'types/user'
 
-const profileChangeAvatarApi = new ProfileChangeAvatarApi()
-const profileChangeApi = new ProfileChangeApi()
-const profileChangePasswordApi = new ProfileChangePasswordApi()
+const profileApi = new ProfileApi()
+const authApi = new AuthApi()
 
 export default class ChatController {
   public async changeAvatar(avatar: File) {
@@ -20,7 +14,7 @@ export default class ChatController {
 
       formData.append('avatar', avatar)
 
-      const response = await profileChangeAvatarApi.mutate(formData)
+      const response = await profileApi.changeAvatar(formData)
 
       store.set('user', response)
 
@@ -43,7 +37,7 @@ export default class ChatController {
 
   public async changeProfile(user: UserType) {
     try {
-      const response = await profileChangeApi.mutate(user)
+      const response = await profileApi.change(user)
 
       store.set('user', response)
 
@@ -66,7 +60,7 @@ export default class ChatController {
 
   public async changePassword(form: ProfileChangePasswordRequestParamsType) {
     try {
-      const response = await profileChangePasswordApi.mutate(form)
+      const response = await profileApi.changePassword(form)
 
       return response
     } catch (error) {
@@ -86,6 +80,6 @@ export default class ChatController {
   }
 
   public async logout() {
-    return await new AuthController().logout()
+    return await authApi.logout()
   }
 }

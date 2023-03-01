@@ -105,6 +105,15 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
     }
   }
 
+  &__search {
+    @include mx.themify('background-color', 'overlay-bg');
+
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: cfg.$z-index-overlay;
+  }
+
   &__content {
     display: grid;
     grid-template-areas:

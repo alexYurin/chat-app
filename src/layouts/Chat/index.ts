@@ -11,7 +11,7 @@ import {
   Loader,
   BaseComponent,
 } from 'components/index'
-import { ChatContactList } from './components'
+import { ChatContactList, ChatSearchUsers } from './components'
 import { InputProps } from 'components/Input'
 import { LoaderProps } from 'components/Loader'
 import { connect } from 'services/Store'
@@ -50,11 +50,13 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         }
 
         case 'contacts': {
-          this.setProps({
-            isVisibleContacts: this.props.contacts.length > 0,
-          })
+          if (this.props.contacts) {
+            this.setProps({
+              isVisibleContacts: this.props.contacts.length > 0,
+            })
 
-          return true
+            return true
+          }
 
           break
         }
@@ -188,7 +190,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     Form.preSubmitValidate(event, this.props.children)
   }
 
-  onChangeAvatar = async (event: Event) => {
+  private async onChangeAvatar(event: Event) {
     const inputFile = event.target
 
     if (inputFile instanceof HTMLInputElement && inputFile.files) {
@@ -202,7 +204,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
   }
 
-  onLogout = async () => {
+  private async onLogout() {
     const logout = this.withLoadingProfile(this.controller.logout)
 
     await logout()
@@ -225,28 +227,6 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       src: user?.avatar ? `${RESOURCES_URL}${user?.avatar}` : avatar.src,
     }
 
-    const cx = [
-      {
-        isActive: false,
-        name: 'Test Name',
-        avatar: avatar,
-        unread: 5,
-        lastMessage: {
-          date: '10.09',
-          text: 'Last message Text',
-        },
-      },
-      {
-        isActive: false,
-        name: 'Test Name 2',
-        avatar: avatar,
-        lastMessage: {
-          date: '25.03',
-          text: 'Last message Text 2',
-        },
-      },
-    ]
-
     this.props.children = [
       new Button({
         status: 'primary',
@@ -254,8 +234,11 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         children: ['Создать чат'],
         className: 'chat-layout__contacts-add-button',
       }),
+      new ChatSearchUsers({
+        className: 'chat-layout__search-users',
+      }),
       new ChatContactList({
-        contacts: cx,
+        items: contacts,
         className: 'chat-layout__contacts-list scroll',
       }),
       new Loader({
@@ -276,7 +259,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         listeners: [
           {
             eventType: 'click',
-            callback: onLogout,
+            callback: this.onLogout.bind(this),
           },
         ],
       }),
@@ -287,7 +270,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         listeners: [
           {
             eventType: 'change',
-            callback: onChangeAvatar,
+            callback: this.onChangeAvatar.bind(this),
           },
         ],
       }),
@@ -309,7 +292,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         listeners: [
           {
             eventType: 'submit',
-            callback: this.onProfileSubmit,
+            callback: this.onProfileSubmit.bind(this),
           },
         ],
       }),
@@ -327,7 +310,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         listeners: [
           {
             eventType: 'submit',
-            callback: this.onPasswordSubmit,
+            callback: this.onPasswordSubmit.bind(this),
           },
         ],
       }),
@@ -345,7 +328,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         listeners: [
           {
             eventType: 'submit',
-            callback: this.onMessageSubmit,
+            callback: this.onMessageSubmit.bind(this),
           },
         ],
       }),
@@ -355,7 +338,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         listeners: [
           {
             eventType: 'click',
-            callback: this.triggerProfileFormEdit,
+            callback: this.triggerProfileFormEdit.bind(this),
           },
         ],
       }),

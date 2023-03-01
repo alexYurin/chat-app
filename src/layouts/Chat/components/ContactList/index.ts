@@ -1,11 +1,12 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import ChatContact, { ChatContactProps } from 'layouts/Chat/components/Contact'
+import { ChatContactItemType } from 'types/chat'
 import templateString from 'bundle-text:./template.pug'
 
 import './styles.scss'
 
 export interface ChatContactListProps extends BaseComponentProps {
-  contacts: ChatContactProps[]
+  items?: ChatContactItemType[]
   onChangeContact?: (contact: ChatContactProps) => void
 }
 
@@ -23,19 +24,20 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
   }
 
   protected init() {
-    const { contacts } = this.props
+    const { items } = this.props
 
-    this.props.children = contacts.map((contact: ChatContactProps) => {
-      return new ChatContact({
-        ...contact,
-        listeners: [
-          {
-            eventType: 'click',
-            callback: this.onChangeContact,
-          },
-          ...(contact.listeners || []),
-        ],
+    if (items) {
+      this.props.children = items.map((item) => {
+        return new ChatContact({
+          ...item,
+          listeners: [
+            {
+              eventType: 'click',
+              callback: this.onChangeContact,
+            },
+          ],
+        })
       })
-    })
+    }
   }
 }

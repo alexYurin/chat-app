@@ -6,6 +6,7 @@ $theme-dark: (
   primary: clr.$primary,
   main-bg: clr.$background,
   card: color.adjust(clr.$background, $blackness: 5%, $alpha: -0.9),
+  modal-bg: color.adjust(clr.$background, $lightness: 15%),
   card-box-shadow: color.adjust(clr.$purple-100, $alpha: -0.9),
   card-box-shadow-scale: color.adjust(clr.$purple-100, $alpha: -0.6),
   overlay-bg: color.adjust(clr.$background, $blackness: 15%, $alpha: -0.2),

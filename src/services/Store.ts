@@ -1,12 +1,13 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base'
 import EventBus from 'services/EventBus'
 import { UserType } from 'types/user'
+import { ChatContactItemType } from 'types/chat'
 import { isEquals } from 'utils/index'
 
 export type StateType = {
   isLoading?: boolean
   user?: UserType | null
-  contacts?: UserType[]
+  contacts?: ChatContactItemType[]
   messages?: unknown[]
   error?: {
     status: number

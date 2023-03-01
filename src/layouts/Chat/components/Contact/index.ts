@@ -1,5 +1,6 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
-import Avatar, { AvatarProps } from 'components/Avatar'
+import Avatar from 'components/Avatar'
+import { ChatContactType } from 'types/chat'
 import templateString from 'bundle-text:./template.pug'
 
 import avatarPlaceholderSrc from 'data-url:static/images/avatar-placeholder.svg'
@@ -7,14 +8,10 @@ import './styles.scss'
 
 export interface ChatContactProps extends BaseComponentProps {
   isActive?: boolean
-  avatar: AvatarProps
-  name: string
-  unread?: number
-  lastMessage: {
-    text: string
-    date: string
-  }
+  detail: ChatContactType
 }
+
+const RESOURCES_URL = process.env.RESOURCES_URL as string
 
 export default class ChatContact extends BaseComponent<ChatContactProps> {
   protected template = templateString
@@ -28,17 +25,18 @@ export default class ChatContact extends BaseComponent<ChatContactProps> {
   }
 
   protected init() {
-    const { avatar, name, lastMessage, unread } = this.props
-    const unreadCount = `${unread ?? ''}`
+    const { title, avatar, unread_count, last_message } = this.props.detail
+    const unreadCount = `${unread_count ?? ''}`
 
     this.props.children = [
       new Avatar({
-        ...avatar,
+        src: `${RESOURCES_URL}${avatar}`,
+        alt: title,
         className: 'contact__avatar',
       }),
-      name,
-      lastMessage.text,
-      lastMessage.date,
+      title,
+      last_message.content,
+      last_message.time,
       unreadCount,
     ]
   }

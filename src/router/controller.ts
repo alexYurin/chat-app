@@ -1,8 +1,10 @@
-import AuthController from 'layouts/Auth/controller'
+import AuthApi from 'api/Auth'
 import { RoutesTypes } from 'router/routes'
 import { store } from 'services/index'
 
 type RoutePathType = RoutesTypes[keyof RoutesTypes]['pathname']
+
+const authApi = new AuthApi()
 
 export default class RouterController {
   private routesCollection: string[] = []
@@ -18,19 +20,31 @@ export default class RouterController {
   }
 
   public async checkUser() {
-    return await new AuthController().checkUser()
+    try {
+      const response = await authApi.fetchUser()
+
+      store.set('user', response)
+
+      return response
+    } catch (error) {
+      if (error instanceof XMLHttpRequest) {
+        const response = JSON.parse(error.response)
+
+        return response
+      }
+    }
   }
 
   public getCurrentPathname(pathname: string) {
     const { user, error } = store.getState()
     const isDefinedPath = this.isDefinedPath(pathname)
-    const isFakeErrorParh = pathname === this.routes.error.pathname && !error
+    const isFakeErrorPath = pathname === this.routes.error.pathname && !error
     const isMessengerPath = pathname === this.routes.chat.pathname
     const isAuthPath =
       pathname === this.routes.signIn.pathname ||
       pathname === this.routes.signUp.pathname
 
-    if (!isDefinedPath || isFakeErrorParh) {
+    if (!isDefinedPath || isFakeErrorPath) {
       return this.routes.notFound.pathname
     }
 
