@@ -7,6 +7,7 @@ import { isEquals } from 'utils/index'
 export type StateType = {
   isLoading?: boolean
   user?: UserType | null
+  contact?: ChatContactItemType | null
   contacts?: ChatContactItemType[]
   messages?: unknown[]
   error?: {
@@ -29,6 +30,7 @@ class Store extends EventBus<StoreEventType> {
 
     this.state = {
       isLoading: false,
+      contact: null,
       contacts: [],
       messages: [],
       user: null,
@@ -66,7 +68,7 @@ export function connect(mapStateToProps: (state: StateType) => StateType) {
           const newState = mapStateToProps(store.getState())
 
           if (!isEquals(state, newState)) {
-            this.setProps({ ...newState } as TPropsType)
+            this.setProps(newState as TPropsType)
           }
 
           state = newState

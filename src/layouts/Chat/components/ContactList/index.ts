@@ -12,6 +12,7 @@ export interface ChatContactListProps extends BaseComponentProps {
 
 export default class ChatContactList extends BaseComponent<ChatContactListProps> {
   protected template = templateString
+  protected disableRenderPropsList = ['contact']
 
   constructor(props: ChatContactListProps) {
     super('chatContactList', props)
@@ -20,7 +21,19 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
   }
 
   protected onChangeContact(event: Event) {
-    console.log('event', event)
+    const contact = event.currentTarget as HTMLElement
+    const contactInstance = BaseComponent.findChild(
+      contact,
+      this.props.children
+    )
+
+    if (contactInstance) {
+      const contactProps = contactInstance.getProps() as ChatContactProps
+
+      if (typeof this.props.onChangeContact === 'function') {
+        this.props.onChangeContact(contactProps)
+      }
+    }
   }
 
   protected init() {
@@ -33,7 +46,7 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
           listeners: [
             {
               eventType: 'click',
-              callback: this.onChangeContact,
+              callback: this.onChangeContact.bind(this),
             },
           ],
         })

@@ -1,5 +1,5 @@
 import { BaseComponentProps } from 'components/Base'
-import { ChatContactList, ChatSearchUsers } from './components'
+import { ChatContactList, ChatCreateForm } from './components'
 import { Form, Input, Button, Avatar, Image, Loader } from 'components/index'
 import { FormProps } from 'components/Form'
 import { InputProps } from 'components/Input'
@@ -7,7 +7,8 @@ import { AvatarProps } from 'components/Avatar'
 
 export type ChatAddContactButtonType = Button
 export type ChatContactListType = ChatContactList
-export type ChatSearchUsersType = ChatSearchUsers
+export type ChatCreateFormType = ChatCreateForm
+export type ChatContactsLoaderType = Loader
 export type ChatProfileLoaderType = Loader
 export type ChatProfileEditAvatarIconType = Image
 export type ChatProfileLogoutType = Button
@@ -24,8 +25,9 @@ export type ChatSubmitMessageButtonType = Button
 
 export type ChatChildrenPropsType = [
   ChatAddContactButtonType,
-  ChatSearchUsersType,
+  ChatCreateFormType,
   ChatContactListType,
+  ChatContactsLoaderType,
   ChatProfileLoaderType,
   ChatProfileEditAvatarIconType,
   ChatProfileLogoutType,
@@ -42,6 +44,8 @@ export type ChatChildrenPropsType = [
 ]
 
 export interface ChatPropsType extends BaseComponentProps {
+  isLoadingContacts?: boolean
+  isLoadingCreateChatForm?: boolean
   isLoadingProfile?: boolean
   isVisibleMessageInput?: boolean
   isVisibleContacts?: boolean

@@ -14,6 +14,10 @@ export type ChatCreateRequestParamsType = {
   title: string
 }
 
+export type ChatCreateResponseType = {
+  id: number
+}
+
 export type ChatRemoveRequestParamsType = {
   chatId: number
 }
@@ -56,7 +60,7 @@ export default class ChatApi extends BaseApi {
   }
 
   public createChat(payload: ChatCreateRequestParamsType) {
-    return this.post('chats', {
+    return this.post<ChatCreateResponseType>('chats', {
       data: payload,
       headers: {
         'Content-Type': 'application/json',

@@ -11,7 +11,7 @@ import {
   Loader,
   BaseComponent,
 } from 'components/index'
-import { ChatContactList, ChatSearchUsers } from './components'
+import { ChatContactList, ChatCreateForm } from './components'
 import { InputProps } from 'components/Input'
 import { LoaderProps } from 'components/Loader'
 import { connect } from 'services/Store'
@@ -29,8 +29,24 @@ const RESOURCES_URL = process.env.RESOURCES_URL as string
 
 class ChatLayout extends BaseLayout<ChatPropsType> {
   protected template = layout
-  protected disableRenderPropsList = ['user', 'isLoading', 'isLoadingProfile']
-  private controller = new ChatController()
+  protected disableRenderPropsList = [
+    'user',
+    'contacts',
+    'isLoading',
+    'isLoadingContacts',
+    'isLoadingProfile',
+  ]
+  private controller: ChatController
+
+  constructor(name: string, props: ChatPropsType) {
+    super(name, props)
+    this.controller = new ChatController()
+
+    this.fetchContacts()
+    this.init()
+
+    return this
+  }
 
   protected onUpdateProps(
     propKey: keyof ChatPropsType,
@@ -55,6 +71,8 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
               isVisibleContacts: this.props.contacts.length > 0,
             })
 
+            this.init()
+
             return true
           }
 
@@ -65,6 +83,24 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
           if (this.props.isLoadingProfile) {
             break
           }
+
+          break
+        }
+
+        case 'isLoadingContacts': {
+          const isVisible = newValue as boolean
+          const loader = document.querySelector(
+            '.chat-layout__contacts-loader'
+          ) as HTMLElement
+
+          const loaderComponent = BaseLayout.findChild<Loader>(
+            loader,
+            this.props.children
+          )
+
+          loaderComponent?.setProps<LoaderProps>({
+            isVisible,
+          })
 
           break
         }
@@ -121,8 +157,67 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
   }
 
+  protected withLoadingCreateChatForm<
+    THandlerArgs = unknown,
+    THandlerReturn = unknown
+  >(
+    handler: (...args: THandlerArgs[]) => Promise<THandlerReturn>,
+    ...args: unknown[]
+  ) {
+    return async () => {
+      this.setProps({
+        isLoadingCreateChatForm: true,
+      })
+
+      const response = await handler(...args)
+
+      this.setProps({
+        isLoadingCreateChatForm: false,
+      })
+
+      return response
+    }
+  }
+
+  protected withLoadingContacts<
+    THandlerArgs = unknown,
+    THandlerReturn = unknown
+  >(
+    handler: (...args: THandlerArgs[]) => Promise<THandlerReturn>,
+    ...args: unknown[]
+  ) {
+    return async () => {
+      this.setProps({
+        isLoadingContacts: true,
+      })
+
+      const response = await handler(...args)
+
+      this.setProps({
+        isLoadingContacts: false,
+      })
+
+      return response
+    }
+  }
+
+  private async fetchContacts() {
+    const fetchContacts = this.withLoadingContacts(this.controller.fetchChats)
+
+    return await fetchContacts()
+  }
+
   private validate(event: Event, currentInputProps: InputProps) {
     Form.validate(event, currentInputProps, this.props.children)
+  }
+
+  private triggerCreateChatForm() {
+    const triggerClassname = 'chat-layout__create-form_active'
+
+    const formContainer = document.querySelector('.chat-layout__create-form')
+    const isVisible = formContainer?.classList.contains(triggerClassname)
+
+    formContainer?.classList[isVisible ? 'remove' : 'add'](triggerClassname)
   }
 
   private triggerProfileFormEdit(event: Event) {
@@ -186,6 +281,27 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
   }
 
+  private async onChatCreateSubmit(event: Event) {
+    const { isValidForm, values } = Form.preSubmitValidate(
+      event,
+      this.props.children
+    )
+
+    if (isValidForm) {
+      const createChat = this.withLoadingCreateChatForm(
+        this.controller.createChat,
+        values
+      )
+
+      const response = await createChat()
+
+      if (response === 'OK') {
+        this.triggerCreateChatForm()
+        this.fetchContacts()
+      }
+    }
+  }
+
   private onMessageSubmit(event: Event) {
     Form.preSubmitValidate(event, this.props.children)
   }
@@ -219,7 +335,9 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       profileFields,
       passwordFields,
       messageFields,
+      isLoadingContacts,
       isLoadingProfile,
+      isLoadingCreateChatForm,
     } = this.props
 
     const avatarProps = {
@@ -233,13 +351,28 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         type: 'button',
         children: ['Создать чат'],
         className: 'chat-layout__contacts-add-button',
+        listeners: [
+          {
+            eventType: 'click',
+            callback: this.triggerCreateChatForm.bind(this),
+          },
+        ],
       }),
-      new ChatSearchUsers({
+      new ChatCreateForm({
+        isLoading: isLoadingCreateChatForm,
         className: 'chat-layout__search-users',
+        onValidate: this.validate.bind(this),
+        onSubmit: this.onChatCreateSubmit.bind(this),
+        onCancel: this.triggerCreateChatForm.bind(this),
       }),
       new ChatContactList({
         items: contacts,
         className: 'chat-layout__contacts-list scroll',
+      }),
+      new Loader({
+        className: 'chat-layout__contacts-loader',
+        isVisible: isLoadingContacts,
+        withOverlay: true,
       }),
       new Loader({
         className: 'chat-layout__profile-loader',
@@ -367,6 +500,6 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   }
 }
 
-const withState = connect((state) => state)
+const withState = connect((state) => ({ ...state }))
 
 export default withState<ChatPropsType>(ChatLayout as typeof BaseComponent)

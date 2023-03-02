@@ -1,0 +1,15 @@
+-
+  const classNames = {
+    [`${className}`]: Boolean(className),
+  }
+
+  const [loader, title, form, buttonSubmit, buttonCancel] = children
+
+div(class=classNames).chat-create
+  | !{loader}
+  .chat-create__content.card
+    | !{title}
+    | !{form}
+    | !{buttonSubmit}
+    | !{buttonCancel}
+

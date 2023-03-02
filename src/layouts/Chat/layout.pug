@@ -1,8 +1,9 @@
 -
   const [
     addContactButton,
-    searchUsers,
+    createChatForm,
     contactList,
+    contactsLoader,
     profileLoader,
     editAvatarIcon,
     logoutButton,
@@ -20,7 +21,7 @@
 
   const chatContentClassNames = {
     'chat-layout__content_input_active': isVisibleMessageInput,
-    'chat-layout__content_contacts': isVisibleContacts,
+    'chat-layout__content_contacts_active': isVisibleContacts,
   }
 
 section.chat-layout.flex.h100
@@ -74,6 +75,9 @@ section.chat-layout.flex.h100
 
         | !{passwordSubmitButton}
 
+  section.chat-layout__create-form
+    | !{createChatForm}
+
   section.chat-layout__content(class=chatContentClassNames)
     label(
       for="chat-profile-trigger"
@@ -82,6 +86,7 @@ section.chat-layout.flex.h100
       | Профиль
 
     aside.chat-layout__contacts.column
+      | !{contactsLoader}
       | !{addContactButton}
       | !{contactList}
 
@@ -95,6 +100,3 @@ section.chat-layout.flex.h100
 
       .chat-layout__submit
         | !{messageSubmitButton}
-
-  section.chat-layout__search
-    | !{searchUsers}
