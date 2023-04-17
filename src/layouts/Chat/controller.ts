@@ -9,7 +9,66 @@ const profileApi = new ProfileApi()
 const authApi = new AuthApi()
 const chatApi = new ChatApi()
 
+function decorate<T extends ChatController, K extends keyof T>(
+  target: T,
+  key: K,
+  descriptor: T[K] extends (n: number) => number
+    ? TypedPropertyDescriptor<(n: number) => number>
+    : never
+) {
+  const f = descriptor.value
+
+  // if (f) {
+  //   descriptor.value = function (this: T, x: number) {
+  //     return f(this.mySecretNumber * x)
+  //   }
+  // }
+
+  // return descriptor
+}
+
 export default class ChatController {
+  public async fetchChatUsers(chatId: number) {
+    try {
+      const users = await chatApi.fetchUsers({
+        chatId,
+        offset: 0,
+        limit: 100,
+      })
+
+      const { contacts } = store.getState()
+
+      store.set(
+        'contacts',
+        contacts?.map((contact) => {
+          if (contact.detail.id === chatId) {
+            return {
+              ...contact,
+              users,
+            }
+          }
+
+          return contact
+        })
+      )
+
+      return users
+    } catch (error) {
+      if (error instanceof XMLHttpRequest) {
+        const response = JSON.parse(error.response)
+
+        store.set('error', {
+          status: error.status,
+          message: response.reason || response.message,
+        })
+      }
+
+      Router.navigate(routes.error.pathname)
+
+      return error
+    }
+  }
+
   public async fetchChats(activeChatId?: number) {
     try {
       const chats = await chatApi.fetchChats({
@@ -17,10 +76,10 @@ export default class ChatController {
         limit: 20,
       })
 
-      const contacts = chats.map((chat) => {
+      const contacts = chats.map((contact) => {
         return {
-          isActive: chat.id === activeChatId,
-          detail: chat,
+          isActive: contact.id === activeChatId,
+          detail: contact,
         }
       })
 
@@ -43,6 +102,7 @@ export default class ChatController {
     }
   }
 
+  @decorate
   public async createChat(form: ChatCreateRequestParamsType) {
     try {
       const response = await chatApi.createChat(form)

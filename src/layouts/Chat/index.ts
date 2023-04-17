@@ -368,7 +368,10 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       new ChatContactList({
         items: contacts,
         className: 'chat-layout__contacts-list scroll',
+        // onChangeContact: (contact) => {
+        //   console.log(contact)
       }),
+      // },
       new Loader({
         className: 'chat-layout__contacts-loader',
         isVisible: isLoadingContacts,

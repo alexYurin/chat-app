@@ -7,7 +7,7 @@ import { isEquals } from 'utils/index'
 export type StateType = {
   isLoading?: boolean
   user?: UserType | null
-  contact?: ChatContactItemType | null
+  currentContact?: ChatContactItemType | null
   contacts?: ChatContactItemType[]
   messages?: unknown[]
   error?: {
@@ -30,7 +30,7 @@ class Store extends EventBus<StoreEventType> {
 
     this.state = {
       isLoading: false,
-      contact: null,
+      currentContact: null,
       contacts: [],
       messages: [],
       user: null,
