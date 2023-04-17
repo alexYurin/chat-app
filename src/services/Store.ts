@@ -11,7 +11,7 @@ export type StateType = {
   contacts?: ChatContactItemType[]
   messages?: unknown[]
   error?: {
-    status: number
+    status: number | string
     message: string
   } | null
 }

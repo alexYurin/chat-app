@@ -1,3 +1,4 @@
+import fetchDecorator from 'api/fetchDecorator'
 import { AuthApi } from 'api/index'
 import ChatApi, { ChatCreateRequestParamsType } from 'api/Chat'
 import ProfileApi, { ProfileChangePasswordRequestParamsType } from 'api/Profile'
@@ -8,24 +9,6 @@ import { UserType } from 'types/user'
 const profileApi = new ProfileApi()
 const authApi = new AuthApi()
 const chatApi = new ChatApi()
-
-function decorate<T extends ChatController, K extends keyof T>(
-  target: T,
-  key: K,
-  descriptor: T[K] extends (n: number) => number
-    ? TypedPropertyDescriptor<(n: number) => number>
-    : never
-) {
-  const f = descriptor.value
-
-  // if (f) {
-  //   descriptor.value = function (this: T, x: number) {
-  //     return f(this.mySecretNumber * x)
-  //   }
-  // }
-
-  // return descriptor
-}
 
 export default class ChatController {
   public async fetchChatUsers(chatId: number) {
@@ -102,7 +85,6 @@ export default class ChatController {
     }
   }
 
-  @decorate
   public async createChat(form: ChatCreateRequestParamsType) {
     try {
       const response = await chatApi.createChat(form)
@@ -128,31 +110,17 @@ export default class ChatController {
     }
   }
 
+  @fetchDecorator<UserType>()
   public async changeAvatar(avatar: File) {
-    try {
-      const formData = new FormData()
+    const formData = new FormData()
 
-      formData.append('avatar', avatar)
+    formData.append('avatar', avatar)
 
-      const response = await profileApi.changeAvatar(formData)
+    const response = await profileApi.changeAvatar(formData)
 
-      store.set('user', response)
+    store.set('user', response)
 
-      return response
-    } catch (error) {
-      if (error instanceof XMLHttpRequest) {
-        const response = JSON.parse(error.response)
-
-        store.set('error', {
-          status: error.status,
-          message: response.reason || response.message,
-        })
-      }
-
-      Router.navigate(routes.error.pathname)
-
-      return error
-    }
+    return response
   }
 
   public async changeProfile(user: UserType) {
