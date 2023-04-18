@@ -112,6 +112,32 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
             break
           }
 
+          console.log(this.props)
+
+          break
+        }
+
+        case 'isLoadingRemoveChatForm': {
+          const isVisible = newValue as boolean
+          const loader = document.querySelector(
+            '.loader chat-remove__loader'
+          ) as HTMLElement
+
+          const loaderComponent = BaseLayout.findChild<Loader>(
+            loader,
+            this.props.children
+          )
+
+          loaderComponent?.setProps<LoaderProps>({
+            isVisible,
+          })
+
+          // if (this.props.contacts) {
+          //   this.setProps({
+          //     isVisibleContacts: this.props.contacts.length > 0,
+          //   })
+          // }
+
           break
         }
 
@@ -129,6 +155,12 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
           loaderComponent?.setProps<LoaderProps>({
             isVisible,
           })
+
+          if (this.props.contacts) {
+            this.setProps({
+              isVisibleContacts: this.props.contacts.length > 0,
+            })
+          }
 
           break
         }
@@ -356,6 +388,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
   }
 
+  @withLoading('isLoadingRemoveChatForm')
   private async onRemoveChatSubmit(event: Event) {
     event.preventDefault()
 

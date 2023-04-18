@@ -48,6 +48,7 @@ export type ChatChildrenPropsType = [
 export interface ChatPropsType extends BaseComponentProps {
   isLoadingContacts?: boolean
   isLoadingCreateChatForm?: boolean
+  isLoadingRemoveChatForm?: boolean
   isLoadingProfile?: boolean
   isVisibleMessageInput?: boolean
   isVisibleContacts?: boolean
