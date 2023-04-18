@@ -1,6 +1,9 @@
 import fetchDecorator from 'api/fetchDecorator'
-import { AuthApi } from 'api/index'
-import ChatApi, { ChatCreateRequestParamsType } from 'api/Chat'
+import { AuthApi, UserApi } from 'api/index'
+import ChatApi, {
+  ChatCreateRequestParamsType,
+  ChatRemoveRequestParamsType,
+} from 'api/Chat'
 import ProfileApi, { ProfileChangePasswordRequestParamsType } from 'api/Profile'
 import { Router, routes } from 'router/index'
 import { store } from 'services/index'
@@ -9,108 +12,113 @@ import { UserType } from 'types/user'
 const profileApi = new ProfileApi()
 const authApi = new AuthApi()
 const chatApi = new ChatApi()
+const userApi = new UserApi()
 
 export default class ChatController {
+  @fetchDecorator({ withRouteOnErrorPage: true })
   public async fetchChatUsers(chatId: number) {
-    try {
-      const users = await chatApi.fetchUsers({
-        chatId,
-        offset: 0,
-        limit: 100,
-      })
+    const users = await chatApi.fetchUsers({
+      chatId,
+      offset: 0,
+      limit: 100,
+    })
 
-      const { contacts } = store.getState()
+    const { contacts } = store.getState()
 
-      store.set(
-        'contacts',
-        contacts?.map((contact) => {
-          if (contact.detail.id === chatId) {
-            return {
-              ...contact,
-              users,
-            }
+    store.set(
+      'contacts',
+      contacts?.map((contact) => {
+        if (contact.detail.id === chatId) {
+          return {
+            ...contact,
+            users,
           }
-
-          return contact
-        })
-      )
-
-      return users
-    } catch (error) {
-      if (error instanceof XMLHttpRequest) {
-        const response = JSON.parse(error.response)
-
-        store.set('error', {
-          status: error.status,
-          message: response.reason || response.message,
-        })
-      }
-
-      Router.navigate(routes.error.pathname)
-
-      return error
-    }
-  }
-
-  public async fetchChats(activeChatId?: number) {
-    try {
-      const chats = await chatApi.fetchChats({
-        offset: 0,
-        limit: 20,
-      })
-
-      const contacts = chats.map((contact) => {
-        return {
-          isActive: contact.id === activeChatId,
-          detail: contact,
         }
+
+        return contact
+      })
+    )
+
+    return users
+  }
+
+  @fetchDecorator({ withRouteOnErrorPage: true })
+  public async findUser(login: string) {
+    const [user] = await userApi.find({ login })
+
+    if (user) {
+      const chatId = await this.createChat({
+        title: user.display_name || user.login,
       })
 
-      store.set('contacts', contacts)
+      if (typeof chatId === 'number') {
+        const response = await this.addUsersToChat(chatId, [user.id as number])
 
-      return chats
-    } catch (error) {
-      if (error instanceof XMLHttpRequest) {
-        const response = JSON.parse(error.response)
+        console.log('RESP addUsersToChat', response)
 
-        store.set('error', {
-          status: error.status,
-          message: response.reason || response.message,
-        })
+        return response
       }
-
-      Router.navigate(routes.error.pathname)
-
-      return error
     }
+
+    return Promise.resolve('Пользователь не найден')
   }
 
+  @fetchDecorator({ withRouteOnErrorPage: true })
+  public async fetchChats(activeChatId?: number) {
+    const chats = await chatApi.fetchChats({
+      offset: 0,
+      limit: 20,
+    })
+
+    const contacts = chats.map((contact) => {
+      return {
+        isActive: contact.id === activeChatId,
+        detail: contact,
+      }
+    })
+
+    store.set('contacts', contacts)
+
+    return chats
+  }
+
+  @fetchDecorator({ withRouteOnErrorPage: true })
+  public async addUsersToChat(chatId: number, users: number[]) {
+    const response = await chatApi.addUsersToChat({
+      chatId,
+      users,
+    })
+
+    // if (response?.id) {
+    //   return response?.id
+    // }
+
+    return response
+  }
+
+  @fetchDecorator({ withRouteOnErrorPage: true })
   public async createChat(form: ChatCreateRequestParamsType) {
-    try {
-      const response = await chatApi.createChat(form)
+    const response = await chatApi.createChat(form)
 
-      if (response?.id) {
-        return 'OK'
-      }
-
-      return response
-    } catch (error) {
-      if (error instanceof XMLHttpRequest) {
-        const response = JSON.parse(error.response)
-
-        store.set('error', {
-          status: error.status,
-          message: response.reason || response.message,
-        })
-      }
-
-      Router.navigate(routes.error.pathname)
-
-      return error
+    if (response?.id) {
+      return response?.id
     }
+
+    return response
   }
 
-  @fetchDecorator<UserType>()
+  @fetchDecorator({ withRouteOnErrorPage: true })
+  public async removeChat(form: ChatRemoveRequestParamsType) {
+    const response = await chatApi.removeChat(form)
+
+    if (response?.userId) {
+      return 'OK'
+    }
+
+    return response
+  }
+
+  @fetchDecorator({ withRouteOnErrorPage: true })
   public async changeAvatar(avatar: File) {
     const formData = new FormData()
 
@@ -123,51 +131,28 @@ export default class ChatController {
     return response
   }
 
+  @fetchDecorator({ withRouteOnErrorPage: true })
   public async changeProfile(user: UserType) {
-    try {
-      const response = await profileApi.change(user)
+    const response = await profileApi.change(user)
 
-      store.set('user', response)
+    store.set('user', response)
 
-      return response
-    } catch (error) {
-      if (error instanceof XMLHttpRequest) {
-        const response = JSON.parse(error.response)
-
-        store.set('error', {
-          status: error.status,
-          message: response.reason || response.message,
-        })
-      }
-
-      Router.navigate(routes.error.pathname)
-
-      return error
-    }
+    return response
   }
 
+  @fetchDecorator({ withRouteOnErrorPage: true })
   public async changePassword(form: ProfileChangePasswordRequestParamsType) {
-    try {
-      const response = await profileApi.changePassword(form)
+    const response = await profileApi.changePassword(form)
 
-      return response
-    } catch (error) {
-      if (error instanceof XMLHttpRequest) {
-        const response = JSON.parse(error.response)
-
-        store.set('error', {
-          status: error.status,
-          message: response.reason || response.message,
-        })
-      }
-
-      Router.navigate(routes.error.pathname)
-
-      return error
-    }
+    return response
   }
 
+  @fetchDecorator({ withRouteOnErrorPage: true })
   public async logout() {
-    return await authApi.logout()
+    await authApi.logout()
+
+    store.set('user', null)
+
+    Router.navigate(routes.signIn.pathname)
   }
 }

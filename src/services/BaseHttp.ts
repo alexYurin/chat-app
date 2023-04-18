@@ -6,7 +6,9 @@ const METHODS = {
   DELETE: 'DELETE',
 } as const
 
-type RequestOptionsType<TData = Record<string, string | number> | FormData> = {
+type RequestOptionsType<
+  TData = Record<string, string | number | string[] | number[]> | FormData
+> = {
   method?: keyof typeof METHODS
   headers?: Record<string, string>
   data?: TData

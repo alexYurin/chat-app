@@ -1,7 +1,8 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
-import Avatar from 'components/Avatar'
+import { Avatar, Button, Image } from 'components/index'
 import { ChatContactType } from 'types/chat'
 import templateString from 'bundle-text:./template.pug'
+import removeIconSrc from 'data-url:static/images/remove.svg'
 
 import './styles.scss'
 
@@ -23,6 +24,7 @@ export default class ChatContact extends BaseComponent<ChatContactProps> {
 
   protected init() {
     const { title, avatar, unread_count, last_message } = this.props.detail
+
     const avatarSrc = avatar
       ? `${RESOURCES_URL}${avatar}`
       : Avatar.defaultAvatarSrc
@@ -38,6 +40,15 @@ export default class ChatContact extends BaseComponent<ChatContactProps> {
       last_message?.content || '',
       last_message?.time || '',
       unreadCount,
+      new Button({
+        className: 'contact__remove-button',
+        children: [
+          new Image({
+            src: removeIconSrc,
+            alt: 'remove contact',
+          }),
+        ],
+      }),
     ]
   }
 }

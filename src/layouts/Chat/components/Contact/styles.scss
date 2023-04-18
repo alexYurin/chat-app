@@ -39,9 +39,9 @@
   &__body {
     display: grid;
     grid-template-areas:
-      'name date'
-      'message unread';
-    grid-template-columns: 1fr 60px;
+      'name date date'
+      'message unread remove';
+    grid-template-columns: 1fr 60px 20px;
     align-items: center;
     column-gap: fn.offset(0.5);
     row-gap: fn.offset(0.5);
@@ -88,5 +88,12 @@
     border-radius: 50%;
     font-size: 1.2rem;
     font-weight: 600;
+  }
+
+  &__remove-button {
+    all: unset;
+    grid-area: remove;
+    width: 16px;
+    height: 18px;
   }
 }

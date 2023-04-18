@@ -5,11 +5,11 @@
 
   const [loader, title, form, buttonSubmit, buttonCancel] = children
 
-div(class=classNames).chat-create
+div(class=classNames).chat-remove
   | !{loader}
-  .chat-create__content.card
+  .chat-remove__content.card
     | !{title}
     | !{form}
-    .chat-create__buttons
+    .chat-remove__buttons
       | !{buttonCancel}
       | !{buttonSubmit}

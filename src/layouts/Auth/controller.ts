@@ -1,3 +1,4 @@
+import fetchDecorator from 'api/fetchDecorator'
 import AuthApi, { AuthSignUpRequestParamsType } from 'api/Auth'
 import { FormValuesType } from './index'
 import { Router, routes } from 'router/index'
@@ -12,72 +13,37 @@ const isSignUpValues = (
 }
 
 class AuthController {
+  @fetchDecorator({ withAppLoading: true })
   public async setAuth(values: FormValuesType) {
-    store.set('isLoading', true)
+    const response = await (isSignUpValues(values)
+      ? authApi.signUp(values)
+      : authApi.signIn(values))
 
-    try {
-      const response = await (isSignUpValues(values)
-        ? authApi.signUp(values)
-        : authApi.signIn(values))
+    await this.checkUser()
 
-      await this.checkUser()
+    Router.navigate(routes.chat.pathname)
 
-      Router.navigate(routes.chat.pathname)
-
-      return response
-    } catch (error) {
-      if (error instanceof XMLHttpRequest) {
-        const response = JSON.parse(error.response)
-
-        store.set('error', {
-          status: error.status,
-          message: response.reason || response.message,
-        })
-      }
-
-      Router.navigate(routes.error.pathname)
-
-      return error
-    } finally {
-      store.set('isLoading', false)
-    }
+    return response
   }
 
+  @fetchDecorator()
   public async checkUser() {
-    try {
-      const response = await authApi.fetchUser()
+    const response = await authApi.fetchUser()
 
-      store.set('user', response)
+    store.set('user', response)
 
-      return response
-    } catch (error) {
-      if (error instanceof XMLHttpRequest) {
-        const response = JSON.parse(error.response)
-
-        return response
-      }
-    }
+    return response
   }
 
+  @fetchDecorator({ withAppLoading: true })
   public async logout() {
-    store.set('isLoading', true)
+    const response = await authApi.logout()
 
-    try {
-      const response = await authApi.logout()
+    store.set('user', null)
 
-      store.set('user', null)
+    Router.navigate(routes.signIn.pathname)
 
-      Router.navigate(routes.signIn.pathname)
-      return response
-    } catch (error) {
-      if (error instanceof XMLHttpRequest) {
-        const response = JSON.parse(error.response)
-
-        return response
-      }
-    } finally {
-      store.set('isLoading', false)
-    }
+    return response
   }
 }
 

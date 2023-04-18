@@ -1,7 +1,14 @@
 import { Router, routes } from 'router/index'
 import { store } from 'services/index'
 
-export default function fetchDecorator<TArgs = unknown, TResponse = unknown>() {
+export type FetchDecoratorOptionsType = {
+  withAppLoading?: boolean
+  withRouteOnErrorPage?: boolean
+}
+
+export default function fetchDecorator<TArgs = unknown, TResponse = unknown>(
+  options: FetchDecoratorOptionsType = {}
+) {
   return (
     target: object,
     key: string,
@@ -12,7 +19,11 @@ export default function fetchDecorator<TArgs = unknown, TResponse = unknown>() {
     const fetchMethod = descriptor.value
 
     if (fetchMethod) {
-      descriptor.value = async function (...args: TArgs[]) {
+      descriptor.value = async function (...args: TArgs[]): Promise<TResponse> {
+        if (options?.withAppLoading) {
+          store.set('isLoading', true)
+        }
+
         try {
           const response = await fetchMethod.apply(this, args)
 
@@ -32,11 +43,17 @@ export default function fetchDecorator<TArgs = unknown, TResponse = unknown>() {
             })
           }
 
-          Router.navigate(routes.error.pathname)
+          if (options?.withRouteOnErrorPage) {
+            Router.navigate(routes.error.pathname)
+          }
 
           console.error(`Error from method: ${key}`, target)
 
-          return error
+          return Promise.reject(error)
+        } finally {
+          if (options?.withAppLoading) {
+            store.set('isLoading', false)
+          }
         }
       }
     }

@@ -1,5 +1,5 @@
 import { BaseComponentProps } from 'components/Base'
-import { ChatContactList, ChatCreateForm } from './components'
+import { ChatContactList, ChatCreateForm, ChatRemoveForm } from './components'
 import { Form, Input, Button, Avatar, Image, Loader } from 'components/index'
 import { FormProps } from 'components/Form'
 import { InputProps } from 'components/Input'
@@ -8,6 +8,7 @@ import { AvatarProps } from 'components/Avatar'
 export type ChatAddContactButtonType = Button
 export type ChatContactListType = ChatContactList
 export type ChatCreateFormType = ChatCreateForm
+export type ChatRemoveFormType = ChatRemoveForm
 export type ChatContactsLoaderType = Loader
 export type ChatProfileLoaderType = Loader
 export type ChatProfileEditAvatarIconType = Image
@@ -26,6 +27,7 @@ export type ChatSubmitMessageButtonType = Button
 export type ChatChildrenPropsType = [
   ChatAddContactButtonType,
   ChatCreateFormType,
+  ChatRemoveFormType,
   ChatContactListType,
   ChatContactsLoaderType,
   ChatProfileLoaderType,

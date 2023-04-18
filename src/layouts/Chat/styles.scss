@@ -105,7 +105,8 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
     }
   }
 
-  &__create-form {
+  &__create-form,
+  &__remove-form {
     position: absolute;
     width: 100%;
     height: 100%;

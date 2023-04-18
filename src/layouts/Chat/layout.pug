@@ -2,6 +2,7 @@
   const [
     addContactButton,
     createChatForm,
+    removeChatForm,
     contactList,
     contactsLoader,
     profileLoader,
@@ -77,6 +78,9 @@ section.chat-layout.flex.h100
 
   section.chat-layout__create-form
     | !{createChatForm}
+
+  section.chat-layout__remove-form
+    | !{removeChatForm}
 
   section.chat-layout__content(class=chatContentClassNames)
     //- label(

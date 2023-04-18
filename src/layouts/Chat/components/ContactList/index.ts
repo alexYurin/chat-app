@@ -9,6 +9,7 @@ import './styles.scss'
 export interface ChatContactListProps extends BaseComponentProps {
   items?: ChatContactItemType[]
   onChangeContact?: (contact: ChatContactProps) => void
+  onRemoveChat?: (chatId: number) => void
 }
 
 export default class ChatContactList extends BaseComponent<ChatContactListProps> {
@@ -23,11 +24,25 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
   }
 
   protected onChangeContact(event: Event) {
+    const target = event.target as HTMLElement
     const contact = event.currentTarget as HTMLElement
+
     const contactInstance = BaseComponent.findChild<ChatContact>(
       contact,
       this.props.children
     )
+
+    const HTMLRemoveButton = target.closest('.contact__remove-button')
+
+    if (HTMLRemoveButton) {
+      if (typeof this.props.onRemoveChat === 'function') {
+        this.props.onRemoveChat(
+          parseInt(contactInstance?.getProps().id as string)
+        )
+      }
+
+      return
+    }
 
     if (contactInstance) {
       const contactProps = contactInstance.getProps() as ChatContactProps
@@ -38,16 +53,16 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
         `#id_${currentContact?.detail?.id}`
       ) as HTMLElement
 
-      const currenrtContactInstance = ChatContactList.findChild<ChatContact>(
+      const currentContactInstance = ChatContactList.findChild<ChatContact>(
         HTMLCurrentContact,
         this.props.children
       )
 
-      if (currenrtContactInstance?.getProps().id === contactProps.id) {
+      if (currentContactInstance?.getProps().id === contactProps.id) {
         return
       }
 
-      currenrtContactInstance?.setProps({
+      currentContactInstance?.setProps({
         isActive: false,
       })
 
@@ -63,7 +78,7 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
           }
 
           if (contact.detail.id === currentContact?.detail.id) {
-            return currenrtContactInstance?.getProps() || currentContact
+            return currentContactInstance?.getProps() || currentContact
           }
 
           return contact
@@ -85,7 +100,7 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
       this.props.children = items.map((item) => {
         return new ChatContact({
           ...item,
-          id: `id_${item.detail.id}`,
+          id: `${item.detail.id}`,
           listeners: [
             {
               eventType: 'click',

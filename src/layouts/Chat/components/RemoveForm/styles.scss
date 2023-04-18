@@ -2,7 +2,7 @@
 @use 'styles/config' as cfg;
 @use 'styles/functions' as fn;
 
-.chat-create {
+.chat-remove {
   @include mx.themify('background-color', 'overlay-bg');
 
   position: fixed;
@@ -12,7 +12,7 @@
   border-radius: cfg.$radius;
   z-index: cfg.$z-index-content;
 
-  .loader_visible ~ .chat-create__content {
+  .loader_visible ~ .chat-remove__content {
     filter: blur(4px);
   }
 

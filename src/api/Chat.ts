@@ -18,6 +18,17 @@ export type ChatCreateResponseType = {
   id: number
 }
 
+export type ChatAddUsersRequestParamsType = {
+  users: number[]
+  chatId: number
+}
+
+export type ChatAddUsersRequestType = string
+
+export type ChatChangeAvatarRequestParamsType = FormData
+
+export type ChatChangeAvatarResponseType = ChatContactType
+
 export type ChatRemoveRequestParamsType = {
   chatId: number
 }
@@ -68,8 +79,23 @@ export default class ChatApi extends BaseApi {
     })
   }
 
+  public addUsersToChat(payload: ChatAddUsersRequestParamsType) {
+    return this.put<ChatAddUsersRequestType>('chats/users', {
+      data: payload,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  }
+
+  public changeChatAvatar(payload: ChatChangeAvatarRequestParamsType) {
+    return this.put<ChatChangeAvatarResponseType>('chats/avatar', {
+      data: payload,
+    })
+  }
+
   public removeChat(payload: ChatRemoveRequestParamsType) {
-    return this.post<ChatRemoveResponseType>('chats', {
+    return this.delete<ChatRemoveResponseType>('chats', {
       data: payload,
       headers: {
         'Content-Type': 'application/json',

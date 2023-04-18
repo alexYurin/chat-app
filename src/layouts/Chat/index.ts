@@ -11,7 +11,7 @@ import {
   Loader,
   BaseComponent,
 } from 'components/index'
-import { ChatContactList, ChatCreateForm } from './components'
+import { ChatContactList, ChatCreateForm, ChatRemoveForm } from './components'
 import { InputProps } from 'components/Input'
 import { LoaderProps } from 'components/Loader'
 import { connect } from 'services/Store'
@@ -26,6 +26,34 @@ const formProfileId = 'chat-profile-form'
 const formPasswordId = 'chat-password-form'
 
 const RESOURCES_URL = process.env.RESOURCES_URL as string
+
+function withLoading(loadingKey: keyof ChatPropsType) {
+  return (
+    target: ChatLayout,
+    property: string,
+    descriptor: TypedPropertyDescriptor<
+      (...args: unknown[]) => Promise<unknown>
+    >
+  ) => {
+    const fetchHandler = descriptor.value
+
+    descriptor.value = async function (this: ChatLayout, ...args: unknown[]) {
+      this.setProps({
+        [loadingKey]: true,
+      })
+
+      const response = await fetchHandler?.apply(this, args)
+
+      this.setProps({
+        [loadingKey]: false,
+      })
+
+      return response
+    }
+
+    return descriptor
+  }
+}
 
 class ChatLayout extends BaseLayout<ChatPropsType> {
   protected template = layout
@@ -220,6 +248,21 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     formContainer?.classList[isVisible ? 'remove' : 'add'](triggerClassname)
   }
 
+  private triggerRemoveChatForm(chatId?: number) {
+    const triggerClassname = 'chat-layout__remove-form_active'
+
+    const formContainer = document.querySelector('.chat-layout__remove-form')
+    const isVisible = formContainer?.classList.contains(triggerClassname)
+
+    formContainer?.classList[isVisible ? 'remove' : 'add'](triggerClassname)
+
+    if (chatId) {
+      formContainer
+        ?.querySelector('.chat-remove__form')
+        ?.setAttribute('data-chat-id', `${chatId}`)
+    }
+  }
+
   private triggerProfileFormEdit(event: Event) {
     const triggerButton = event.target as HTMLButtonElement
 
@@ -281,22 +324,52 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
   }
 
-  private async onChatCreateSubmit(event: Event) {
+  private async onCreateChatSubmit(event: Event) {
     const { isValidForm, values } = Form.preSubmitValidate(
       event,
       this.props.children
     )
 
     if (isValidForm) {
-      const createChat = this.withLoadingCreateChatForm(
-        this.controller.createChat,
-        values
-      )
-
-      const response = await createChat()
+      const response = await this.controller.findUser(values.login)
 
       if (response === 'OK') {
         this.triggerCreateChatForm()
+        this.fetchContacts()
+      } else {
+        const targetInput = (event.target as HTMLElement).querySelector(
+          '.input'
+        )
+
+        const inputComponent = ChatLayout.findChild<Input>(
+          targetInput as HTMLElement,
+          this.props.children
+        )
+
+        inputComponent?.setProps({
+          message: response as string,
+          status: 'alert',
+        })
+      }
+
+      return response
+    }
+  }
+
+  private async onRemoveChatSubmit(event: Event) {
+    event.preventDefault()
+
+    const chatIdAttribute = (event.target as HTMLElement).getAttribute(
+      'data-chat-id'
+    )
+
+    if (chatIdAttribute) {
+      const response = await this.controller.removeChat({
+        chatId: parseInt(chatIdAttribute),
+      })
+
+      if (response === 'OK') {
+        this.triggerRemoveChatForm()
         this.fetchContacts()
       }
     }
@@ -320,10 +393,9 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
   }
 
+  @withLoading('isLoadingProfile')
   private async onLogout() {
-    const logout = this.withLoadingProfile(this.controller.logout)
-
-    await logout()
+    await this.controller.logout()
   }
 
   protected init() {
@@ -362,16 +434,20 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         isLoading: isLoadingCreateChatForm,
         className: 'chat-layout__search-users',
         onValidate: this.validate.bind(this),
-        onSubmit: this.onChatCreateSubmit.bind(this),
+        onSubmit: this.onCreateChatSubmit.bind(this),
         onCancel: this.triggerCreateChatForm.bind(this),
+      }),
+      new ChatRemoveForm({
+        isLoading: false,
+        className: 'chat-layout__remove-users',
+        onSubmit: this.onRemoveChatSubmit.bind(this),
+        onCancel: this.triggerRemoveChatForm.bind(this),
       }),
       new ChatContactList({
         items: contacts,
         className: 'chat-layout__contacts-list scroll',
-        // onChangeContact: (contact) => {
-        //   console.log(contact)
+        onRemoveChat: this.triggerRemoveChatForm.bind(this),
       }),
-      // },
       new Loader({
         className: 'chat-layout__contacts-loader',
         isVisible: isLoadingContacts,

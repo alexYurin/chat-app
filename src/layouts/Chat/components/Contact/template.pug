@@ -1,5 +1,5 @@
 -
-  const [avatar, name, lastMessageText, lastMessageDate, unread] = children
+  const [avatar, name, lastMessageText, lastMessageDate, unread, removeIcon] = children
 
   const classNames = {
     [`${className}`]: Boolean(className),
@@ -16,3 +16,5 @@
 
     if (unread)
       span.contact__unread !{unread}
+
+    | !{removeIcon}

@@ -19,7 +19,7 @@ export default class ChatCreateForm extends BaseComponent<ChatCreateFormProps> {
   protected template = templateString
 
   constructor(props: ChatCreateFormProps) {
-    super('chatSearch', props)
+    super('chatCreate', props)
 
     this.init()
   }
@@ -42,19 +42,19 @@ export default class ChatCreateForm extends BaseComponent<ChatCreateFormProps> {
         className: 'chat-create__form',
         fields: [
           {
-            label: 'Название чата',
+            label: 'Логин пользователя',
             input: {
-              name: 'title',
+              name: 'login',
               type: 'text',
-              validation: Validation.rules.title,
+              validation: Validation.rules.login,
               listeners: [
                 {
                   eventType: 'blur',
                   callback: (event: Event) =>
                     this.props.onValidate(event, {
-                      name: 'title',
+                      name: 'login',
                       type: 'text',
-                      validation: Validation.rules.title,
+                      validation: Validation.rules.login,
                     }),
                 },
               ],
