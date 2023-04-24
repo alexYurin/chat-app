@@ -1,5 +1,6 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import { Title, Form, Button, Loader } from 'components/index'
+import { LoaderProps } from 'components/Loader'
 import templateString from 'bundle-text:./template.pug'
 
 import './styles.scss'
@@ -12,13 +13,40 @@ interface ChatRemoveFormProps extends BaseComponentProps {
 
 const formId = 'chat-remove-form'
 
-export default class ChatCreateForm extends BaseComponent<ChatRemoveFormProps> {
+export default class ChatRemoveForm extends BaseComponent<ChatRemoveFormProps> {
   protected template = templateString
+  protected disableRenderPropsList = ['isLoading']
 
   constructor(props: ChatRemoveFormProps) {
     super('chatRemove', props)
 
     this.init()
+  }
+
+  protected onUpdateProps(
+    propKey: keyof ChatRemoveFormProps,
+    prevValue: unknown,
+    newValue: unknown
+  ): boolean {
+    switch (propKey) {
+      case 'isLoading': {
+        const isVisible = newValue as boolean
+        const loader = document.querySelector(
+          '.chat-remove__loader'
+        ) as HTMLElement
+
+        const loaderComponent = BaseComponent.findChild<Loader>(
+          loader,
+          this.props.children
+        )
+
+        loaderComponent?.setProps<LoaderProps>({
+          isVisible,
+        })
+      }
+    }
+
+    return false
   }
 
   protected init() {

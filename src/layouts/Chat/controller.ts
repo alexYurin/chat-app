@@ -43,18 +43,16 @@ export default class ChatController {
   }
 
   @fetchDecorator({ withRouteOnErrorPage: true })
-  public async findUser(login: string) {
+  public async createChatWithAddUser(title: string, login: string) {
     const [user] = await userApi.find({ login })
 
     if (user) {
       const chatId = await this.createChat({
-        title: user.display_name || user.login,
+        title,
       })
 
       if (typeof chatId === 'number') {
         const response = await this.addUsersToChat(chatId, [user.id as number])
-
-        console.log('RESP addUsersToChat', response)
 
         return response
       }

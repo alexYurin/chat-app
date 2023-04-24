@@ -12,6 +12,10 @@
   border-radius: cfg.$radius;
   z-index: cfg.$z-index-content;
 
+  .loader_visible .loader__overlay {
+    border-radius: cfg.$radius;
+  }
+
   .loader_visible ~ .chat-create__content {
     filter: blur(4px);
   }

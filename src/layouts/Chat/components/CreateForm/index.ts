@@ -1,5 +1,6 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import { Title, Form, Button, Loader } from 'components/index'
+import { LoaderProps } from 'components/Loader'
 import { InputProps } from 'components/Input'
 import Validation from 'components/Form/Validation'
 import templateString from 'bundle-text:./template.pug'
@@ -17,11 +18,38 @@ const formId = 'chat-create-form'
 
 export default class ChatCreateForm extends BaseComponent<ChatCreateFormProps> {
   protected template = templateString
+  protected disableRenderPropsList = ['isLoading']
 
   constructor(props: ChatCreateFormProps) {
     super('chatCreate', props)
 
     this.init()
+  }
+
+  protected onUpdateProps(
+    propKey: keyof ChatCreateFormProps,
+    prevValue: unknown,
+    newValue: unknown
+  ): boolean {
+    switch (propKey) {
+      case 'isLoading': {
+        const isVisible = newValue as boolean
+        const loader = document.querySelector(
+          '.chat-create__loader'
+        ) as HTMLElement
+
+        const loaderComponent = BaseComponent.findChild<Loader>(
+          loader,
+          this.props.children
+        )
+
+        loaderComponent?.setProps<LoaderProps>({
+          isVisible,
+        })
+      }
+    }
+
+    return false
   }
 
   protected init() {
@@ -41,6 +69,25 @@ export default class ChatCreateForm extends BaseComponent<ChatCreateFormProps> {
         id: formId,
         className: 'chat-create__form',
         fields: [
+          {
+            label: 'Название чата',
+            input: {
+              name: 'title',
+              type: 'text',
+              validation: Validation.rules.display_name,
+              listeners: [
+                {
+                  eventType: 'blur',
+                  callback: (event: Event) =>
+                    this.props.onValidate(event, {
+                      name: 'title',
+                      type: 'text',
+                      validation: Validation.rules.display_name,
+                    }),
+                },
+              ],
+            },
+          },
           {
             label: 'Логин пользователя',
             input: {

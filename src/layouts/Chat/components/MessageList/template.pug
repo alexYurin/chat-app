@@ -1,0 +1,9 @@
+-
+  const classNames = {
+    [`${className}`]: Boolean(className),
+  }
+
+ul(class=classNames).message-list
+  each message in children
+    li.contact-list__item
+      | !{message}

@@ -50,7 +50,7 @@ export default class Validation {
       errorText: 'Не должно быть пустым.',
     },
     display_name: {
-      pattern: /^[A-ZА-Яa-zа-я]{2,20}$/,
+      pattern: /^[A-ZА-Яa-zа-я0-9\s_-]{2,20}$/,
       errorText: 'Латиница или кириллица, от 2 до 20 символов.',
     },
     title: {

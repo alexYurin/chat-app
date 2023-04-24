@@ -1,5 +1,6 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import ChatContact, { ChatContactProps } from 'layouts/Chat/components/Contact'
+import { isEquals } from 'utils/index'
 import { ChatContactItemType } from 'types/chat'
 import templateString from 'bundle-text:./template.pug'
 import { store } from 'services/index'
@@ -12,6 +13,8 @@ export interface ChatContactListProps extends BaseComponentProps {
   onRemoveChat?: (chatId: number) => void
 }
 
+const PREFIX_CHAT_ID = 'id_'
+
 export default class ChatContactList extends BaseComponent<ChatContactListProps> {
   protected template = templateString
 
@@ -21,6 +24,27 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
     this.init()
 
     return this
+  }
+
+  protected onUpdateProps(
+    propKey: keyof ChatContactListProps,
+    prevProp: unknown,
+    newProp: unknown
+  ): boolean {
+    switch (propKey) {
+      case 'items': {
+        if (!isEquals(prevProp, newProp)) {
+          this.init()
+
+          return true
+        }
+
+        return false
+      }
+
+      default:
+        return false
+    }
   }
 
   protected onChangeContact(event: Event) {
@@ -36,9 +60,10 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
 
     if (HTMLRemoveButton) {
       if (typeof this.props.onRemoveChat === 'function') {
-        this.props.onRemoveChat(
-          parseInt(contactInstance?.getProps().id as string)
-        )
+        const id =
+          contactInstance?.getProps()?.id?.replace(PREFIX_CHAT_ID, '') || ''
+
+        this.props.onRemoveChat(parseInt(id))
       }
 
       return
@@ -50,7 +75,7 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
       const { currentContact, contacts } = store.getState()
 
       const HTMLCurrentContact = document.querySelector(
-        `#id_${currentContact?.detail?.id}`
+        `#${PREFIX_CHAT_ID}${currentContact?.detail?.id}`
       ) as HTMLElement
 
       const currentContactInstance = ChatContactList.findChild<ChatContact>(
@@ -100,7 +125,7 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
       this.props.children = items.map((item) => {
         return new ChatContact({
           ...item,
-          id: `${item.detail.id}`,
+          id: `${PREFIX_CHAT_ID}${item.detail.id}`,
           listeners: [
             {
               eventType: 'click',

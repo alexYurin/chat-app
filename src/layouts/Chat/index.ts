@@ -2,6 +2,14 @@ import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
 import ChatController from './controller'
 import { first } from 'utils/index'
+import { ChatContactList, ChatCreateForm, ChatRemoveForm } from './components'
+import { ChatContactProps } from './components/Contact'
+import { InputProps } from 'components/Input'
+import { LoaderProps } from 'components/Loader'
+import { connect } from 'services/Store'
+import { ChatPropsType } from './types'
+import { isEquals } from 'utils/index'
+import withLoading from './withLoading'
 import {
   Form,
   Input,
@@ -11,12 +19,6 @@ import {
   Loader,
   BaseComponent,
 } from 'components/index'
-import { ChatContactList, ChatCreateForm, ChatRemoveForm } from './components'
-import { InputProps } from 'components/Input'
-import { LoaderProps } from 'components/Loader'
-import { connect } from 'services/Store'
-import { ChatPropsType } from './types'
-import { isEquals } from 'utils/index'
 
 import editAvatarIconSrc from 'data-url:static/images/edit.svg'
 import './styles.scss'
@@ -27,34 +29,6 @@ const formPasswordId = 'chat-password-form'
 
 const RESOURCES_URL = process.env.RESOURCES_URL as string
 
-function withLoading(loadingKey: keyof ChatPropsType) {
-  return (
-    target: ChatLayout,
-    property: string,
-    descriptor: TypedPropertyDescriptor<
-      (...args: unknown[]) => Promise<unknown>
-    >
-  ) => {
-    const fetchHandler = descriptor.value
-
-    descriptor.value = async function (this: ChatLayout, ...args: unknown[]) {
-      this.setProps({
-        [loadingKey]: true,
-      })
-
-      const response = await fetchHandler?.apply(this, args)
-
-      this.setProps({
-        [loadingKey]: false,
-      })
-
-      return response
-    }
-
-    return descriptor
-  }
-}
-
 class ChatLayout extends BaseLayout<ChatPropsType> {
   protected template = layout
   protected disableRenderPropsList = [
@@ -63,6 +37,8 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     'isLoading',
     'isLoadingContacts',
     'isLoadingProfile',
+    'isLoadingCreateChatForm',
+    'isLoadingRemoveChatForm',
   ]
   private controller: ChatController
 
@@ -99,7 +75,18 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
               isVisibleContacts: this.props.contacts.length > 0,
             })
 
-            this.init()
+            const contactsList = document.querySelector(
+              '.contact-list'
+            ) as HTMLElement
+
+            const contactsListInstance = BaseLayout.findChild<ChatContactList>(
+              contactsList,
+              this.props.children
+            )
+
+            contactsListInstance?.setProps({
+              items: this.props.contacts,
+            })
 
             return true
           }
@@ -112,33 +99,43 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
             break
           }
 
-          console.log(this.props)
-
           break
+        }
+
+        case 'isLoadingCreateChatForm': {
+          const isVisible = newValue as boolean
+          const createChatForm = document.querySelector(
+            '.chat-create'
+          ) as HTMLElement
+
+          const createChatFormComponent = BaseLayout.findChild<Loader>(
+            createChatForm,
+            this.props.children
+          )
+
+          createChatFormComponent?.setProps<LoaderProps>({
+            isLoading: isVisible,
+          })
+
+          return false
         }
 
         case 'isLoadingRemoveChatForm': {
           const isVisible = newValue as boolean
-          const loader = document.querySelector(
-            '.loader chat-remove__loader'
+          const removeChatForm = document.querySelector(
+            '.chat-remove'
           ) as HTMLElement
 
-          const loaderComponent = BaseLayout.findChild<Loader>(
-            loader,
+          const removeChatFormComponent = BaseLayout.findChild<Loader>(
+            removeChatForm,
             this.props.children
           )
 
-          loaderComponent?.setProps<LoaderProps>({
-            isVisible,
+          removeChatFormComponent?.setProps<LoaderProps>({
+            isLoading: isVisible,
           })
 
-          // if (this.props.contacts) {
-          //   this.setProps({
-          //     isVisibleContacts: this.props.contacts.length > 0,
-          //   })
-          // }
-
-          break
+          return false
         }
 
         case 'isLoadingContacts': {
@@ -195,76 +192,11 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     return false
   }
 
-  protected withLoadingProfile<
-    THandlerArgs = unknown,
-    THandlerReturn = unknown
-  >(
-    handler: (...args: THandlerArgs[]) => Promise<THandlerReturn>,
-    ...args: unknown[]
-  ) {
-    return async () => {
-      this.setProps({
-        isLoadingProfile: true,
-      })
-
-      const response = await handler(...args)
-
-      this.setProps({
-        isLoadingProfile: false,
-      })
-
-      return response
-    }
-  }
-
-  protected withLoadingCreateChatForm<
-    THandlerArgs = unknown,
-    THandlerReturn = unknown
-  >(
-    handler: (...args: THandlerArgs[]) => Promise<THandlerReturn>,
-    ...args: unknown[]
-  ) {
-    return async () => {
-      this.setProps({
-        isLoadingCreateChatForm: true,
-      })
-
-      const response = await handler(...args)
-
-      this.setProps({
-        isLoadingCreateChatForm: false,
-      })
-
-      return response
-    }
-  }
-
-  protected withLoadingContacts<
-    THandlerArgs = unknown,
-    THandlerReturn = unknown
-  >(
-    handler: (...args: THandlerArgs[]) => Promise<THandlerReturn>,
-    ...args: unknown[]
-  ) {
-    return async () => {
-      this.setProps({
-        isLoadingContacts: true,
-      })
-
-      const response = await handler(...args)
-
-      this.setProps({
-        isLoadingContacts: false,
-      })
-
-      return response
-    }
-  }
-
+  @withLoading('isLoadingContacts')
   private async fetchContacts() {
-    const fetchContacts = this.withLoadingContacts(this.controller.fetchChats)
+    const response = await this.controller.fetchChats()
 
-    return await fetchContacts()
+    return response
   }
 
   private validate(event: Event, currentInputProps: InputProps) {
@@ -316,6 +248,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     ]
   }
 
+  @withLoading('isLoadingProfile')
   private async onProfileSubmit(event: Event) {
     const { isValidForm, values } = Form.preSubmitValidate(
       event,
@@ -323,15 +256,13 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     )
 
     if (isValidForm) {
-      const changeProfile = this.withLoadingProfile(
-        this.controller.changeProfile,
-        values
-      )
+      const response = await this.controller.changeProfile(values)
 
-      await changeProfile()
+      return response
     }
   }
 
+  @withLoading('isLoadingProfile')
   private async onPasswordSubmit(event: Event) {
     const { isValidForm, values } = Form.preSubmitValidate(
       event,
@@ -339,12 +270,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     )
 
     if (isValidForm) {
-      const changePassword = this.withLoadingProfile(
-        this.controller.changePassword,
-        values
-      )
-
-      const response = await changePassword()
+      const response = await this.controller.changePassword(values)
 
       if (response === 'OK') {
         const passwordTrigger = document.querySelector(
@@ -356,6 +282,17 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
   }
 
+  private onChangeContact(params: ChatContactProps) {
+    const container = document.querySelector('.chat-layout__content')
+
+    if (container?.classList.contains('chat-layout__content_input_active')) {
+      return
+    }
+
+    container?.classList.add('chat-layout__content_input_active')
+  }
+
+  @withLoading('isLoadingCreateChatForm')
   private async onCreateChatSubmit(event: Event) {
     const { isValidForm, values } = Form.preSubmitValidate(
       event,
@@ -363,24 +300,29 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     )
 
     if (isValidForm) {
-      const response = await this.controller.findUser(values.login)
+      const response = await this.controller.createChatWithAddUser(
+        values.title,
+        values.login
+      )
 
       if (response === 'OK') {
         this.triggerCreateChatForm()
         this.fetchContacts()
       } else {
-        const targetInput = (event.target as HTMLElement).querySelector(
-          '.input'
-        )
+        const inputs = (event.target as HTMLElement).querySelectorAll('.input')
 
-        const inputComponent = ChatLayout.findChild<Input>(
-          targetInput as HTMLElement,
-          this.props.children
-        )
+        inputs.forEach((input) => {
+          const inputComponent = ChatLayout.findChild<Input>(
+            input as HTMLElement,
+            this.props.children
+          )
 
-        inputComponent?.setProps({
-          message: response as string,
-          status: 'alert',
+          if (inputComponent?.getProps().name === 'login') {
+            inputComponent?.setProps({
+              message: response as string,
+              status: 'alert',
+            })
+          }
         })
       }
 
@@ -412,17 +354,16 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     Form.preSubmitValidate(event, this.props.children)
   }
 
+  @withLoading('isLoadingProfile')
   private async onChangeAvatar(event: Event) {
     const inputFile = event.target
 
     if (inputFile instanceof HTMLInputElement && inputFile.files) {
       const file = first(Array.from(inputFile.files)) as File
-      const changeAvatar = this.withLoadingProfile(
-        this.controller.changeAvatar,
-        file
-      )
 
-      await changeAvatar()
+      const response = await this.controller.changeAvatar(file)
+
+      await response
     }
   }
 
@@ -443,6 +384,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       isLoadingContacts,
       isLoadingProfile,
       isLoadingCreateChatForm,
+      isLoadingRemoveChatForm,
     } = this.props
 
     const avatarProps = {
@@ -471,7 +413,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         onCancel: this.triggerCreateChatForm.bind(this),
       }),
       new ChatRemoveForm({
-        isLoading: false,
+        isLoading: isLoadingRemoveChatForm,
         className: 'chat-layout__remove-users',
         onSubmit: this.onRemoveChatSubmit.bind(this),
         onCancel: this.triggerRemoveChatForm.bind(this),
@@ -479,6 +421,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       new ChatContactList({
         items: contacts,
         className: 'chat-layout__contacts-list scroll',
+        onChangeContact: this.onChangeContact.bind(this),
         onRemoveChat: this.triggerRemoveChatForm.bind(this),
       }),
       new Loader({

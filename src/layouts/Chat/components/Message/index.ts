@@ -7,18 +7,18 @@ import removeIconSrc from 'data-url:static/images/remove.svg'
 
 import './styles.scss'
 
-export interface ChatContactProps extends BaseComponentProps {
+export interface ChatMessageProps extends BaseComponentProps {
   isActive?: boolean
   detail: ChatContactType
 }
 
 const RESOURCES_URL = process.env.RESOURCES_URL as string
 
-export default class ChatContact extends BaseComponent<ChatContactProps> {
+export default class ChatMessage extends BaseComponent<ChatMessageProps> {
   protected template = templateString
 
-  constructor(props: ChatContactProps) {
-    super('chatContact', props)
+  constructor(props: ChatMessageProps) {
+    super('chatMessage', props)
 
     this.init()
   }
