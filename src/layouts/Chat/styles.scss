@@ -212,78 +212,6 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
     grid-area: messages;
   }
 
-  &__profile {
-    @include mx.themify('background-color', 'chat-sidebar-bg');
-
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: $profile-section-width;
-    height: 100vh;
-    transform: translateX($profile-section-width);
-    transition: transform 0.2s ease-in-out, box-shadow 0.3s 0.09s ease-in-out;
-    z-index: cfg.$z-index-content;
-  }
-
-  &__profile-overlay {
-    @extend .chat-layout__overlay;
-
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  &__profile-avatar {
-    position: relative;
-    overflow: hidden;
-  }
-
-  &__profile-form.form_readonly {
-    .form__control {
-      flex-flow: row nowrap;
-      align-items: center;
-    }
-
-    .form__label {
-      margin-right: fn.offset(0.5);
-      margin-bottom: 0;
-      white-space: nowrap;
-
-      &::after {
-        content: ':';
-      }
-    }
-
-    .input__message {
-      display: none;
-    }
-  }
-
-  &__profile-form:not(.form_readonly) {
-    & ~ .chat-layout__form-submit .chat-layout__trigger_password {
-      display: none;
-    }
-  }
-
-  &__profile-avatar-content {
-    height: $profile-section--avatar-height;
-    transition: filter 0.1s linear;
-
-    .avatar {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.2s ease-in-out;
-      border-radius: unset;
-    }
-  }
-
-  &__profile-edit-icon {
-    @extend %absolute-center;
-
-    width: 15%;
-    height: 15%;
-  }
-
   &__input {
     grid-area: input;
     display: flex;
@@ -324,18 +252,6 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
     .button {
       width: 100%;
     }
-  }
-
-  &__profile-logout-button.button {
-    margin-left: auto;
-    padding: 0 fn.offset();
-    min-width: unset;
-    width: auto;
-    height: 32px;
-    border-radius: calc(#{cfg.$radius} * 1.5);
-  }
-
-  &__messages {
   }
 
   &__messages-text {

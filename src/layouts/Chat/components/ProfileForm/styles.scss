@@ -14,33 +14,42 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
   transform: translate(-50%, -50%);
 }
 
-.chat-layout {
-  &__profile {
-    @include mx.themify('background-color', 'chat-sidebar-bg');
+.chat-layout__profile {
+  @include mx.themify('background-color', 'chat-sidebar-bg');
 
-    position: absolute;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: $profile-section-width;
+  height: 100vh;
+  transform: translateX($profile-section-width);
+  transition: transform 0.2s ease-in-out, box-shadow 0.3s 0.09s ease-in-out;
+  z-index: cfg.$z-index-content;
+
+  &-overlay {
+    @include mx.themify('background-color', 'overlay-bg');
+
+    position: fixed;
     top: 0;
-    right: 0;
-    width: $profile-section-width;
-    height: 100vh;
-    transform: translateX($profile-section-width);
-    transition: transform 0.2s ease-in-out, box-shadow 0.3s 0.09s ease-in-out;
-    z-index: cfg.$z-index-content;
-  }
-
-  &__profile-overlay {
-    @extend .chat-layout__overlay;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: scale(0);
+    z-index: cfg.$z-index-overlay;
+    transition: opacity 0.2s ease-in-out;
+    cursor: pointer;
 
     opacity: 1;
     transform: scale(1);
   }
 
-  &__profile-avatar {
+  &-avatar {
     position: relative;
     overflow: hidden;
   }
 
-  &__profile-form.form_readonly {
+  &-form.form_readonly {
     .form__control {
       flex-flow: row nowrap;
       align-items: center;
@@ -61,13 +70,13 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
     }
   }
 
-  &__profile-form:not(.form_readonly) {
+  &-form:not(.form_readonly) {
     & ~ .chat-layout__form-submit .chat-layout__trigger_password {
       display: none;
     }
   }
 
-  &__profile-avatar-content {
+  &-avatar-content {
     height: $profile-section--avatar-height;
     transition: filter 0.1s linear;
 
@@ -80,116 +89,19 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
     }
   }
 
-  &__profile-edit-icon {
+  &-edit-icon {
     @extend %absolute-center;
 
     width: 15%;
     height: 15%;
   }
 
-  &__form {
-    &.form_readonly ~ .chat-layout__form-submit .chat-layout__submit-button {
-      display: none;
-    }
-  }
-
-  &__form-container {
-    @include mx.themify('background-color', 'chat-sidebar-bg');
-
-    position: absolute;
-    top: $profile-section--avatar-height;
-    left: 0;
-    padding: fn.offset(3) fn.offset() fn.offset(2);
-    width: 100%;
-    height: calc(100vh - #{$profile-section--avatar-height});
-
-    &_password {
-      transform: translateX(100%);
-      transition: transform 0.2s ease-in-out;
-    }
-
-    .form {
-      margin-left: fn.offset(-1);
-      padding: 0 fn.offset();
-      width: calc(100% + #{fn.offset()} * 2);
-    }
-
-    .button {
-      width: 100%;
-    }
-  }
-
-  &__profile-logout-button.button {
+  .chat-layout__form-container &-logout-button.button {
     margin-left: auto;
     padding: 0 fn.offset();
     min-width: unset;
     width: auto;
     height: 32px;
     border-radius: calc(#{cfg.$radius} * 1.5);
-  }
-
-  &__messages {
-  }
-
-  &__messages-text {
-    font-size: 1.8rem;
-    max-width: 360px;
-    text-align: center;
-    font-weight: 300;
-  }
-
-  &__form-title.title {
-    @include mx.themify('color', 'primary');
-
-    align-items: center;
-    margin-bottom: calc(#{fn.offset(3)} - 2rem);
-    font-weight: 200;
-  }
-
-  &__form-submit {
-    margin-top: auto;
-    padding-top: fn.offset(2);
-
-    .button {
-      font-size: 1.4rem;
-
-      &:not(:first-child) {
-        margin-top: fn.offset();
-      }
-    }
-  }
-
-  &__message-form {
-    width: 100%;
-
-    .form__label {
-      display: none;
-    }
-
-    .input {
-      position: relative;
-    }
-
-    .input__message {
-      position: absolute;
-      margin-top: fn.offset(-0.5);
-      bottom: 100%;
-    }
-  }
-
-  &__submit {
-    margin-left: fn.offset(0.5);
-  }
-
-  &__link {
-    margin-top: fn.offset();
-  }
-
-  &__service-text {
-    padding: 0 fn.offset(1.4);
-    max-width: $profile-section-width;
-    font-size: 1.8rem;
-    text-align: center;
-    font-weight: 300;
   }
 }

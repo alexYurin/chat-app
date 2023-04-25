@@ -1,22 +1,11 @@
 -
   const [
-    addContactButton,
     createChatForm,
     removeChatForm,
     contactList,
-    contactsLoader,
-    profileLoader,
-    editAvatarIcon,
-    logoutButton,
-    avatarSettings,
-    avatar,
-    avatarInput,
     profileForm,
-    passwordForm,
+    avatar,
     messageForm,
-    profileToggleChangeButton,
-    profileSubmitButton,
-    passwordSubmitButton,
     messageSubmitButton,
   ] = children
 
@@ -38,43 +27,7 @@ section.chat-layout.flex.h100
 
   label(for="chat-profile-trigger").chat-layout__overlay
 
-  section.chat-layout__profile
-    | !{profileLoader}
-
-    .chat-layout__profile-avatar
-      label(for="user_avatar").chat-layout__trigger.chat-layout__trigger_avatar.center
-        | !{editAvatarIcon}
-      .chat-layout__profile-avatar-content
-        | !{avatarSettings}
-        | !{avatarInput}
-
-    .chat-layout__form-container.chat-layout__form-container_profile.column
-      h2.chat-layout__form-title.title.title_level_1.row.row_nowrap
-        | Данные Профиля
-        | !{logoutButton}
-
-      | !{profileForm}
-
-      .chat-layout__form-submit.column
-        | !{profileToggleChangeButton}
-
-        label(
-          for="chat-password-trigger"
-        ).chat-layout__trigger.chat-layout__trigger_password.button Изменить Пароль
-
-        | !{profileSubmitButton}
-
-    .chat-layout__form-container.chat-layout__form-container_password.column
-      h2.chat-layout__form-title.title.title_level_1 Смена Пароля
-
-      | !{passwordForm}
-
-      .chat-layout__form-submit.column
-        label(
-          for="chat-password-trigger"
-        ).chat-layout__trigger.chat-layout__trigger_password.button Отменить
-
-        | !{passwordSubmitButton}
+  | !{profileForm}
 
   section.chat-layout__create-form
     | !{createChatForm}
@@ -89,12 +42,7 @@ section.chat-layout.flex.h100
       | !{avatar}
       | Профиль
 
-    aside.chat-layout__contacts.column
-      | !{contactsLoader}
-      | !{addContactButton}
-      | !{contactList}
-
-      span.chat-layout__service-text| Нет контактов
+    | !{contactList}
 
     .chat-layout__messages.column.center
       span.chat-layout__service-text Выберете собеседника или создайте новый чат

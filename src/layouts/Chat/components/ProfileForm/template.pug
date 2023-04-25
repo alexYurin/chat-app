@@ -1,0 +1,52 @@
+-
+  const [
+    loader,
+    editAvatarIcon,
+    logoutButton,
+    avatarSettings,
+    avatar,
+    avatarInput,
+    profileForm,
+    passwordForm,
+    profileToggleChangeButton,
+    profileSubmitButton,
+    passwordSubmitButton,
+  ] = children
+
+section.chat-layout__profile
+  | !{loader}
+
+  .chat-layout__profile-avatar
+    label(for="user_avatar").chat-layout__trigger.chat-layout__trigger_avatar.center
+      | !{editAvatarIcon}
+    .chat-layout__profile-avatar-content
+      | !{avatarSettings}
+      | !{avatarInput}
+
+  .chat-layout__form-container.chat-layout__form-container_profile.column
+    h2.chat-layout__form-title.title.title_level_1.row.row_nowrap
+      | Данные Профиля
+      | !{logoutButton}
+
+    | !{profileForm}
+
+    .chat-layout__form-submit.column
+      | !{profileToggleChangeButton}
+
+      label(
+        for="chat-password-trigger"
+      ).chat-layout__trigger.chat-layout__trigger_password.button Изменить Пароль
+
+      | !{profileSubmitButton}
+
+  .chat-layout__form-container.chat-layout__form-container_password.column
+    h2.chat-layout__form-title.title.title_level_1 Смена Пароля
+
+    | !{passwordForm}
+
+    .chat-layout__form-submit.column
+      label(
+        for="chat-password-trigger"
+      ).chat-layout__trigger.chat-layout__trigger_password.button Отменить
+
+      | !{passwordSubmitButton}

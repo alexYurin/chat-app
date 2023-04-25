@@ -4,6 +4,7 @@ import { isEquals } from 'utils/index'
 import { ChatContactItemType } from 'types/chat'
 import templateString from 'bundle-text:./template.pug'
 import { store } from 'services/index'
+import { Button, Loader } from 'components/index'
 
 import './styles.scss'
 
@@ -36,6 +37,8 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
         if (!isEquals(prevProp, newProp)) {
           this.init()
 
+          console.log('RENDER', this.props.items)
+
           return true
         }
 
@@ -45,6 +48,15 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
       default:
         return false
     }
+  }
+
+  private triggerCreateChatForm() {
+    const triggerClassname = 'chat-layout__create-form_active'
+
+    const formContainer = document.querySelector('.chat-layout__create-form')
+    const isVisible = formContainer?.classList.contains(triggerClassname)
+
+    formContainer?.classList[isVisible ? 'remove' : 'add'](triggerClassname)
   }
 
   protected onChangeContact(event: Event) {
@@ -119,21 +131,42 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
   }
 
   protected init() {
-    const { items } = this.props
+    const { items, isLoading } = this.props
+
+    console.log('items', items)
 
     if (items) {
-      this.props.children = items.map((item) => {
-        return new ChatContact({
-          ...item,
-          id: `${PREFIX_CHAT_ID}${item.detail.id}`,
+      this.props.children = [
+        new Loader({
+          className: 'chat-layout__contacts-loader',
+          isVisible: isLoading,
+          withOverlay: true,
+        }),
+        new Button({
+          status: 'primary',
+          type: 'button',
+          children: ['Создать чат'],
+          className: 'chat-layout__contacts-add-button',
           listeners: [
             {
               eventType: 'click',
-              callback: this.onChangeContact.bind(this),
+              callback: this.triggerCreateChatForm.bind(this),
             },
           ],
-        })
-      })
+        }),
+        ...items.map((item) => {
+          return new ChatContact({
+            ...item,
+            id: `${PREFIX_CHAT_ID}${item.detail.id}`,
+            listeners: [
+              {
+                eventType: 'click',
+                callback: this.onChangeContact.bind(this),
+              },
+            ],
+          })
+        }),
+      ]
     }
   }
 }
