@@ -10,10 +10,11 @@ import { ChatPropsType } from './types'
 import { isEquals } from 'utils/index'
 import withLoading from './withLoading'
 import {
-  ChatContactList,
+  ChatContactsList,
   ChatCreateForm,
   ChatRemoveForm,
   ChatProfileForm,
+  ChatMessagesList,
   ChatMessageInput,
 } from './components'
 import { Input, Avatar, Loader, BaseComponent } from 'components/index'
@@ -28,6 +29,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     'user',
     'contacts',
     'isLoading',
+    'isVisibleMessageInput',
     'isVisibleContacts',
     'isLoadingContacts',
     'isLoadingProfile',
@@ -97,6 +99,10 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
             container?.classList[isActiveChats ? 'add' : 'remove'](
               'chat-layout__content_input_active'
             )
+
+            this.setProps({
+              isVisibleMessageInput: isActiveChats,
+            })
           }
 
           return false
@@ -187,6 +193,10 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
           return false
         }
 
+        case 'isVisibleMessageInput': {
+          return false
+        }
+
         default:
           console.log(
             `Unhandled prop "${propKey}" in skip re-render with values: ${prevValue}, ${newValue}`
@@ -232,7 +242,13 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       return
     }
 
-    container?.classList.add('chat-layout__content_input_active')
+    if (!this.props.isVisibleMessageInput) {
+      container?.classList.add('chat-layout__content_input_active')
+
+      this.setProps({
+        isVisibleMessageInput: true,
+      })
+    }
   }
 
   @withLoading('isLoadingContacts')
@@ -365,7 +381,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         onSubmit: this.onRemoveChatSubmit.bind(this),
         onCancel: this.triggerRemoveChatForm.bind(this),
       }),
-      new ChatContactList({
+      new ChatContactsList({
         isLoading: isLoadingContacts,
         items: contacts,
         className: 'chat-layout__contacts-list scroll',
@@ -383,6 +399,9 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         onChangeProfile: this.onChangeProfile.bind(this),
         onChangePassword: this.onChangePassword.bind(this),
         onLogout: this.onLogout.bind(this),
+      }),
+      new ChatMessagesList({
+        items: [],
       }),
       new ChatMessageInput({
         messageFields,

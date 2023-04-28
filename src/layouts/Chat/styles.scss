@@ -32,6 +32,7 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
       font-weight: 600;
       transition: box-shadow 0.2s ease-in-out, transform 0.2s linear;
       cursor: pointer;
+      z-index: cfg.$z-index-content;
 
       &:hover {
         box-shadow: 0 0 2.5rem #{fn.theme-color('dark', 'primary')};
@@ -140,6 +141,10 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
       .chat-layout__input {
         margin-bottom: 0;
       }
+
+      .messages-list {
+        display: flex;
+      }
     }
 
     &_contacts_active {
@@ -210,6 +215,7 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
 
   &__messages {
     grid-area: messages;
+    position: relative;
   }
 
   &__input {

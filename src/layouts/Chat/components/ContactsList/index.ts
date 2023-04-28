@@ -8,7 +8,7 @@ import { Button, Loader } from 'components/index'
 
 import './styles.scss'
 
-export interface ChatContactListProps extends BaseComponentProps {
+export interface ChatContactsListProps extends BaseComponentProps {
   isLoading?: boolean
   items?: ChatContactItemType[]
   onChangeContact?: (contact: ChatContactProps) => void
@@ -17,12 +17,12 @@ export interface ChatContactListProps extends BaseComponentProps {
 
 const PREFIX_CHAT_ID = 'id_'
 
-export default class ChatContactList extends BaseComponent<ChatContactListProps> {
+export default class ChatContactsList extends BaseComponent<ChatContactsListProps> {
   protected template = templateString
   protected disableRenderPropsList = ['isLoading', 'items']
 
-  constructor(props: ChatContactListProps) {
-    super('chatContactList', props)
+  constructor(props: ChatContactsListProps) {
+    super('chatContactsList', props)
 
     this.init()
 
@@ -30,7 +30,7 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
   }
 
   protected onUpdateProps(
-    propKey: keyof ChatContactListProps,
+    propKey: keyof ChatContactsListProps,
     prevProp: unknown,
     newProp: unknown
   ): boolean {
@@ -100,7 +100,7 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
         `#${PREFIX_CHAT_ID}${currentContact?.detail?.id}`
       ) as HTMLElement
 
-      const currentContactInstance = ChatContactList.findChild<ChatContact>(
+      const currentContactInstance = ChatContactsList.findChild<ChatContact>(
         HTMLCurrentContact,
         this.props.children
       )

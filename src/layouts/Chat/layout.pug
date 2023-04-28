@@ -5,8 +5,8 @@
     removeChatForm,
     contactList,
     profileForm,
+    messagesList,
     messageInput,
-    messageSubmitButton,
   ] = children
 
   const chatContentClassNames = {
@@ -45,6 +45,8 @@ section.chat-layout.flex.h100
     | !{contactList}
 
     .chat-layout__messages.column.center
+      | !{messagesList}
+
       span.chat-layout__service-text Выберете собеседника или создайте новый чат
 
     | !{messageInput}

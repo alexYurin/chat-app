@@ -1,0 +1,12 @@
+-
+  const classNames = {
+    [`${className}`]: Boolean(className),
+  }
+
+ul(class=classNames).messages-list.scroll
+  if children.length === 0
+    li.messages-list__text Пока нет сообщений. Напишите первым 😉
+
+  each message in children
+    li.messages-list__item
+      | !{message}

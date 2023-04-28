@@ -1,0 +1,53 @@
+@use 'styles/mixins' as mx;
+@use 'styles/config' as cfg;
+@use 'styles/functions' as fn;
+
+$container-offset: 60px;
+
+.messages-list {
+  @include mx.themify('background-color', 'main-bg');
+
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: calc(100% - $container-offset);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &:empty {
+    &::after {
+      content: 'Пока нет сообщений. Напишите первым 😉';
+    }
+  }
+
+  &__text,
+  &__item {
+    display: flex;
+  }
+
+  &__text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.8rem;
+    text-align: center;
+  }
+
+  &__item {
+    width: 100%;
+    border-style: solid;
+    border-width: 0;
+
+    &:not(:last-child) {
+      @include mx.themify('border-color', 'input-border');
+
+      border-bottom-width: 0.1rem;
+    }
+  }
+}
