@@ -12,6 +12,7 @@ export interface AvatarProps extends BaseComponentProps {
 
 export default class Avatar extends BaseComponent<AvatarProps> {
   protected template = templateString
+  protected disableRenderPropsList = ['src']
 
   static defaultAvatarSrc = avatarPlaceholderSrc
 

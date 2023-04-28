@@ -9,6 +9,7 @@ import { Button, Loader } from 'components/index'
 import './styles.scss'
 
 export interface ChatContactListProps extends BaseComponentProps {
+  isLoading?: boolean
   items?: ChatContactItemType[]
   onChangeContact?: (contact: ChatContactProps) => void
   onRemoveChat?: (chatId: number) => void
@@ -18,6 +19,7 @@ const PREFIX_CHAT_ID = 'id_'
 
 export default class ChatContactList extends BaseComponent<ChatContactListProps> {
   protected template = templateString
+  protected disableRenderPropsList = ['isLoading', 'items']
 
   constructor(props: ChatContactListProps) {
     super('chatContactList', props)
@@ -33,11 +35,19 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
     newProp: unknown
   ): boolean {
     switch (propKey) {
-      case 'items': {
+      case 'isLoading': {
         if (!isEquals(prevProp, newProp)) {
           this.init()
 
-          console.log('RENDER', this.props.items)
+          return true
+        }
+
+        return false
+      }
+
+      case 'items': {
+        if (!isEquals(prevProp, newProp)) {
+          this.init()
 
           return true
         }
@@ -132,8 +142,6 @@ export default class ChatContactList extends BaseComponent<ChatContactListProps>
 
   protected init() {
     const { items, isLoading } = this.props
-
-    console.log('items', items)
 
     if (items) {
       this.props.children = [

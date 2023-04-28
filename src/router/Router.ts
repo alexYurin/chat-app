@@ -42,6 +42,10 @@ class Router {
   public navigate(pathname: string) {
     const currentPathname = this.controller.getCurrentPathname(pathname)
 
+    if (this.currentPathname === currentPathname) {
+      return
+    }
+
     this.history.pushTo(currentPathname)
   }
 

@@ -1,9 +1,9 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import { Form, Input, Button, Image, Avatar, Loader } from 'components/index'
-import { AvatarProps } from 'components/Avatar'
-import { FormProps } from 'components/Form'
 import { ProfileChangePasswordRequestParamsType } from 'api/Profile'
 import { InputProps } from 'components/Input'
+import { FormProps } from 'components/Form'
+import { AvatarProps } from 'components/Avatar'
 import { UserType } from 'types/user'
 import { first, isFunction } from 'utils/index'
 import editAvatarIconSrc from 'data-url:static/images/edit.svg'
@@ -42,6 +42,15 @@ export default class ChatProfileForm extends BaseComponent<ChatProfileFormProps>
     Form.validate(event, currentInputProps, this.props.children)
   }
 
+  private createInputListeners(inputProps: InputProps) {
+    return [
+      {
+        eventType: 'blur',
+        callback: (event: Event) => this.validate(event, inputProps),
+      },
+    ]
+  }
+
   private triggerProfileFormEdit(event: Event) {
     const triggerButton = event.target as HTMLButtonElement
 
@@ -52,15 +61,6 @@ export default class ChatProfileForm extends BaseComponent<ChatProfileFormProps>
 
     triggerButton.textContent = buttonText
     form?.classList[action]('form_readonly')
-  }
-
-  private createInputListeners(inputProps: InputProps) {
-    return [
-      {
-        eventType: 'blur',
-        callback: (event: Event) => this.validate(event, inputProps),
-      },
-    ]
   }
 
   private onChangeAvatar(event: Event) {

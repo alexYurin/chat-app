@@ -282,24 +282,6 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
     }
   }
 
-  &__message-form {
-    width: 100%;
-
-    .form__label {
-      display: none;
-    }
-
-    .input {
-      position: relative;
-    }
-
-    .input__message {
-      position: absolute;
-      margin-top: fn.offset(-0.5);
-      bottom: 100%;
-    }
-  }
-
   &__submit {
     margin-left: fn.offset(0.5);
   }

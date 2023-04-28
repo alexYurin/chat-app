@@ -3,15 +3,20 @@ import { Title, Form, Button, Loader } from 'components/index'
 import { LoaderProps } from 'components/Loader'
 import { InputProps } from 'components/Input'
 import Validation from 'components/Form/Validation'
-import templateString from 'bundle-text:./template.pug'
+import { isFunction } from 'utils/index'
 
+import templateString from 'bundle-text:./template.pug'
 import './styles.scss'
 
-interface ChatCreateFormProps extends BaseComponentProps {
+export type ChatFormCreateValueType = {
+  title: string
+  login: string
+}
+
+export interface ChatCreateFormProps extends BaseComponentProps {
   isLoading?: boolean
-  onValidate: (event: Event, currentInputProps: InputProps) => void
   onCancel: () => void
-  onSubmit: (event: Event) => void
+  onSubmit: (values: ChatFormCreateValueType) => void
 }
 
 const formId = 'chat-create-form'
@@ -52,6 +57,22 @@ export default class ChatCreateForm extends BaseComponent<ChatCreateFormProps> {
     return false
   }
 
+  private validate(event: Event, currentInputProps: InputProps) {
+    Form.validate(event, currentInputProps, this.props.children)
+  }
+
+  private onSubmit(event: Event) {
+    const { isValidForm, values } =
+      Form.preSubmitValidate<ChatFormCreateValueType>(
+        event,
+        this.props.children
+      )
+
+    if (isValidForm && isFunction(this.props.onSubmit)) {
+      this.props.onSubmit(values)
+    }
+  }
+
   protected init() {
     this.props.children = [
       new Loader({
@@ -79,7 +100,7 @@ export default class ChatCreateForm extends BaseComponent<ChatCreateFormProps> {
                 {
                   eventType: 'blur',
                   callback: (event: Event) =>
-                    this.props.onValidate(event, {
+                    this.validate(event, {
                       name: 'title',
                       type: 'text',
                       validation: Validation.rules.display_name,
@@ -98,7 +119,7 @@ export default class ChatCreateForm extends BaseComponent<ChatCreateFormProps> {
                 {
                   eventType: 'blur',
                   callback: (event: Event) =>
-                    this.props.onValidate(event, {
+                    this.validate(event, {
                       name: 'login',
                       type: 'text',
                       validation: Validation.rules.login,
@@ -111,7 +132,7 @@ export default class ChatCreateForm extends BaseComponent<ChatCreateFormProps> {
         listeners: [
           {
             eventType: 'submit',
-            callback: this.props.onSubmit,
+            callback: this.onSubmit.bind(this),
           },
         ],
       }),

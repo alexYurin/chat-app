@@ -1,0 +1,19 @@
+@use 'styles/functions' as fn;
+
+.chat-layout__message-form {
+  width: 100%;
+
+  .form__label {
+    display: none;
+  }
+
+  .input {
+    position: relative;
+  }
+
+  .input__message {
+    position: absolute;
+    margin-top: fn.offset(-0.5);
+    bottom: 100%;
+  }
+}
