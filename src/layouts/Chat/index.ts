@@ -234,20 +234,8 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   }
 
   private onChangeContact(params: ChatContactProps) {
-    const container = document.querySelector('.chat-layout__content')
-
-    console.log('onChangeContact', params)
-
-    if (container?.classList.contains('chat-layout__content_input_active')) {
-      return
-    }
-
-    if (!this.props.isVisibleMessageInput) {
-      container?.classList.add('chat-layout__content_input_active')
-
-      this.setProps({
-        isVisibleMessageInput: true,
-      })
+    if (params.token === undefined) {
+      this.controller.connectToChat(params.detail.id)
     }
   }
 

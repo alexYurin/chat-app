@@ -6,7 +6,7 @@ import ChatApi, {
 } from 'api/Chat'
 import ProfileApi, { ProfileChangePasswordRequestParamsType } from 'api/Profile'
 import { Router, routes } from 'router/index'
-import { store } from 'services/index'
+import { store, SocketClient } from 'services/index'
 import { UserType } from 'types/user'
 
 const profileApi = new ProfileApi()
@@ -20,7 +20,7 @@ export default class ChatController {
     const users = await chatApi.fetchUsers({
       chatId,
       offset: 0,
-      limit: 100,
+      limit: 20,
     })
 
     const { contacts } = store.getState()
@@ -68,16 +68,53 @@ export default class ChatController {
       limit: 20,
     })
 
+    const oldContacts = store.getState().contacts
+
     const contacts = chats.map((contact) => {
-      return {
+      const oldContact = oldContacts?.find(
+        (currentContact) => currentContact.detail.id === contact.id
+      )
+
+      const contactDescription = {
         isActive: contact.id === activeChatId,
         detail: contact,
       }
+
+      if (oldContact) {
+        return {
+          ...contactDescription,
+          client: oldContact?.client,
+        }
+      } else {
+        return this.connectToChat(contact.id).then((client) => {
+          return {
+            ...contactDescription,
+            client,
+          }
+        })
+      }
     })
 
-    store.set('contacts', contacts)
+    const connectedContacts = await Promise.all(contacts)
+
+    store.set('contacts', connectedContacts)
 
     return chats
+  }
+
+  public async connectToChat(chatId: number) {
+    const { user } = store.getState()
+    const { token } = await chatApi.fetchChatToken({ chatId })
+
+    const client = new SocketClient({
+      chatId,
+      token,
+      userId: user?.id as number,
+    })
+
+    console.log('CLIENT', client)
+
+    return { client }
   }
 
   @fetchDecorator({ withRouteOnErrorPage: true })
@@ -86,10 +123,6 @@ export default class ChatController {
       chatId,
       users,
     })
-
-    // if (response?.id) {
-    //   return response?.id
-    // }
 
     return response
   }

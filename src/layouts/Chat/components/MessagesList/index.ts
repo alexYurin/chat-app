@@ -1,6 +1,5 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import { isEquals } from 'utils/index'
-import { ChatContactItemType } from 'types/chat'
 
 import templateString from 'bundle-text:./template.pug'
 import './styles.scss'

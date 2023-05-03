@@ -120,11 +120,11 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
       store.set(
         'contacts',
         contacts?.map((contact: ChatContactProps) => {
-          if (contact.detail.id === contactProps.detail.id) {
+          if (contact.detail.id === contactProps?.detail?.id) {
             return contactProps
           }
 
-          if (contact.detail.id === currentContact?.detail.id) {
+          if (contact.detail.id === currentContact?.detail?.id) {
             return currentContactInstance?.getProps() || currentContact
           }
 

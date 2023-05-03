@@ -2,6 +2,7 @@ import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import { Avatar, Button, Image } from 'components/index'
 import { ChatContactType } from 'types/chat'
 import { parseDateToTime } from 'utils/index'
+import { SocketClient } from 'services/index'
 import templateString from 'bundle-text:./template.pug'
 import removeIconSrc from 'data-url:static/images/remove.svg'
 
@@ -9,6 +10,7 @@ import './styles.scss'
 
 export interface ChatContactProps extends BaseComponentProps {
   isActive?: boolean
+  client?: SocketClient
   detail: ChatContactType
 }
 

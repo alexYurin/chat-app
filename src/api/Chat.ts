@@ -60,13 +60,18 @@ export type ChatNewMessagesCountResponseType = {
   unread_count: number
 }
 
+export type ChatTokenRequestParamsType = {
+  chatId: number
+}
+
+export type ChatTokenResponseType = {
+  token: string
+}
+
 export default class ChatApi extends BaseApi {
   public fetchChats(payload: ChatsRequestParamsType) {
     return this.get<ChatContactType[]>('chats', {
       data: payload,
-      headers: {
-        'Content-Type': 'application/json',
-      },
     })
   }
 
@@ -108,20 +113,16 @@ export default class ChatApi extends BaseApi {
 
     return this.get<ChatUsersResponseType>(`chats/${chatId}/users`, {
       data: restPayload,
-      headers: {
-        'Content-Type': 'application/json',
-      },
     })
   }
 
   public fetchNewCountMessages(payload: ChatNewMessagesCountRequestParamsType) {
     return this.get<ChatNewMessagesCountResponseType>(
-      `chats/new/${payload.chatId}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
+      `chats/new/${payload.chatId}`
     )
+  }
+
+  public fetchChatToken(payload: ChatTokenRequestParamsType) {
+    return this.post<ChatTokenResponseType>(`chats/token/${payload.chatId}`)
   }
 }
