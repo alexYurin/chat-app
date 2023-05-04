@@ -1,7 +1,7 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base'
 import EventBus from 'services/EventBus'
 import { UserType } from 'types/user'
-import { ChatContactItemType } from 'types/chat'
+import { ChatContactItemType, ChatMessageType } from 'types/chat'
 import { isEquals } from 'utils/index'
 
 export type StateType = {
@@ -9,7 +9,7 @@ export type StateType = {
   user?: UserType | null
   currentContact?: ChatContactItemType | null
   contacts?: ChatContactItemType[]
-  messages?: unknown[]
+  messages?: ChatMessageType[]
   error?: {
     status: number | string
     message: string

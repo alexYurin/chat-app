@@ -1,6 +1,13 @@
 export type SocketEventNameType = 'open' | 'close' | 'message' | 'error'
 
-export type SocketEventType = WebSocketEventMap[keyof WebSocketEventMap]
+export type SocketEventType = {
+  wasClean?: boolean
+  code?: number
+  reason?: string
+  message?: string
+  data?: string
+  type?: string
+}
 
 export type SocketEventCallbackType = (event: SocketEventType) => void
 
@@ -41,7 +48,15 @@ export default class SocketClient {
     )
   }
 
+  public ping() {
+    this.socket.send(
+      JSON.stringify({
+        type: 'ping',
+      })
+    )
+  }
+
   public on(eventName: SocketEventNameType, callback: SocketEventCallbackType) {
-    this.socket.addEventListener(eventName, callback)
+    this.socket.addEventListener(eventName, callback as EventListener)
   }
 }

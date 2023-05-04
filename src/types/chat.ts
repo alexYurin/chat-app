@@ -31,8 +31,8 @@ export type ChatContactType = {
 }
 
 export type ChatContactItemType = {
-  isActive?: boolean
+  isActive: boolean
   detail: ChatContactType
-  users?: UserType[]
-  client?: SocketClient
+  users: UserType[]
+  client: SocketClient
 }

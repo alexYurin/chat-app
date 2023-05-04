@@ -11,6 +11,7 @@ import './styles.scss'
 export interface ChatContactsListProps extends BaseComponentProps {
   isLoading?: boolean
   items?: ChatContactItemType[]
+  currentContact?: ChatContactProps | null
   onChangeContact?: (contact: ChatContactProps) => void
   onRemoveChat?: (chatId: number) => void
 }
@@ -73,6 +74,8 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
     const target = event.target as HTMLElement
     const contact = event.currentTarget as HTMLElement
 
+    const { currentContact, contacts } = store.getState()
+
     const contactInstance = BaseComponent.findChild<ChatContact>(
       contact,
       this.props.children
@@ -91,48 +94,51 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
       return
     }
 
+    if (
+      `${PREFIX_CHAT_ID}${currentContact?.detail.id}` ===
+      contactInstance?.getProps().id
+    ) {
+      return
+    }
+
     if (contactInstance) {
-      const contactProps = contactInstance.getProps() as ChatContactProps
+      if (currentContact) {
+        const HTMLCurrentContact = document.getElementById(
+          `${PREFIX_CHAT_ID}${currentContact.detail.id}`
+        ) as HTMLElement
 
-      const { currentContact, contacts } = store.getState()
+        const contactContactInstance = BaseComponent.findChild<ChatContact>(
+          HTMLCurrentContact,
+          this.props.children
+        )
 
-      const HTMLCurrentContact = document.querySelector(
-        `#${PREFIX_CHAT_ID}${currentContact?.detail?.id}`
-      ) as HTMLElement
-
-      const currentContactInstance = ChatContactsList.findChild<ChatContact>(
-        HTMLCurrentContact,
-        this.props.children
-      )
-
-      if (currentContactInstance?.getProps().id === contactProps.id) {
-        return
+        contactContactInstance?.setProps({
+          isActive: false,
+        })
       }
-
-      currentContactInstance?.setProps({
-        isActive: false,
-      })
 
       contactInstance.setProps({
         isActive: true,
       })
 
-      store.set(
-        'contacts',
-        contacts?.map((contact: ChatContactProps) => {
-          if (contact.detail.id === contactProps?.detail?.id) {
-            return contactProps
-          }
-
-          if (contact.detail.id === currentContact?.detail?.id) {
-            return currentContactInstance?.getProps() || currentContact
-          }
-
-          return contact
-        })
-      )
+      const contactProps = contactInstance.getProps()
 
       store.set('currentContact', contactProps)
+
+      store.set(
+        'contacts',
+        contacts?.map((storeContact) => {
+          if (storeContact.detail.id === currentContact?.detail.id) {
+            storeContact.isActive = currentContact.isActive
+          }
+
+          if (storeContact.detail.id === contactProps.detail.id) {
+            storeContact.isActive = contactProps.isActive
+          }
+
+          return storeContact
+        })
+      )
 
       if (typeof this.props.onChangeContact === 'function') {
         this.props.onChangeContact(contactProps)
@@ -141,7 +147,7 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
   }
 
   protected init() {
-    const { items, isLoading } = this.props
+    const { items, isLoading, currentContact } = this.props
 
     if (items) {
       this.props.children = [
@@ -165,6 +171,8 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
         ...items.map((item) => {
           return new ChatContact({
             ...item,
+            isActive:
+              currentContact?.id === `${PREFIX_CHAT_ID}${item.detail.id}`,
             id: `${PREFIX_CHAT_ID}${item.detail.id}`,
             listeners: [
               {

@@ -2,6 +2,7 @@ import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
 import ChatController from './controller'
 import { UserType } from 'types/user'
+import { ChatContactItemType, ChatMessageType } from 'types/chat'
 import { ChatContactProps } from './components/Contact'
 import { ProfileChangePasswordRequestParamsType } from 'api/Profile'
 import { LoaderProps } from 'components/Loader'
@@ -27,7 +28,9 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   protected template = layout
   protected disableRenderPropsList = [
     'user',
+    'messages',
     'contacts',
+    'currentContact',
     'isLoading',
     'isVisibleMessageInput',
     'isVisibleContacts',
@@ -73,36 +76,55 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
           return true
         }
 
-        case 'contacts': {
-          if (this.props.contacts) {
-            const container = document.querySelector('.chat-layout__content')
+        case 'messages': {
+          if (!isEquals(prevValue, newValue)) {
+            const updatedMessages = newValue as ChatMessageType[]
+            const messagesList = document.querySelector(
+              '.messages-list'
+            ) as HTMLElement
 
+            const messagesLiatInstance =
+              BaseComponent.findChild<ChatMessagesList>(
+                messagesList,
+                this.props.children
+              )
+
+            messagesLiatInstance?.setProps({
+              items: updatedMessages,
+            })
+          }
+
+          return false
+        }
+
+        case 'currentContact': {
+          return false
+        }
+
+        case 'contacts': {
+          const updatedContacts = newValue as ChatContactItemType[]
+
+          if (updatedContacts) {
             const contactsList = document.querySelector(
               '.chat-layout__contacts'
             ) as HTMLElement
 
-            const contactsListInstance = BaseLayout.findChild<ChatContactList>(
+            const contactsListInstance = BaseLayout.findChild<ChatContactsList>(
               contactsList,
               this.props.children
             )
 
+            this.setProps({ isVisibleContacts: updatedContacts.length > 0 })
+
             contactsListInstance?.setProps({
-              items: this.props.contacts,
+              items: updatedContacts,
             })
 
-            this.setProps({ isVisibleContacts: this.props.contacts.length > 0 })
-
-            const isActiveChats = this.props.contacts.some(
-              (contact) => contact.isActive
-            )
-
-            container?.classList[isActiveChats ? 'add' : 'remove'](
-              'chat-layout__content_input_active'
-            )
-
-            this.setProps({
-              isVisibleMessageInput: isActiveChats,
-            })
+            if (updatedContacts.length === 0) {
+              this.setProps({
+                isVisibleMessageInput: false,
+              })
+            }
           }
 
           return false
@@ -194,6 +216,14 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         }
 
         case 'isVisibleMessageInput': {
+          const container = document.querySelector(
+            '.chat-layout__content'
+          ) as HTMLElement
+
+          container.classList[newValue ? 'add' : 'remove'](
+            'chat-layout__content_input_active'
+          )
+
           return false
         }
 
@@ -234,8 +264,16 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   }
 
   private onChangeContact(params: ChatContactProps) {
-    if (params.token === undefined) {
+    if (params.client === undefined) {
       this.controller.connectToChat(params.detail.id)
+    } else {
+      params.client.getHistory(0)
+    }
+
+    if (!this.props.isVisibleMessageInput) {
+      this.setProps({
+        isVisibleMessageInput: true,
+      })
     }
   }
 
@@ -332,13 +370,17 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   }
 
   private onSendMessage(message: string) {
-    console.log('send message', message)
+    const { currentContact } = this.getProps()
+
+    // currentContact?.client.sendMessage(message)
   }
 
   protected init() {
     const {
       user,
+      messages,
       contacts,
+      currentContact,
       avatar,
       avatarInput,
       profileFields,
@@ -370,6 +412,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         onCancel: this.triggerRemoveChatForm.bind(this),
       }),
       new ChatContactsList({
+        currentContact,
         isLoading: isLoadingContacts,
         items: contacts,
         className: 'chat-layout__contacts-list scroll',
@@ -389,7 +432,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         onLogout: this.onLogout.bind(this),
       }),
       new ChatMessagesList({
-        items: [],
+        items: messages,
       }),
       new ChatMessageInput({
         messageFields,

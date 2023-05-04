@@ -8,6 +8,7 @@ import ProfileApi, { ProfileChangePasswordRequestParamsType } from 'api/Profile'
 import { Router, routes } from 'router/index'
 import { store, SocketClient } from 'services/index'
 import { UserType } from 'types/user'
+import { ChatMessageType } from 'types/chat'
 
 const profileApi = new ProfileApi()
 const authApi = new AuthApi()
@@ -15,6 +16,50 @@ const chatApi = new ChatApi()
 const userApi = new UserApi()
 
 export default class ChatController {
+  private handleSocketMessage(event: MessageEvent) {
+    const payload = JSON.parse(event.data)
+
+    if (event.type === 'message' && Array.isArray(payload)) {
+      store.set('messages', payload)
+
+      return
+    }
+
+    if (event.type === 'message' && typeof payload === 'string') {
+      console.log('new message', payload)
+
+      return
+    }
+  }
+
+  private addSocketListeners(chatId: number, client: SocketClient) {
+    client.on('open', () => {
+      console.log(`Установлено соединение: Чат ${chatId}`)
+    })
+
+    client.on('close', (event) => {
+      if (event.wasClean) {
+        console.log(`Соединение закрыто чисто: Чат ${chatId}`)
+      } else {
+        console.log(
+          `Обрыв соединения: Чат ${chatId} - Код: ${event.code} | Причина: "${event.reason}"`
+        )
+      }
+    })
+
+    client.on('error', (event) => {
+      console.error(`Ошибка соединения: Чат ${chatId}, ${event.message}`)
+    })
+
+    client.on('message', (event) => {
+      this.handleSocketMessage(event as MessageEvent)
+    })
+
+    setInterval(() => {
+      client.ping()
+    }, 3000)
+  }
+
   @fetchDecorator({ withRouteOnErrorPage: true })
   public async fetchChatUsers(chatId: number) {
     const users = await chatApi.fetchUsers({
@@ -97,7 +142,18 @@ export default class ChatController {
 
     const connectedContacts = await Promise.all(contacts)
 
-    store.set('contacts', connectedContacts)
+    const withUsers = connectedContacts.map((connectedContact) => {
+      return this.getChatUsers(connectedContact.detail.id).then((response) => {
+        return {
+          ...connectedContact,
+          users: response,
+        }
+      })
+    })
+
+    const connectedContactsWithUsers = await Promise.all(withUsers)
+
+    store.set('contacts', connectedContactsWithUsers)
 
     return chats
   }
@@ -112,9 +168,16 @@ export default class ChatController {
       userId: user?.id as number,
     })
 
-    console.log('CLIENT', client)
+    this.addSocketListeners(chatId, client)
 
-    return { client }
+    return client
+  }
+
+  @fetchDecorator({ withRouteOnErrorPage: true })
+  public async getChatUsers(chatId: number) {
+    const response = await chatApi.fetchUsers({ chatId })
+
+    return response
   }
 
   @fetchDecorator({ withRouteOnErrorPage: true })

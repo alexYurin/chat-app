@@ -3,6 +3,7 @@
 
   const classNames = {
     [`${className}`]: Boolean(className),
+    'contact_admin': Boolean(removeIcon),
     'contact_active': isActive,
   }
 
@@ -14,7 +15,9 @@
     p.contact__message !{lastMessageText}
     time(datetime=lastMessageDate).contact__date !{lastMessageDate}
 
-    if (unread)
-      span.contact__unread !{unread}
+    span.contact__unread-status
+      if (unread)
+        b.contact__unread-count !{unread}
 
-    | !{removeIcon}
+    if (removeIcon)
+      | !{removeIcon}

@@ -12,6 +12,15 @@
   transition: background-color 0.2s ease-in-out;
   cursor: pointer;
 
+  &_admin {
+    .contact__body {
+      grid-template-areas:
+        'name date date'
+        'message unread remove';
+      grid-template-columns: 1fr 60px 20px;
+    }
+  }
+
   &:hover {
     @include mx.themify('background-color', 'contact-bg-hover');
   }
@@ -39,9 +48,9 @@
   &__body {
     display: grid;
     grid-template-areas:
-      'name date date'
-      'message unread remove';
-    grid-template-columns: 1fr 60px 20px;
+      'name date'
+      'message unread';
+    grid-template-columns: 1fr 60px;
     align-items: center;
     column-gap: fn.offset(0.5);
     row-gap: fn.offset(0.5);
@@ -73,15 +82,23 @@
     font-size: 1.2rem;
   }
 
-  &__unread {
+  &__unread-status {
+    grid-area: unread;
+  }
+
+  &__unread-status,
+  &__unread-count {
+    display: inline-flex;
+    justify-self: flex-end;
+    min-height: 20px;
+  }
+
+  &__unread-count {
     @include mx.themify('background-color', 'primary');
     @include mx.themify('color', 'text-dark');
 
-    grid-area: unread;
-    display: inline-flex;
     justify-content: center;
     align-items: center;
-    justify-self: flex-end;
     padding: fn.offset(0.2);
     width: 20px;
     height: 20px;
