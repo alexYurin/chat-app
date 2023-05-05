@@ -5,18 +5,21 @@ import { store } from 'services/index'
 import { parseDateToTime } from 'utils/index'
 import templateString from 'bundle-text:./template.pug'
 import removeIconSrc from 'data-url:static/images/remove.svg'
+import { isEquals } from 'utils/index'
 
 import './styles.scss'
 
 export interface ChatContactProps
   extends BaseComponentProps,
-    ChatContactItemType {}
+    ChatContactItemType {
+  isLoading: boolean
+}
 
 const RESOURCES_URL = process.env.RESOURCES_URL as string
 
 export default class ChatContact extends BaseComponent<ChatContactProps> {
   protected template = templateString
-  protected disableRenderPropsList = ['isActive']
+  protected disableRenderPropsList = ['isActive', 'isLoading', 'detail']
 
   constructor(props: ChatContactProps) {
     super('chatContact', props)
@@ -29,11 +32,62 @@ export default class ChatContact extends BaseComponent<ChatContactProps> {
     prevProp: unknown,
     newProp: unknown
   ): boolean {
-    switch (propKey) {
-      case 'isActive': {
-        const HTMLContact = this.getDOMElement()
+    const HTMLContact = this.getDOMElement()
 
+    switch (propKey) {
+      case 'isLoading': {
+        HTMLContact.classList[newProp ? 'add' : 'remove']('contact_loading')
+
+        return false
+      }
+
+      case 'isActive': {
         HTMLContact.classList[newProp ? 'add' : 'remove']('contact_active')
+
+        return false
+      }
+
+      case 'detail': {
+        if (!isEquals(prevProp, newProp)) {
+          console.log('DETAIL', prevProp, newProp)
+          const updatedDetail = newProp as ChatContactProps['detail']
+
+          const count = updatedDetail.unread_count
+
+          const contactMessage = HTMLContact?.querySelector(
+            '.contact__message'
+          ) as HTMLElement
+
+          const time = HTMLContact?.querySelector(
+            '.contact__date'
+          ) as HTMLElement
+
+          const unreadCountStatus = HTMLContact?.querySelector(
+            '.contact__unread-status'
+          ) as HTMLElement
+
+          const unreadCount = unreadCountStatus.querySelector(
+            '.contact__unread-count'
+          )
+
+          contactMessage.textContent = updatedDetail.last_message?.content || ''
+
+          time.textContent = parseDateToTime(
+            new Date(updatedDetail.last_message?.time as string)
+          )
+
+          if (unreadCount instanceof HTMLElement) {
+            count > 0
+              ? (unreadCount.textContent = `${count}`)
+              : unreadCount.remove()
+          } else if (count > 0) {
+            const countElement = document.createElement('b')
+
+            countElement.classList.add('contact__unread-count')
+            countElement.textContent = `${count}`
+            unreadCountStatus.appendChild(countElement)
+          }
+        }
 
         return false
       }

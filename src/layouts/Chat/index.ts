@@ -3,7 +3,7 @@ import BaseLayout from 'layouts/Base/index'
 import ChatController from './controller'
 import { UserType } from 'types/user'
 import { ChatContactItemType, ChatMessageType } from 'types/chat'
-import { ChatContactProps } from './components/Contact'
+import ChatContact, { ChatContactProps } from './components/Contact'
 import { ProfileChangePasswordRequestParamsType } from 'api/Profile'
 import { LoaderProps } from 'components/Loader'
 import { connect } from 'services/Store'
@@ -18,11 +18,14 @@ import {
   ChatMessagesList,
   ChatMessageInput,
 } from './components'
+import { PREFIX_CHAT_ID } from './components/ContactsList/index'
 import { Input, Avatar, Loader, BaseComponent } from 'components/index'
 
 import './styles.scss'
 
 const RESOURCES_URL = process.env.RESOURCES_URL as string
+
+const PAGE_SIZE = 20
 
 class ChatLayout extends BaseLayout<ChatPropsType> {
   protected template = layout
@@ -41,9 +44,14 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   ]
   private controller: ChatController
 
+  private pageNumber = 0
+
   constructor(name: string, props: ChatPropsType) {
     super(name, props)
-    this.controller = new ChatController()
+    this.controller = new ChatController({
+      onOpenSocket: this.onOpenSocket.bind(this),
+      onGetMessage: this.onGetMessage.bind(this),
+    })
 
     this.fetchContacts()
     this.init()
@@ -77,22 +85,33 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         }
 
         case 'messages': {
+          const updatedMessages = newValue as ChatMessageType[]
+
           if (!isEquals(prevValue, newValue)) {
-            const updatedMessages = newValue as ChatMessageType[]
             const messagesList = document.querySelector(
               '.messages-list'
             ) as HTMLElement
 
-            const messagesLiatInstance =
+            const messagesListInstance =
               BaseComponent.findChild<ChatMessagesList>(
                 messagesList,
                 this.props.children
               )
 
-            messagesLiatInstance?.setProps({
+            messagesListInstance?.setProps({
               items: updatedMessages,
             })
           }
+
+          const serviceText = document.querySelector(
+            '.chat-layout__service-text_chat'
+          )
+
+          serviceText?.classList[
+            updatedMessages.length === 0 && this.props.currentContact
+              ? 'add'
+              : 'remove'
+          ]('chat-layout__service-text_chat_active')
 
           return false
         }
@@ -239,6 +258,116 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     return false
   }
 
+  private getContactComponentById(chatId: number) {
+    const chatContact = document.querySelector(
+      `#${PREFIX_CHAT_ID}${chatId}`
+    ) as HTMLElement
+
+    return BaseComponent.findChild<ChatContact>(
+      chatContact,
+      this.props.children
+    )
+  }
+
+  private onOpenSocket(chatId: number) {
+    const chatContactInstance = this.getContactComponentById(chatId)
+
+    chatContactInstance?.setProps({
+      isLoading: false,
+    })
+  }
+
+  private onGetMessage(chatId: number, message: ChatMessageType) {
+    const { currentContact } = this.props
+    const chatContactInstance = this.getContactComponentById(chatId)
+    const contactProps = chatContactInstance?.getProps()
+
+    if (contactProps) {
+      const unreadCountMessages =
+        currentContact?.detail.id !== chatId
+          ? (contactProps.detail.unread_count ?? 0) + 1
+          : 0
+
+      chatContactInstance?.setProps({
+        detail: {
+          ...contactProps.detail,
+          unread_count: unreadCountMessages,
+          last_message: {
+            user: contactProps.detail.last_message?.user,
+            time: message.time,
+            content: message.content,
+          },
+        },
+      })
+    }
+  }
+
+  private onSendMessage(message: string) {
+    const { currentContact } = this.getProps()
+
+    this.toScrollBottom()
+
+    currentContact?.client.sendMessage(message)
+  }
+
+  private onChangeContact(params: ChatContactProps) {
+    const chatContactInstance = this.getContactComponentById(params.detail.id)
+    const contactProps = chatContactInstance?.getProps()
+
+    this.toScrollBottom()
+
+    if (contactProps) {
+      chatContactInstance?.setProps({
+        detail: {
+          ...contactProps.detail,
+          unread_count: 0,
+        },
+      })
+    }
+
+    if (params.client === undefined) {
+      this.controller.connectToChat(params.detail.id)
+    } else {
+      params.client.getHistory(0)
+    }
+
+    if (!this.props.isVisibleMessageInput) {
+      this.setProps({
+        isVisibleMessageInput: true,
+      })
+    }
+  }
+
+  private onScrollMessageList(event: Event) {
+    const list = event.target as HTMLElement
+    const windowOffset = window.innerHeight - list.offsetHeight
+    const listScrollHeight =
+      list.scrollHeight - window.innerHeight + windowOffset
+
+    const isScrollTop = listScrollHeight === -list.scrollTop
+
+    if (isScrollTop) {
+      const { currentContact } = this.props
+
+      this.pageNumber += 1
+
+      setTimeout(() => {
+        console.log('IS SCROLL TOP< NEED TO FETCH MESSAGES')
+        currentContact?.client.getHistory(PAGE_SIZE * this.pageNumber - 1)
+      }, 300)
+    }
+  }
+
+  private toScrollBottom() {
+    const containerList = document.querySelector(
+      '.messages-list'
+    ) as HTMLElement
+
+    this.pageNumber = 0
+
+    containerList.scrollTop = containerList.scrollHeight
+  }
+
   private triggerCreateChatForm() {
     const triggerClassname = 'chat-layout__create-form_active'
 
@@ -260,20 +389,6 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       formContainer
         ?.querySelector('.chat-remove__form')
         ?.setAttribute('data-chat-id', `${chatId}`)
-    }
-  }
-
-  private onChangeContact(params: ChatContactProps) {
-    if (params.client === undefined) {
-      this.controller.connectToChat(params.detail.id)
-    } else {
-      params.client.getHistory(0)
-    }
-
-    if (!this.props.isVisibleMessageInput) {
-      this.setProps({
-        isVisibleMessageInput: true,
-      })
     }
   }
 
@@ -369,12 +484,6 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
   }
 
-  private onSendMessage(message: string) {
-    const { currentContact } = this.getProps()
-
-    // currentContact?.client.sendMessage(message)
-  }
-
   protected init() {
     const {
       user,
@@ -432,7 +541,14 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         onLogout: this.onLogout.bind(this),
       }),
       new ChatMessagesList({
+        user,
         items: messages,
+        listeners: [
+          {
+            eventType: 'scroll',
+            callback: this.onScrollMessageList.bind(this),
+          },
+        ],
       }),
       new ChatMessageInput({
         messageFields,

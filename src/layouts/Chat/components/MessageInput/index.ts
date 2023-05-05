@@ -1,5 +1,5 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
-import { Form, Button } from 'components/index'
+import { Form, Button, Input } from 'components/index'
 import { FormProps } from 'components/Form'
 import { isFunction } from 'utils/index'
 
@@ -31,6 +31,19 @@ export default class ChatMessageInput extends BaseComponent<ChatMessageInputProp
     )
 
     if (isValidForm && isFunction(this.props.onSendMessage)) {
+      const chatInput = (event.target as Element).querySelector(
+        '.input'
+      ) as HTMLElement
+
+      const chatInputInstance = BaseComponent.findChild<Input>(
+        chatInput,
+        this.props.children
+      )
+
+      chatInputInstance?.setProps({
+        value: '',
+      })
+
       this.props.onSendMessage(values.message)
     }
   }

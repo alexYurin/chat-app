@@ -1,11 +1,13 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
+import { ChatMessage } from 'layouts/Chat/components/index'
+import { ChatMessageType } from 'types/chat'
 import { isEquals } from 'utils/index'
 
 import templateString from 'bundle-text:./template.pug'
 import './styles.scss'
 
 export interface ChatMessagesListProps extends BaseComponentProps {
-  items?: any[]
+  items?: ChatMessageType[]
 }
 
 export default class ChatMessagesList extends BaseComponent<ChatMessagesListProps> {
@@ -41,8 +43,13 @@ export default class ChatMessagesList extends BaseComponent<ChatMessagesListProp
   }
 
   protected init() {
-    const { items } = this.props
+    const { user, items } = this.props
 
-    this.props.children = []
+    this.props.children = items?.map((message) => {
+      return new ChatMessage({
+        isAuthor: user?.id === message.user_id,
+        message,
+      })
+    })
   }
 }

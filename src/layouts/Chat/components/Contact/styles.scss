@@ -12,6 +12,11 @@
   transition: background-color 0.2s ease-in-out;
   cursor: pointer;
 
+  &_loading {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
   &_admin {
     .contact__body {
       grid-template-areas:

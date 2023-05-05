@@ -1,12 +1,14 @@
 -
-  const [avatar, name, lastMessageText, lastMessageDate, unread, removeIcon] = children
+  const [message, time] = children
 
   const classNames = {
     [`${className}`]: Boolean(className),
+    ['message_author']: isAuthor,
   }
 
 .message(id=id class=classNames)
-  | !{avatar}
-
   .message__body
-    p.message__text sfsfsfsff
+    p.message__text
+      | !{message}
+    time(datetime=time).message__time
+      | !{time}

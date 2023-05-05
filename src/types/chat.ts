@@ -5,7 +5,7 @@ export type ChatMessageType = {
   chat_id: number
   time: string
   type: string
-  user_id: string
+  user_id: number
   content: string
   file?: {
     id: number
@@ -24,7 +24,7 @@ export type ChatContactType = {
   avatar: string | null
   unread_count: number
   last_message: {
-    user: UserType
+    user?: UserType
     time: string
     content: string
   } | null

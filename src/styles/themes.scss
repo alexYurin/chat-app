@@ -19,6 +19,8 @@ $theme-dark: (
   contact-bg: color.adjust(clr.$background, $lightness: 6%),
   contact-bg-hover: color.adjust(clr.$background, $lightness: 10%),
   contact-bg-active: color.adjust(clr.$background, $lightness: 15%),
+  message-bg: color.adjust(clr.$background, $lightness: 10%),
+  message-bg-author: color.adjust(clr.$primary, $lightness: 1%),
   input-bg: color.adjust(clr.$background, $lightness: 5%),
   input-color: color.adjust(clr.$comment, $lightness: 25%),
   input-border: color.adjust(clr.$background, $lightness: 10%),

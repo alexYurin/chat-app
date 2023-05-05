@@ -1,22 +1,22 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import ChatContact, { ChatContactProps } from 'layouts/Chat/components/Contact'
-import { isEquals } from 'utils/index'
 import { ChatContactItemType } from 'types/chat'
 import templateString from 'bundle-text:./template.pug'
 import { store } from 'services/index'
 import { Button, Loader } from 'components/index'
+import { isEquals, isFunction } from 'utils/index'
 
 import './styles.scss'
 
 export interface ChatContactsListProps extends BaseComponentProps {
   isLoading?: boolean
   items?: ChatContactItemType[]
-  currentContact?: ChatContactProps | null
+  currentContact?: ChatContactItemType | null
   onChangeContact?: (contact: ChatContactProps) => void
   onRemoveChat?: (chatId: number) => void
 }
 
-const PREFIX_CHAT_ID = 'id_'
+export const PREFIX_CHAT_ID = 'id_'
 
 export default class ChatContactsList extends BaseComponent<ChatContactsListProps> {
   protected template = templateString
@@ -70,7 +70,7 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
     formContainer?.classList[isVisible ? 'remove' : 'add'](triggerClassname)
   }
 
-  protected onChangeContact(event: Event) {
+  private onChangeContact(event: Event) {
     const target = event.target as HTMLElement
     const contact = event.currentTarget as HTMLElement
 
@@ -84,7 +84,7 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
     const HTMLRemoveButton = target.closest('.contact__remove-button')
 
     if (HTMLRemoveButton) {
-      if (typeof this.props.onRemoveChat === 'function') {
+      if (isFunction(this.props.onRemoveChat)) {
         const id =
           contactInstance?.getProps()?.id?.replace(PREFIX_CHAT_ID, '') || ''
 
@@ -140,7 +140,7 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
         })
       )
 
-      if (typeof this.props.onChangeContact === 'function') {
+      if (isFunction(this.props.onChangeContact)) {
         this.props.onChangeContact(contactProps)
       }
     }
@@ -171,6 +171,7 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
         ...items.map((item) => {
           return new ChatContact({
             ...item,
+            isLoading: true,
             isActive:
               currentContact?.id === `${PREFIX_CHAT_ID}${item.detail.id}`,
             id: `${PREFIX_CHAT_ID}${item.detail.id}`,

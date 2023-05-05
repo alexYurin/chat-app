@@ -9,6 +9,12 @@ import { Router, routes } from 'router/index'
 import { store, SocketClient } from 'services/index'
 import { UserType } from 'types/user'
 import { ChatMessageType } from 'types/chat'
+import isFunction from 'utils/isFunction'
+
+export type ControllerOptionsType = {
+  onOpenSocket?: (chatId: number, client: SocketClient) => void
+  onGetMessage?: (chatId: number, message: ChatMessageType) => void
+}
 
 const profileApi = new ProfileApi()
 const authApi = new AuthApi()
@@ -16,17 +22,34 @@ const chatApi = new ChatApi()
 const userApi = new UserApi()
 
 export default class ChatController {
-  private handleSocketMessage(event: MessageEvent) {
+  constructor(private options: ControllerOptionsType) {
+    return this
+  }
+
+  private handleSocketMessage(chatId: number, event: MessageEvent) {
+    const { currentContact, messages } = store.getState()
+
     const payload = JSON.parse(event.data)
 
     if (event.type === 'message' && Array.isArray(payload)) {
-      store.set('messages', payload)
+      if (payload.length > 0) {
+        store.set('messages', payload)
+      }
 
       return
     }
 
-    if (event.type === 'message' && typeof payload === 'string') {
-      console.log('new message', payload)
+    if (payload.type === 'message') {
+      if (currentContact?.detail.id === chatId) {
+        store.set('messages', [
+          { ...payload, chat_id: chatId },
+          ...(messages as ChatMessageType[]),
+        ])
+      }
+
+      if (isFunction(this.options.onGetMessage)) {
+        this.options.onGetMessage(chatId, payload)
+      }
 
       return
     }
@@ -35,6 +58,10 @@ export default class ChatController {
   private addSocketListeners(chatId: number, client: SocketClient) {
     client.on('open', () => {
       console.log(`Установлено соединение: Чат ${chatId}`)
+
+      if (isFunction(this.options.onOpenSocket)) {
+        this.options.onOpenSocket(chatId, client)
+      }
     })
 
     client.on('close', (event) => {
@@ -45,6 +72,10 @@ export default class ChatController {
           `Обрыв соединения: Чат ${chatId} - Код: ${event.code} | Причина: "${event.reason}"`
         )
       }
+
+      setTimeout(() => {
+        this.connectToChat(chatId)
+      }, 1000)
     })
 
     client.on('error', (event) => {
@@ -52,12 +83,19 @@ export default class ChatController {
     })
 
     client.on('message', (event) => {
-      this.handleSocketMessage(event as MessageEvent)
+      this.handleSocketMessage(chatId, event as MessageEvent)
     })
 
     setInterval(() => {
       client.ping()
     }, 3000)
+  }
+
+  @fetchDecorator({ withRouteOnErrorPage: true })
+  public async fetchNewCountMessages(chatId: number) {
+    const response = await chatApi.fetchNewCountMessages({ chatId })
+
+    return response
   }
 
   @fetchDecorator({ withRouteOnErrorPage: true })
