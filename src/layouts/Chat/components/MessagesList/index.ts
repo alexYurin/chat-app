@@ -12,6 +12,9 @@ export interface ChatMessagesListProps extends BaseComponentProps {
 
 export default class ChatMessagesList extends BaseComponent<ChatMessagesListProps> {
   protected template = templateString
+  protected disableRenderPropsList = ['items']
+
+  private currentScrollTop = 0
 
   constructor(props: ChatMessagesListProps) {
     super('chatMessagesList', props)
@@ -29,6 +32,12 @@ export default class ChatMessagesList extends BaseComponent<ChatMessagesListProp
     switch (propKey) {
       case 'items': {
         if (!isEquals(prevProp, newProp)) {
+          const list = this.getDOMElement()
+
+          this.currentScrollTop = list.scrollTop
+
+          list?.classList?.add('messages-list_blur')
+
           this.init()
 
           return true
@@ -44,6 +53,17 @@ export default class ChatMessagesList extends BaseComponent<ChatMessagesListProp
 
   protected init() {
     const { user, items } = this.props
+
+    setTimeout(() => {
+      const list = this.getDOMElement()
+
+      list?.scroll({
+        behavior: 'instant',
+        top: this.currentScrollTop + 1,
+      })
+
+      list?.classList?.remove('messages-list_blur')
+    })
 
     this.props.children = items?.map((message) => {
       return new ChatMessage({

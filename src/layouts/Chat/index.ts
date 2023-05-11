@@ -168,7 +168,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
             '.chat-layout__contacts'
           ) as HTMLElement
 
-          const contactsListInstance = BaseLayout.findChild<ChatContactList>(
+          const contactsListInstance = BaseLayout.findChild<ChatContactsList>(
             contactsList,
             this.props.children
           )
@@ -269,12 +269,16 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     )
   }
 
-  private onOpenSocket(chatId: number) {
+  private dropLoadingContact(chatId: number) {
     const chatContactInstance = this.getContactComponentById(chatId)
 
     chatContactInstance?.setProps({
       isLoading: false,
     })
+  }
+
+  private onOpenSocket(chatId: number) {
+    this.dropLoadingContact(chatId)
   }
 
   private onGetMessage(chatId: number, message: ChatMessageType) {
@@ -352,7 +356,6 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       this.pageNumber += 1
 
       setTimeout(() => {
-        console.log('IS SCROLL TOP< NEED TO FETCH MESSAGES')
         currentContact?.client.getHistory(PAGE_SIZE * this.pageNumber - 1)
       }, 300)
     }

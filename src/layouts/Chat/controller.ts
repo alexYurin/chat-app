@@ -32,7 +32,19 @@ export default class ChatController {
     const payload = JSON.parse(event.data)
 
     if (event.type === 'message' && Array.isArray(payload)) {
-      if (payload.length > 0) {
+      if (payload.length === 0) {
+        return
+      }
+
+      if (messages && messages?.length > 0) {
+        const [messageOnce] = messages
+
+        const isCurrent = currentContact?.detail.id === messageOnce.chat_id
+
+        const updatedMessages = isCurrent ? [...messages, ...payload] : payload
+
+        store.set('messages', updatedMessages)
+      } else {
         store.set('messages', payload)
       }
 
