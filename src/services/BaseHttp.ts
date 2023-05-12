@@ -1,3 +1,5 @@
+import { queryStringify } from 'utils/index'
+
 const METHODS = {
   GET: 'GET',
   POST: 'POST',
@@ -13,16 +15,6 @@ type RequestOptionsType<
   headers?: Record<string, string>
   data?: TData
   timeout?: number
-}
-
-const queryStringify = (data: RequestOptionsType['data']) => {
-  if (data) {
-    return Object.entries(data)
-      .map(([key, value]) => `${key}=${encodeURIComponent(value as string)}`)
-      .join('&')
-  }
-
-  return ''
 }
 
 const isFormData = (data: unknown): data is FormData => {
