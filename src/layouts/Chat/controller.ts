@@ -1,4 +1,4 @@
-import fetchDecorator from 'api/fetchDecorator'
+import withHandleErrors from 'api/withHandleErrors'
 import { AuthApi, UserApi } from 'api/index'
 import ChatApi, {
   ChatCreateRequestParamsType,
@@ -112,14 +112,14 @@ export default class ChatController {
     }, 3000)
   }
 
-  @fetchDecorator({ withRouteOnErrorPage: true })
+  @withHandleErrors({ withRouteOnErrorPage: true })
   public async fetchNewCountMessages(chatId: number) {
     const response = await chatApi.fetchNewCountMessages({ chatId })
 
     return response
   }
 
-  @fetchDecorator({ withRouteOnErrorPage: true })
+  @withHandleErrors({ withRouteOnErrorPage: true })
   public async fetchChatUsers(chatId: number) {
     const users = await chatApi.fetchUsers({
       chatId,
@@ -146,7 +146,7 @@ export default class ChatController {
     return users
   }
 
-  @fetchDecorator({ withRouteOnErrorPage: true })
+  @withHandleErrors({ withRouteOnErrorPage: true })
   public async createChatWithAddUser(title: string, login: string) {
     const [user] = await userApi.find({ login })
 
@@ -165,7 +165,7 @@ export default class ChatController {
     return Promise.resolve('Пользователь не найден')
   }
 
-  @fetchDecorator({ withRouteOnErrorPage: true })
+  @withHandleErrors({ withRouteOnErrorPage: true })
   public async fetchChats(activeChatId?: number) {
     const chats = await chatApi.fetchChats({
       offset: 0,
@@ -232,14 +232,14 @@ export default class ChatController {
     return client
   }
 
-  @fetchDecorator({ withRouteOnErrorPage: true })
+  @withHandleErrors({ withRouteOnErrorPage: true })
   public async getChatUsers(chatId: number) {
     const response = await chatApi.fetchUsers({ chatId })
 
     return response
   }
 
-  @fetchDecorator({ withRouteOnErrorPage: true })
+  @withHandleErrors({ withRouteOnErrorPage: true })
   public async addUsersToChat(chatId: number, users: number[]) {
     const response = await chatApi.addUsersToChat({
       chatId,
@@ -249,7 +249,7 @@ export default class ChatController {
     return response
   }
 
-  @fetchDecorator({ withRouteOnErrorPage: true })
+  @withHandleErrors({ withRouteOnErrorPage: true })
   public async createChat(form: ChatCreateRequestParamsType) {
     const response = await chatApi.createChat(form)
 
@@ -260,7 +260,7 @@ export default class ChatController {
     return response
   }
 
-  @fetchDecorator({ withRouteOnErrorPage: true })
+  @withHandleErrors({ withRouteOnErrorPage: true })
   public async removeChat(form: ChatRemoveRequestParamsType) {
     const response = await chatApi.removeChat(form)
 
@@ -271,7 +271,7 @@ export default class ChatController {
     return response
   }
 
-  @fetchDecorator({ withRouteOnErrorPage: true })
+  @withHandleErrors({ withRouteOnErrorPage: true })
   public async changeAvatar(avatar: File) {
     const formData = new FormData()
 
@@ -284,7 +284,7 @@ export default class ChatController {
     return response
   }
 
-  @fetchDecorator({ withRouteOnErrorPage: true })
+  @withHandleErrors({ withRouteOnErrorPage: true })
   public async changeProfile(user: UserType) {
     const response = await profileApi.change(user)
 
@@ -293,14 +293,14 @@ export default class ChatController {
     return response
   }
 
-  @fetchDecorator({ withRouteOnErrorPage: true })
+  @withHandleErrors({ withRouteOnErrorPage: true })
   public async changePassword(form: ProfileChangePasswordRequestParamsType) {
     const response = await profileApi.changePassword(form)
 
     return response
   }
 
-  @fetchDecorator({ withRouteOnErrorPage: true })
+  @withHandleErrors({ withRouteOnErrorPage: true })
   public async logout() {
     await authApi.logout()
 

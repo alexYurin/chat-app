@@ -1,4 +1,4 @@
-import fetchDecorator from 'api/fetchDecorator'
+import withHandleErrors from 'api/withHandleErrors'
 import AuthApi, { AuthSignUpRequestParamsType } from 'api/Auth'
 import { FormValuesType } from './index'
 import { Router, routes } from 'router/index'
@@ -13,7 +13,7 @@ const isSignUpValues = (
 }
 
 class AuthController {
-  @fetchDecorator({ withAppLoading: true, withRouteOnErrorPage: true })
+  @withHandleErrors({ withAppLoading: true, withRouteOnErrorPage: true })
   public async setAuth(values: FormValuesType) {
     const response = await (isSignUpValues(values)
       ? authApi.signUp(values)
@@ -26,7 +26,7 @@ class AuthController {
     return response
   }
 
-  @fetchDecorator()
+  @withHandleErrors()
   public async checkUser() {
     const response = await authApi.fetchUser()
 
@@ -35,7 +35,7 @@ class AuthController {
     return response
   }
 
-  @fetchDecorator({ withAppLoading: true })
+  @withHandleErrors({ withAppLoading: true })
   public async logout() {
     const response = await authApi.logout()
 

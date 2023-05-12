@@ -1,13 +1,13 @@
 import { Router, routes } from 'router/index'
 import { store } from 'services/index'
 
-export type FetchDecoratorOptionsType = {
+export type WithHandleErrorsOptionsType = {
   withAppLoading?: boolean
   withRouteOnErrorPage?: boolean
 }
 
-export default function fetchDecorator<TArgs = unknown, TResponse = unknown>(
-  options: FetchDecoratorOptionsType = {}
+export default function withHandleErrors<TArgs = unknown, TResponse = unknown>(
+  options: WithHandleErrorsOptionsType = {}
 ) {
   return (
     target: object,
