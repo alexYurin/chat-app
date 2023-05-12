@@ -49,7 +49,6 @@ export default class ChatContact extends BaseComponent<ChatContactProps> {
 
       case 'detail': {
         if (!isEquals(prevProp, newProp)) {
-          console.log('DETAIL', prevProp, newProp)
           const updatedDetail = newProp as ChatContactProps['detail']
 
           const count = updatedDetail.unread_count

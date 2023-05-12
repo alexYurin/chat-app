@@ -13,7 +13,7 @@ const isSignUpValues = (
 }
 
 class AuthController {
-  @fetchDecorator({ withAppLoading: true })
+  @fetchDecorator({ withAppLoading: true, withRouteOnErrorPage: true })
   public async setAuth(values: FormValuesType) {
     const response = await (isSignUpValues(values)
       ? authApi.signUp(values)

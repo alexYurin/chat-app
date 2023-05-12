@@ -51,6 +51,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     this.controller = new ChatController({
       onOpenSocket: this.onOpenSocket.bind(this),
       onGetMessage: this.onGetMessage.bind(this),
+      onGetMessages: this.onGetMessages.bind(this),
     })
 
     this.fetchContacts()
@@ -75,13 +76,40 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         }
 
         case 'user': {
-          if (isEquals(prevValue, newValue)) {
-            return false
+          if (!isEquals(prevValue, newValue)) {
+            const updatedUser = newValue as UserType
+
+            const profileForm = document.querySelector(
+              '.chat-layout__profile'
+            ) as HTMLElement
+
+            const profileFormInstance =
+              BaseComponent.findChild<ChatProfileForm>(
+                profileForm,
+                this.props.children
+              )
+
+            profileFormInstance?.setProps({
+              user: updatedUser,
+            })
+
+            const profileAvatar = document
+              .querySelector('.chat-layout__trigger_profile')
+              ?.querySelector('.avatar')
+
+            if (profileAvatar instanceof HTMLImageElement) {
+              const profileAvatarInstance = BaseComponent.findChild<Avatar>(
+                profileAvatar,
+                this.props.children
+              )
+
+              profileAvatarInstance?.setProps({
+                src: `${RESOURCES_URL}${updatedUser.avatar}`,
+              })
+            }
           }
 
-          this.init()
-
-          return true
+          return false
         }
 
         case 'messages': {
@@ -117,6 +145,24 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         }
 
         case 'currentContact': {
+          if (!isEquals(prevValue, newValue)) {
+            const updatedCurrentContact = newValue as ChatContactItemType
+
+            const messagesList = document.querySelector(
+              '.messages-list'
+            ) as HTMLElement
+
+            const messagesListInstance =
+              BaseComponent.findChild<ChatMessagesList>(
+                messagesList,
+                this.props.children
+              )
+
+            messagesListInstance?.setProps({
+              currentContact: updatedCurrentContact,
+            })
+          }
+
           return false
         }
 
@@ -182,6 +228,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
 
         case 'isLoadingCreateChatForm': {
           const isVisible = newValue as boolean
+
           const createChatForm = document.querySelector(
             '.chat-create'
           ) as HTMLElement
@@ -217,19 +264,23 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         }
 
         case 'isLoadingProfile': {
-          const isVisible = newValue as boolean
-          const loader = document.querySelector(
-            '.chat-layout__profile-loader'
-          ) as HTMLElement
+          if (!isEquals(prevValue, newValue)) {
+            const isLoading = newValue as boolean
 
-          const loaderComponent = BaseLayout.findChild<Loader>(
-            loader,
-            this.props.children
-          )
+            const profileForm = document.querySelector(
+              '.chat-layout__profile'
+            ) as HTMLElement
 
-          loaderComponent?.setProps<LoaderProps>({
-            isVisible,
-          })
+            const profileFormInstance =
+              BaseComponent.findChild<ChatProfileForm>(
+                profileForm,
+                this.props.children
+              )
+
+            profileFormInstance?.setProps({
+              isLoading,
+            })
+          }
 
           return false
         }
@@ -269,16 +320,22 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     )
   }
 
-  private dropLoadingContact(chatId: number) {
+  private setLoadingForAllContacts(isLoading: boolean) {
+    this.props.contacts?.forEach((contact) => {
+      this.setLoadingContact(contact.detail.id, isLoading)
+    })
+  }
+
+  private setLoadingContact(chatId: number, isLoading: boolean) {
     const chatContactInstance = this.getContactComponentById(chatId)
 
     chatContactInstance?.setProps({
-      isLoading: false,
+      isLoading,
     })
   }
 
   private onOpenSocket(chatId: number) {
-    this.dropLoadingContact(chatId)
+    this.setLoadingContact(chatId, false)
   }
 
   private onGetMessage(chatId: number, message: ChatMessageType) {
@@ -304,6 +361,10 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         },
       })
     }
+  }
+
+  private onGetMessages() {
+    this.showMessagesListLoader(false)
   }
 
   private onSendMessage(message: string) {
@@ -342,18 +403,26 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
   }
 
+  private showMessagesListLoader(isLoading: boolean) {
+    document
+      .querySelector('.messages-list')
+      ?.classList[isLoading ? 'add' : 'remove']('messages-list_loading')
+  }
+
   private onScrollMessageList(event: Event) {
     const list = event.target as HTMLElement
     const windowOffset = window.innerHeight - list.offsetHeight
     const listScrollHeight =
       list.scrollHeight - window.innerHeight + windowOffset
 
-    const isScrollTop = listScrollHeight === -list.scrollTop
+    const isScrollTop = listScrollHeight <= -(list.scrollTop - 1)
 
     if (isScrollTop) {
       const { currentContact } = this.props
 
       this.pageNumber += 1
+
+      this.showMessagesListLoader(true)
 
       setTimeout(() => {
         currentContact?.client.getHistory(PAGE_SIZE * this.pageNumber - 1)
@@ -441,7 +510,10 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
 
     if (response === 'OK') {
       this.triggerCreateChatForm()
-      this.fetchContacts()
+
+      await this.fetchContacts()
+
+      this.setLoadingForAllContacts(false)
     } else {
       const createForm = document.querySelector(
         '.chat-create__form'
@@ -482,7 +554,10 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
 
       if (response === 'OK') {
         this.triggerRemoveChatForm()
-        this.fetchContacts()
+
+        await this.fetchContacts()
+
+        this.setLoadingForAllContacts(false)
       }
     }
   }
@@ -545,6 +620,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       }),
       new ChatMessagesList({
         user,
+        currentContact,
         items: messages,
         listeners: [
           {

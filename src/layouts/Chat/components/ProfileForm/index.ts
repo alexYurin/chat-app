@@ -4,8 +4,9 @@ import { ProfileChangePasswordRequestParamsType } from 'api/Profile'
 import { InputProps } from 'components/Input'
 import { FormProps } from 'components/Form'
 import { AvatarProps } from 'components/Avatar'
+import { LoaderProps } from 'components/Loader'
 import { UserType } from 'types/user'
-import { first, isFunction } from 'utils/index'
+import { first, isFunction, isEquals } from 'utils/index'
 import editAvatarIconSrc from 'data-url:static/images/edit.svg'
 import templateString from 'bundle-text:./template.pug'
 
@@ -30,12 +31,53 @@ const RESOURCES_URL = process.env.RESOURCES_URL as string
 
 export default class ChatProfileForm extends BaseComponent<ChatProfileFormProps> {
   protected template = templateString
-  protected disableRenderPropsList = ['isLoading']
+  protected disableRenderPropsList = ['isLoading', 'user']
 
   constructor(props: ChatProfileFormProps) {
     super('chatProfile', props)
 
     this.init()
+  }
+
+  protected onUpdateProps(
+    propKey: keyof ChatProfileFormProps,
+    prevProp: unknown,
+    newProp: unknown
+  ) {
+    if (this.disableRenderPropsList.includes(propKey)) {
+      switch (propKey) {
+        case 'isLoading': {
+          if (!isEquals(prevProp, newProp)) {
+            const isVisible = newProp as boolean
+
+            const loader = document.querySelector(
+              '.chat-layout__profile-loader'
+            ) as HTMLElement
+
+            const loaderComponent = ChatProfileForm.findChild<Loader>(
+              loader,
+              this.props.children
+            )
+
+            loaderComponent?.setProps<LoaderProps>({
+              isVisible,
+            })
+          }
+
+          return false
+        }
+
+        case 'user': {
+          if (!isEquals(prevProp, newProp)) {
+            this.init()
+
+            return true
+          }
+        }
+      }
+    }
+
+    return false
   }
 
   private validate(event: Event, currentInputProps: InputProps) {

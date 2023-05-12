@@ -7,6 +7,7 @@ import './styles.scss'
 
 export interface ChatMessageProps extends BaseComponentProps {
   isAuthor: boolean
+  userName: string
   message: ChatMessageType
 }
 
@@ -20,10 +21,10 @@ export default class ChatMessage extends BaseComponent<ChatMessageProps> {
   }
 
   protected init() {
-    const { message } = this.props
+    const { message, userName } = this.props
 
     const time = message.time ? parseDateToTime(new Date(message.time)) : ''
 
-    this.props.children = [message.content, time]
+    this.props.children = [userName, message.content, time]
   }
 }

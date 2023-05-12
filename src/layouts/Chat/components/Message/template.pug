@@ -1,5 +1,5 @@
 -
-  const [message, time] = children
+  const [userName, message, time] = children
 
   const classNames = {
     [`${className}`]: Boolean(className),
@@ -8,6 +8,9 @@
 
 .message(id=id class=classNames)
   .message__body
+    if (!isAuthor)
+      span.message__username
+        | !{userName}
     p.message__text
       | !{message}
     time(datetime=time).message__time

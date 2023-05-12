@@ -39,6 +39,7 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
       case 'isLoading': {
         if (!isEquals(prevProp, newProp)) {
           this.init()
+
           return true
         }
 

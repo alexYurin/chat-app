@@ -9,11 +9,12 @@ import { Router, routes } from 'router/index'
 import { store, SocketClient } from 'services/index'
 import { UserType } from 'types/user'
 import { ChatMessageType } from 'types/chat'
-import isFunction from 'utils/isFunction'
+import { isFunction, first } from 'utils/index'
 
 export type ControllerOptionsType = {
   onOpenSocket?: (chatId: number, client: SocketClient) => void
   onGetMessage?: (chatId: number, message: ChatMessageType) => void
+  onGetMessages?: (chatId: number, messages: ChatMessageType[]) => void
 }
 
 const profileApi = new ProfileApi()
@@ -32,15 +33,23 @@ export default class ChatController {
     const payload = JSON.parse(event.data)
 
     if (event.type === 'message' && Array.isArray(payload)) {
+      const messageOnce = first(messages as ChatMessageType[])
+
+      const isCurrent = currentContact?.detail.id === messageOnce?.chat_id
+
+      if (isFunction(this.options.onGetMessages)) {
+        this.options.onGetMessages(chatId, payload)
+      }
+
       if (payload.length === 0) {
+        if (!isCurrent) {
+          store.set('messages', payload)
+        }
+
         return
       }
 
       if (messages && messages?.length > 0) {
-        const [messageOnce] = messages
-
-        const isCurrent = currentContact?.detail.id === messageOnce.chat_id
-
         const updatedMessages = isCurrent ? [...messages, ...payload] : payload
 
         store.set('messages', updatedMessages)
