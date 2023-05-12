@@ -12,9 +12,7 @@ export default function fetchDecorator<TArgs = unknown, TResponse = unknown>(
   return (
     target: object,
     key: string,
-    descriptor: TypedPropertyDescriptor<
-      (...args: TArgs[]) => Promise<TResponse>
-    >
+    descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<TResponse>>
   ) => {
     const fetchMethod = descriptor.value
 

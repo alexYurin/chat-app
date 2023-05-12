@@ -172,8 +172,7 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
           return new ChatContact({
             ...item,
             isLoading: true,
-            isActive:
-              currentContact?.id === `${PREFIX_CHAT_ID}${item.detail.id}`,
+            isActive: currentContact?.detail.id === item.detail.id,
             id: `${PREFIX_CHAT_ID}${item.detail.id}`,
             listeners: [
               {
