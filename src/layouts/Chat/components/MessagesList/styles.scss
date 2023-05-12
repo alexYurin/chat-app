@@ -28,8 +28,8 @@ $container-offset: 60px;
   &__loader.loader {
     display: none;
     position: fixed;
-    top: fn.offset(0.8);
-    left: calc(400px + fn.offset(0.5));
+    top: fn.offset(0.9);
+    right: 140px;
     align-items: flex-start;
 
     &,

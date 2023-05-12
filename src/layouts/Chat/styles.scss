@@ -120,7 +120,7 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
       transform: translateY(0);
 
       & ~ .chat-layout__content {
-        filter: blur(4px);
+        filter: blur(10px);
       }
     }
   }
