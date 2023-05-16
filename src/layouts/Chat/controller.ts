@@ -173,6 +173,9 @@ export default class ChatController {
 
   @withHandleErrors({ withRouteOnErrorPage: true })
   public async fetchChats(activeChatId?: number) {
+    store.set('messages', [])
+    store.set('currentContact', null)
+
     const chats = await chatApi.fetchChats({
       offset: 0,
       limit: 20,
@@ -219,8 +222,6 @@ export default class ChatController {
     const connectedContactsWithUsers = await Promise.all(withUsers)
 
     store.set('contacts', connectedContactsWithUsers)
-    store.set('messages', [])
-    store.set('currentContact', null)
 
     return chats
   }
