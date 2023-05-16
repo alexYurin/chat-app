@@ -15,7 +15,8 @@ $container-offset: 60px;
   margin: 0;
   padding: 0;
   width: 100%;
-  height: calc(100% - $container-offset);
+  height: auto;
+  max-height: calc(100% - $container-offset);
   overflow-y: auto;
   overflow-x: hidden;
 

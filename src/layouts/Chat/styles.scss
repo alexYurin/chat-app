@@ -145,6 +145,10 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
       .messages-list {
         display: flex;
       }
+
+      .chat-layout__service-text_empty {
+        display: none;
+      }
     }
 
     &_contacts_active {
@@ -326,6 +330,10 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
       &_active {
         display: block;
         z-index: cfg.$z-index-content;
+
+        & ~ .chat-layout__service-text {
+          display: none;
+        }
       }
     }
   }

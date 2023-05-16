@@ -163,6 +163,12 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
             messagesListInstance?.setProps({
               currentContact: updatedCurrentContact,
             })
+
+            if (!updatedCurrentContact) {
+              this.setProps({
+                isVisibleMessageInput: false,
+              })
+            }
           }
 
           return false

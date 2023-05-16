@@ -36,7 +36,6 @@ export default class ChatMessagesList extends BaseComponent<ChatMessagesListProp
           const prevMessages = prevProp as ChatMessageType[]
           const currentContact = this.props.currentContact
           const messageOnce = first(prevMessages)
-          const list = this.getDOMElement() as HTMLElement
 
           const isNotCurrent =
             currentContact?.detail.id !== messageOnce?.chat_id
@@ -46,8 +45,6 @@ export default class ChatMessagesList extends BaseComponent<ChatMessagesListProp
               lastMessageId: undefined,
             })
           }
-
-          this.currentScrollTop = list.scrollHeight
 
           this.init()
 
@@ -64,6 +61,8 @@ export default class ChatMessagesList extends BaseComponent<ChatMessagesListProp
 
   protected onMount() {
     const list = this.getDOMElement()
+
+    this.currentScrollTop = list.scrollHeight
 
     if (this.props.lastMessageId) {
       const lastMessage = document.querySelector(`#${this.props.lastMessageId}`)

@@ -219,6 +219,8 @@ export default class ChatController {
     const connectedContactsWithUsers = await Promise.all(withUsers)
 
     store.set('contacts', connectedContactsWithUsers)
+    store.set('messages', [])
+    store.set('currentContact', null)
 
     return chats
   }
