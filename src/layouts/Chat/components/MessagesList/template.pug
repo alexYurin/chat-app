@@ -3,10 +3,8 @@
     [`${className}`]: Boolean(className),
   }
 
-  const [loader, ...items] = children
-
 ul(class=classNames).messages-list.scroll
   | !{loader}
-  each message in items
+  each message in children
     li.messages-list__item
       | !{message}

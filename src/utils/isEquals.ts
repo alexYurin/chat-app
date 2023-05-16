@@ -37,8 +37,6 @@ export function isEqual(object1: Indexed, object2: Indexed): boolean {
   return true
 }
 
-console.log('isEqual', isEqual({ a: [1, 2] }, { a: [1, 2] }))
-
 export default function isEquals(obj1: unknown, obj2: unknown) {
   return JSONStringifyOrder(obj1) === JSONStringifyOrder(obj2)
 }

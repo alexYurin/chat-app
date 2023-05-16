@@ -41,6 +41,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     'isLoadingProfile',
     'isLoadingCreateChatForm',
     'isLoadingRemoveChatForm',
+    'isLoadingMessagesList',
   ]
   private controller: ChatController
 
@@ -285,6 +286,25 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
           return false
         }
 
+        case 'isLoadingMessagesList': {
+          const isVisible = newValue as boolean
+
+          const messagesListLoader = document.querySelector(
+            '.chat-layout__loader-messages'
+          ) as HTMLElement
+
+          const messagesListLoaderInstance = BaseComponent.findChild<Loader>(
+            messagesListLoader,
+            this.props.children
+          )
+
+          messagesListLoaderInstance?.setProps({
+            isVisible,
+          })
+
+          return false
+        }
+
         case 'isVisibleMessageInput': {
           const container = document.querySelector(
             '.chat-layout__content'
@@ -404,9 +424,9 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   }
 
   private showMessagesListLoader(isLoading: boolean) {
-    document
-      .querySelector('.messages-list')
-      ?.classList[isLoading ? 'add' : 'remove']('messages-list_loading')
+    this.setProps({
+      isLoadingMessagesList: isLoading,
+    })
   }
 
   private onScrollMessageList(event: Event) {
@@ -586,6 +606,11 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
 
     this.props.children = [
       new Avatar(avatarProps),
+      new Loader({
+        isVisible: false,
+        withOverlay: false,
+        className: 'chat-layout__loader-messages',
+      }),
       new ChatCreateForm({
         isLoading: isLoadingCreateChatForm,
         className: 'chat-layout__search-users',

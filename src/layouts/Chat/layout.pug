@@ -1,6 +1,7 @@
 -
   const [
     avatar,
+    loader,
     createChatForm,
     removeChatForm,
     contactList,
@@ -36,6 +37,7 @@ section.chat-layout.flex.h100
     | !{removeChatForm}
 
   section.chat-layout__content(class=chatContentClassNames)
+    | !{loader}
     label(
       for="chat-profile-trigger"
     ).chat-layout__trigger.chat-layout__trigger_profile.row.row_nowrap

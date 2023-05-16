@@ -19,27 +19,6 @@ $container-offset: 60px;
   overflow-y: auto;
   overflow-x: hidden;
 
-  &_loading {
-    .messages-list__loader.loader {
-      display: inline-flex;
-    }
-  }
-
-  &__loader.loader {
-    display: none;
-    position: fixed;
-    top: fn.offset(0.9);
-    right: 140px;
-    align-items: flex-start;
-
-    &,
-    .loader__content,
-    .loader__item {
-      width: 3rem;
-      height: 3rem;
-    }
-  }
-
   &__text,
   &__item {
     display: flex;

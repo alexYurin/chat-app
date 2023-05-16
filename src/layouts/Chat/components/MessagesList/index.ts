@@ -64,24 +64,17 @@ export default class ChatMessagesList extends BaseComponent<ChatMessagesListProp
       })
     })
 
-    this.props.children = [
-      new Loader({
-        isVisible: true,
-        withOverlay: false,
-        className: 'messages-list__loader',
-      }),
-      ...(items?.map((message) => {
-        const isAuthor = user?.id === message.user_id
-        const currentUser = users?.find((_user) => _user.id === message.user_id)
-        const userName =
-          currentUser?.display_name || (currentUser?.first_name as string)
+    this.props.children = items?.map((message) => {
+      const isAuthor = user?.id === message.user_id
+      const currentUser = users?.find((_user) => _user.id === message.user_id)
+      const userName =
+        currentUser?.display_name || (currentUser?.first_name as string)
 
-        return new ChatMessage({
-          isAuthor,
-          userName,
-          message,
-        })
-      }) || []),
-    ]
+      return new ChatMessage({
+        isAuthor,
+        userName,
+        message,
+      })
+    })
   }
 }

@@ -158,6 +158,18 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
     }
   }
 
+  &__loader-messages.loader {
+    position: absolute;
+    top: 33px;
+    right: 140px;
+
+    &,
+    .loader__item {
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+
   &__overlay {
     @include mx.themify('background-color', 'overlay-bg');
 
