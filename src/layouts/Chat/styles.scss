@@ -168,6 +168,11 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
       width: 3rem;
       height: 3rem;
     }
+
+    &.loader_visible ~ .chat-layout__messages .messages-list {
+      filter: blur(4px);
+      overflow: hidden;
+    }
   }
 
   &__overlay {

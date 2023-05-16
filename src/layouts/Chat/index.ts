@@ -8,7 +8,7 @@ import { ProfileChangePasswordRequestParamsType } from 'api/Profile'
 import { LoaderProps } from 'components/Loader'
 import { connect } from 'services/Store'
 import { ChatPropsType } from './types'
-import { isEquals } from 'utils/index'
+import { first, isEquals } from 'utils/index'
 import withLoading from './withLoading'
 import {
   ChatContactsList,
@@ -17,6 +17,7 @@ import {
   ChatProfileForm,
   ChatMessagesList,
   ChatMessageInput,
+  ChatMessage,
 } from './components'
 import { PREFIX_CHAT_ID } from './components/ContactsList/index'
 import { Input, Avatar, Loader, BaseComponent } from 'components/index'
@@ -390,7 +391,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   private onSendMessage(message: string) {
     const { currentContact } = this.getProps()
 
-    this.toScrollBottom()
+    this.toDropPage()
 
     currentContact?.client.sendMessage(message)
   }
@@ -399,7 +400,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     const chatContactInstance = this.getContactComponentById(params.detail.id)
     const contactProps = chatContactInstance?.getProps()
 
-    this.toScrollBottom()
+    this.toDropPage()
 
     if (contactProps) {
       chatContactInstance?.setProps({
@@ -431,33 +432,36 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
 
   private onScrollMessageList(event: Event) {
     const list = event.target as HTMLElement
-    const windowOffset = window.innerHeight - list.offsetHeight
-    const listScrollHeight =
-      list.scrollHeight - window.innerHeight + windowOffset
-
-    const isScrollTop = listScrollHeight <= -(list.scrollTop - 1)
+    const isScrollTop = list.scrollTop === 0
 
     if (isScrollTop) {
       const { currentContact } = this.props
 
-      this.pageNumber += 1
+      const listInstance = BaseComponent.findChild<ChatMessagesList>(
+        list,
+        this.props.children
+      )
+
+      const topMessageInstance = first(
+        listInstance?.getChildren() || []
+      ) as ChatMessage
+
+      const lastMessageId = topMessageInstance?.getDOMElement().id
+
+      listInstance?.setProps({
+        lastMessageId,
+      })
 
       this.showMessagesListLoader(true)
 
-      setTimeout(() => {
-        currentContact?.client.getHistory(PAGE_SIZE * this.pageNumber - 1)
-      }, 300)
+      this.pageNumber += 1
+
+      currentContact?.client.getHistory(PAGE_SIZE * this.pageNumber)
     }
   }
 
-  private toScrollBottom() {
-    const containerList = document.querySelector(
-      '.messages-list'
-    ) as HTMLElement
-
+  private toDropPage() {
     this.pageNumber = 0
-
-    containerList.scrollTop = containerList.scrollHeight
   }
 
   private triggerCreateChatForm() {

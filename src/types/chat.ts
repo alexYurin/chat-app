@@ -2,6 +2,7 @@ import { UserType } from 'types/user'
 import { SocketClient } from 'services/index'
 
 export type ChatMessageType = {
+  id: number
   chat_id: number
   time: string
   type: string

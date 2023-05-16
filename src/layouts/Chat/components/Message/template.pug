@@ -10,8 +10,8 @@
   .message__body
     if (!isAuthor)
       span.message__username
-        | !{userName}
+        | #{userName}
     p.message__text
-      | !{message}
+      | #{message}
     time(datetime=time).message__time
       | !{time}

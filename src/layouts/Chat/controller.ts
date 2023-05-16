@@ -9,7 +9,7 @@ import { Router, routes } from 'router/index'
 import { store, SocketClient } from 'services/index'
 import { UserType } from 'types/user'
 import { ChatMessageType } from 'types/chat'
-import { isFunction, first } from 'utils/index'
+import { isFunction, first, isArray } from 'utils/index'
 
 export type ControllerOptionsType = {
   onOpenSocket?: (chatId: number, client: SocketClient) => void
@@ -32,7 +32,7 @@ export default class ChatController {
 
     const payload = JSON.parse(event.data)
 
-    if (event.type === 'message' && Array.isArray(payload)) {
+    if (event.type === 'message' && isArray(payload)) {
       const messageOnce = first(messages as ChatMessageType[])
 
       const isCurrent = currentContact?.detail.id === messageOnce?.chat_id
@@ -50,11 +50,17 @@ export default class ChatController {
       }
 
       if (messages && messages?.length > 0) {
-        const updatedMessages = isCurrent ? [...messages, ...payload] : payload
+        const payloadReversed = payload.reverse()
+
+        const updatedMessages = isCurrent
+          ? [...payloadReversed, ...messages]
+          : payloadReversed
 
         store.set('messages', updatedMessages)
       } else {
-        store.set('messages', payload)
+        const reversed = payload.reverse()
+
+        store.set('messages', reversed)
       }
 
       return
@@ -63,8 +69,8 @@ export default class ChatController {
     if (payload.type === 'message') {
       if (currentContact?.detail.id === chatId) {
         store.set('messages', [
-          { ...payload, chat_id: chatId },
           ...(messages as ChatMessageType[]),
+          { ...payload, chat_id: chatId },
         ])
       }
 
