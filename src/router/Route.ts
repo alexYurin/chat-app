@@ -34,4 +34,8 @@ export default class Route {
   public isMatch(pathname: string) {
     return this.View.pathname === pathname
   }
+
+  public getName() {
+    return this.View.id
+  }
 }

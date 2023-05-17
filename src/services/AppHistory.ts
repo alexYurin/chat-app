@@ -18,7 +18,7 @@ export default class AppHistory {
       return
     }
 
-    this.appHistory.replaceState(state, title, url)
+    this.appHistory.pushState(state, title, url)
 
     window.dispatchEvent(new Event('popstate'))
   }

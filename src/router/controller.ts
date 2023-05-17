@@ -30,16 +30,22 @@ export default class RouterController {
       if (error instanceof XMLHttpRequest) {
         const response = JSON.parse(error.response)
 
-        return response
+        console.warn(response.reason)
+
+        return false
       }
     }
   }
 
   public getCurrentPathname(pathname: string) {
     const { user, error } = store.getState()
+
     const isDefinedPath = this.isDefinedPath(pathname)
+
     const isFakeErrorPath = pathname === this.routes.error.pathname && !error
+
     const isMessengerPath = pathname === this.routes.chat.pathname
+
     const isAuthPath =
       pathname === this.routes.signIn.pathname ||
       pathname === this.routes.signUp.pathname

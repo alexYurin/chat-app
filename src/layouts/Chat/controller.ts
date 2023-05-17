@@ -102,7 +102,7 @@ export default class ChatController {
 
       setTimeout(() => {
         this.connectToChat(chatId)
-      }, 1000)
+      }, 500)
     })
 
     client.on('error', (event) => {
@@ -112,10 +112,6 @@ export default class ChatController {
     client.on('message', (event) => {
       this.handleSocketMessage(chatId, event as MessageEvent)
     })
-
-    setInterval(() => {
-      client.ping()
-    }, 3000)
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -173,9 +169,6 @@ export default class ChatController {
 
   @withHandleErrors({ withRouteOnErrorPage: true })
   public async fetchChats(activeChatId?: number) {
-    store.set('messages', [])
-    store.set('currentContact', null)
-
     const chats = await chatApi.fetchChats({
       offset: 0,
       limit: 20,
@@ -196,7 +189,9 @@ export default class ChatController {
       if (oldContact) {
         return {
           ...contactDescription,
-          client: oldContact?.client,
+          isActive: false,
+          isConnected: true,
+          client: oldContact.client,
         }
       } else {
         return this.connectToChat(contact.id).then((client) => {
@@ -223,7 +218,7 @@ export default class ChatController {
 
     store.set('contacts', connectedContactsWithUsers)
 
-    return chats
+    return connectedContactsWithUsers
   }
 
   public async connectToChat(chatId: number) {

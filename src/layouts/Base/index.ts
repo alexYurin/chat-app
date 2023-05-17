@@ -27,4 +27,8 @@ export default abstract class BaseLayout<
 
     this.dispatchCompile()
   }
+
+  public getName() {
+    return this.name
+  }
 }

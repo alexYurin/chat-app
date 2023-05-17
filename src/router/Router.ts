@@ -46,11 +46,14 @@ class Router {
       return
     }
 
-    this.history.pushTo(currentPathname)
+    const nextRoute = this.getRoute(currentPathname)
+    const routeName = nextRoute?.getName()
+
+    this.history.pushTo(currentPathname, routeName, { page: routeName })
   }
 
   public async run() {
-    await this.controller.checkUser()
+    await this.checkUser()
 
     this.history.addListeners([this.onRoute.bind(this)])
 
