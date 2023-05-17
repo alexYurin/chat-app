@@ -22,12 +22,14 @@ const authApi = new AuthApi()
 const chatApi = new ChatApi()
 const userApi = new UserApi()
 
+const MESSAGES_COUNT = 20
+
 export default class ChatController {
   constructor(private options: ControllerOptionsType) {
     return this
   }
 
-  private handleSocketMessage(chatId: number, event: MessageEvent) {
+  private onGetMessage(chatId: number, event: MessageEvent) {
     const { currentContact, messages } = store.getState()
 
     const payload = JSON.parse(event.data)
@@ -110,7 +112,7 @@ export default class ChatController {
     })
 
     client.on('message', (event) => {
-      this.handleSocketMessage(chatId, event as MessageEvent)
+      this.onGetMessage(chatId, event as MessageEvent)
     })
   }
 
@@ -126,7 +128,7 @@ export default class ChatController {
     const users = await chatApi.fetchUsers({
       chatId,
       offset: 0,
-      limit: 20,
+      limit: MESSAGES_COUNT,
     })
 
     const { contacts } = store.getState()
@@ -309,6 +311,9 @@ export default class ChatController {
     await authApi.logout()
 
     store.set('user', null)
+    store.set('currentContact', null)
+    store.set('contacts', [])
+    store.set('messages', [])
 
     Router.navigate(routes.signIn.pathname)
   }

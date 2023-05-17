@@ -15,8 +15,6 @@ export default class ChatMessagesList extends BaseComponent<ChatMessagesListProp
   protected template = templateString
   protected disableRenderPropsList = ['items']
 
-  private currentScrollTop = 0
-
   constructor(props: ChatMessagesListProps) {
     super('chatMessagesList', props)
 
@@ -62,8 +60,6 @@ export default class ChatMessagesList extends BaseComponent<ChatMessagesListProp
   protected onMount() {
     const list = this.getDOMElement()
 
-    this.currentScrollTop = list.scrollHeight
-
     if (this.props.lastMessageId) {
       const lastMessage = document.querySelector(`#${this.props.lastMessageId}`)
 
@@ -73,7 +69,7 @@ export default class ChatMessagesList extends BaseComponent<ChatMessagesListProp
 
       return
     } else {
-      list.scrollTop = this.currentScrollTop
+      list.scrollTop = list.scrollHeight
     }
   }
 

@@ -8,7 +8,7 @@ import { ProfileChangePasswordRequestParamsType } from 'api/Profile'
 import { LoaderProps } from 'components/Loader'
 import { connect } from 'services/Store'
 import { ChatPropsType } from './types'
-import { first, isEquals } from 'utils/index'
+import { first } from 'utils/index'
 import withLoading from './withLoading'
 import {
   ChatContactsList,
@@ -26,8 +26,6 @@ import './styles.scss'
 import SocketClient from 'services/SocketClient'
 
 const RESOURCES_URL = process.env.RESOURCES_URL as string
-
-const PAGE_SIZE = 20
 
 class ChatLayout extends BaseLayout<ChatPropsType> {
   protected template = layout
@@ -47,7 +45,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   ]
   private controller: ChatController
 
-  private pageNumber = 0
+  private messageOffset = 0
 
   constructor(name: string, props: ChatPropsType) {
     super(name, props)
@@ -68,10 +66,6 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     prevValue: unknown,
     newValue: unknown
   ): boolean {
-    if (isEquals(prevValue, newValue)) {
-      return false
-    }
-
     if (this.disableRenderPropsList.includes(propKey)) {
       switch (propKey) {
         case 'isLoading': {
@@ -172,6 +166,8 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
               isVisibleMessageInput: false,
             })
           }
+
+          this.showMessagesListLoader(false)
 
           return false
         }
@@ -403,16 +399,27 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   private onSendMessage(message: string) {
     const { currentContact } = this.getProps()
 
-    this.toDropPage()
+    const listMessages = document.querySelector('.messages-list') as HTMLElement
+
+    const listMessagesInstance = BaseComponent.findChild<ChatMessagesList>(
+      listMessages,
+      this.props.children
+    )
+
+    listMessagesInstance?.setProps({
+      lastMessageId: undefined,
+    })
 
     currentContact?.client.sendMessage(message)
+
+    this.messageOffset += 1
   }
 
   private onChangeContact(params: ChatContactProps) {
     const chatContactInstance = this.getContactComponentById(params.detail.id)
     const contactProps = chatContactInstance?.getProps()
 
-    this.toDropPage()
+    this.showMessagesListLoader(true)
 
     if (contactProps) {
       chatContactInstance?.setProps({
@@ -442,7 +449,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     })
   }
 
-  private onScrollMessageList(event: Event) {
+  private onScrollMessagesList(event: Event) {
     const list = event.target as HTMLElement
     const isScrollTop = list.scrollTop === 0
 
@@ -458,22 +465,22 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         listInstance?.getChildren() || []
       ) as ChatMessage
 
-      const lastMessageId = topMessageInstance?.getDOMElement().id
+      const lastMessageElementId = topMessageInstance?.getDOMElement().id
+
+      const lastMessageIdString = lastMessageElementId.replace('message__', '')
+
+      const lastMessageId = Number(lastMessageIdString)
 
       listInstance?.setProps({
-        lastMessageId,
+        lastMessageId: lastMessageElementId,
       })
 
       this.showMessagesListLoader(true)
 
-      this.pageNumber += 1
+      currentContact?.client.getHistory(lastMessageId + this.messageOffset)
 
-      currentContact?.client.getHistory(PAGE_SIZE * this.pageNumber)
+      this.messageOffset = 0
     }
-  }
-
-  private toDropPage() {
-    this.pageNumber = 0
   }
 
   private triggerCreateChatForm() {
@@ -503,8 +510,8 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   @withLoading('isLoadingContacts')
   private async fetchContacts() {
     this.setProps({
-      currentContact: null,
       messages: [],
+      currentContact: null,
       isVisibleMessageInput: false,
     })
 
@@ -672,7 +679,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         listeners: [
           {
             eventType: 'scroll',
-            callback: this.onScrollMessageList.bind(this),
+            callback: this.onScrollMessagesList.bind(this),
           },
         ],
       }),
