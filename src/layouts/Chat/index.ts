@@ -8,7 +8,7 @@ import { ProfileChangePasswordRequestParamsType } from 'api/Profile'
 import { LoaderProps } from 'components/Loader'
 import { connect } from 'services/Store'
 import { ChatPropsType } from './types'
-import { first } from 'utils/index'
+import { first, isEquals } from 'utils/index'
 import withLoading from './withLoading'
 import {
   ChatContactsList,
@@ -18,9 +18,10 @@ import {
   ChatMessagesList,
   ChatMessageInput,
   ChatMessage,
+  ChatUsersGroup,
 } from './components'
 import { PREFIX_CHAT_ID } from './components/ContactsList/index'
-import { Input, Avatar, Loader, BaseComponent } from 'components/index'
+import { Avatar, Loader, BaseComponent } from 'components/index'
 
 import './styles.scss'
 import SocketClient from 'services/SocketClient'
@@ -66,6 +67,10 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     prevValue: unknown,
     newValue: unknown
   ): boolean {
+    if (isEquals(prevValue, newValue)) {
+      return false
+    }
+
     if (this.disableRenderPropsList.includes(propKey)) {
       switch (propKey) {
         case 'isLoading': {
@@ -151,13 +156,26 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
             '.messages-list'
           ) as HTMLElement
 
+          const usersGroup = document.querySelector(
+            '.users-group'
+          ) as HTMLElement
+
           const messagesListInstance =
             BaseComponent.findChild<ChatMessagesList>(
               messagesList,
               this.props.children
             )
 
+          const usersGroupInstance = BaseComponent.findChild<ChatUsersGroup>(
+            usersGroup,
+            this.props.children
+          )
+
           messagesListInstance?.setProps({
+            currentContact: updatedCurrentContact,
+          })
+
+          usersGroupInstance?.setProps({
             currentContact: updatedCurrentContact,
           })
 
@@ -483,6 +501,10 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
   }
 
+  private triggerUsersGroupForm() {
+    console.log('TRIGGER UsersGroupForm')
+  }
+
   private triggerCreateChatForm() {
     const triggerClassname = 'chat-layout__create-form_active'
 
@@ -510,8 +532,6 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   @withLoading('isLoadingContacts')
   private async fetchContacts() {
     this.setProps({
-      messages: [],
-      currentContact: null,
       isVisibleMessageInput: false,
     })
 
@@ -551,11 +571,8 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   }
 
   @withLoading('isLoadingCreateChatForm')
-  private async onCreateChatSubmit(values: { title: string; login: string }) {
-    const response = await this.controller.createChatWithAddUser(
-      values.title,
-      values.login
-    )
+  private async onCreateChatSubmit(values: { title: string }) {
+    const response = await this.controller.createChat(values)
 
     if (response === 'OK') {
       this.triggerCreateChatForm()
@@ -564,25 +581,22 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
 
       this.setConnectedAllContacts(true)
     } else {
-      const createForm = document.querySelector(
-        '.chat-create__form'
-      ) as HTMLElement
-
-      const inputs = createForm.querySelectorAll('.input')
-
-      inputs.forEach((input) => {
-        const inputComponent = ChatLayout.findChild<Input>(
-          input as HTMLElement,
-          this.props.children
-        )
-
-        if (inputComponent?.getProps().name === 'login') {
-          inputComponent?.setProps({
-            message: response as string,
-            status: 'alert',
-          })
-        }
-      })
+      // const createForm = document.querySelector(
+      //   '.chat-create__form'
+      // ) as HTMLElement
+      // const inputs = createForm.querySelectorAll('.input')
+      // inputs.forEach((input) => {
+      //   const inputComponent = ChatLayout.findChild<Input>(
+      //     input as HTMLElement,
+      //     this.props.children
+      //   )
+      //   if (inputComponent?.getProps().name === 'login') {
+      //     inputComponent?.setProps({
+      //       message: response as string,
+      //       status: 'alert',
+      //     })
+      //   }
+      // })
     }
 
     return response
@@ -659,6 +673,15 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         className: 'chat-layout__contacts-list scroll',
         onChangeContact: this.onChangeContact.bind(this),
         onRemoveChat: this.triggerRemoveChatForm.bind(this),
+      }),
+      new ChatUsersGroup({
+        currentContact,
+        listeners: [
+          {
+            eventType: 'click',
+            callback: this.triggerUsersGroupForm.bind(this),
+          },
+        ],
       }),
       new ChatProfileForm({
         user,

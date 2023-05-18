@@ -8,6 +8,7 @@ export interface AvatarProps extends BaseComponentProps {
   src?: string
   alt: string
   size?: number
+  title?: string
 }
 
 export default class Avatar extends BaseComponent<AvatarProps> {

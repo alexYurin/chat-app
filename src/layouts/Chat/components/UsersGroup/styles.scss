@@ -1,0 +1,66 @@
+@use 'styles/mixins' as mx;
+@use 'styles/config' as cfg;
+@use 'styles/functions' as fn;
+
+$avatar-size: 26px;
+
+.users-group {
+  @include mx.themify('background-color', 'user-group-bg');
+
+  position: absolute;
+  display: none;
+  top: fn.offset(0.5);
+  left: 400px;
+  margin-left: fn.offset(0.5);
+  align-items: center;
+  padding: fn.offset(0.3) fn.offset(0.3) fn.offset(0.3) fn.offset(0.5);
+  border-radius: cfg.$radius * 1.2;
+  font-weight: 600;
+  transition: box-shadow 0.2s ease-in-out, transform 0.2s linear;
+  cursor: pointer;
+  z-index: cfg.$z-index-content;
+
+  &:hover {
+    box-shadow: 0 0 2.5rem #{fn.theme-color('dark', 'primary')};
+    transform: scale(1.02);
+  }
+
+  &_visible {
+    display: inline-flex;
+  }
+
+  &__list,
+  &__item {
+    display: flex;
+  }
+
+  &__title {
+    margin-right: fn.offset(0.2);
+    transition: transform 0.3s ease-in-out;
+    font-size: 1.4rem;
+  }
+
+  &__list {
+    flex-flow: row nowrap;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__item {
+    @include mx.themify('background-color', 'chat-sidebar-bg');
+    @include mx.themify('border-color', 'user-group-border');
+
+    border-radius: 50%;
+    border-width: 2px;
+    border-style: solid;
+
+    &:not(:first-child) {
+      margin-left: calc($avatar-size * -0.5);
+    }
+
+    .avatar {
+      width: $avatar-size;
+      height: $avatar-size;
+    }
+  }
+}

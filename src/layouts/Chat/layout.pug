@@ -5,6 +5,7 @@
     createChatForm,
     removeChatForm,
     contactList,
+    usersGroup,
     profileForm,
     messagesList,
     messageInput,
@@ -37,6 +38,7 @@ section.chat-layout.flex.h100
     | !{removeChatForm}
 
   section.chat-layout__content(class=chatContentClassNames)
+    | !{usersGroup}
     | !{loader}
     label(
       for="chat-profile-trigger"

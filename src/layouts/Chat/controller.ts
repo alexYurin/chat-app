@@ -150,24 +150,24 @@ export default class ChatController {
     return users
   }
 
-  @withHandleErrors({ withRouteOnErrorPage: true })
-  public async createChatWithAddUser(title: string, login: string) {
-    const [user] = await userApi.find({ login })
+  // @withHandleErrors({ withRouteOnErrorPage: true })
+  // public async createChatWithAddUser(title: string, login: string) {
+  //   const [user] = await userApi.find({ login })
 
-    if (user) {
-      const chatId = await this.createChat({
-        title,
-      })
+  //   if (user) {
+  //     const chatId = await this.createChat({
+  //       title,
+  //     })
 
-      if (typeof chatId === 'number') {
-        const response = await this.addUsersToChat(chatId, [user.id as number])
+  //     if (typeof chatId === 'number') {
+  //       const response = await this.addUsersToChat(chatId, [user.id as number])
 
-        return response
-      }
-    }
+  //       return response
+  //     }
+  //   }
 
-    return Promise.resolve('Пользователь не найден')
-  }
+  //   return Promise.resolve('Пользователь не найден')
+  // }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
   public async fetchChats(activeChatId?: number) {
@@ -204,6 +204,9 @@ export default class ChatController {
         })
       }
     })
+
+    store.set('currentContact', null)
+    store.set('messages', [])
 
     const connectedContacts = await Promise.all(contacts)
 
@@ -259,11 +262,13 @@ export default class ChatController {
   public async createChat(form: ChatCreateRequestParamsType) {
     const response = await chatApi.createChat(form)
 
-    if (response?.id) {
-      return response?.id
+    const chatId = response?.id
+
+    if (typeof chatId === 'number') {
+      return 'OK'
     }
 
-    return response
+    throw new Error(`Ошибка при создании чата: ${response}`)
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })

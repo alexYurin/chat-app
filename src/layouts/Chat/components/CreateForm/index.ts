@@ -109,25 +109,6 @@ export default class ChatCreateForm extends BaseComponent<ChatCreateFormProps> {
               ],
             },
           },
-          {
-            label: 'Логин пользователя',
-            input: {
-              name: 'login',
-              type: 'text',
-              validation: Validation.rules.login,
-              listeners: [
-                {
-                  eventType: 'blur',
-                  callback: (event: Event) =>
-                    this.validate(event, {
-                      name: 'login',
-                      type: 'text',
-                      validation: Validation.rules.login,
-                    }),
-                },
-              ],
-            },
-          },
         ],
         listeners: [
           {

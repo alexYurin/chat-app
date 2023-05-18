@@ -36,7 +36,7 @@ $add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
 
       &:hover {
         box-shadow: 0 0 2.5rem #{fn.theme-color('dark', 'primary')};
-        transform: scale(1.05);
+        transform: scale(1.02);
       }
 
       .avatar {

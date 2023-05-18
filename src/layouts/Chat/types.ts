@@ -6,6 +6,7 @@ import {
   ChatProfileForm,
   ChatMessagesList,
   ChatMessageInput,
+  ChatUsersGroup,
 } from './components'
 import { Avatar, Loader } from 'components/index'
 import { FormProps } from 'components/Form'
@@ -15,6 +16,7 @@ import { AvatarProps } from 'components/Avatar'
 export type ChatProfileAvatarType = Avatar
 export type ChatMessagesListLoaderType = Loader
 export type ChatContactsListType = ChatContactsList
+export type ChatChatUsersGroupType = ChatUsersGroup
 export type ChatCreateFormType = ChatCreateForm
 export type ChatRemoveFormType = ChatRemoveForm
 export type ChatProfileFormType = ChatProfileForm
@@ -27,6 +29,7 @@ export type ChatChildrenPropsType = [
   ChatCreateFormType,
   ChatRemoveFormType,
   ChatContactsListType,
+  ChatChatUsersGroupType,
   ChatProfileFormType,
   ChatMessagesListType,
   ChatMessageInputType
