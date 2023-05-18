@@ -1,11 +1,10 @@
 @use 'styles/mixins' as mx;
 @use 'styles/config' as cfg;
 @use 'styles/functions' as fn;
-
-$container-offset: 60px;
+@use 'layouts/Chat/styles' as chat-styles;
 
 .messages-list {
-  @include mx.themify('background-color', 'main-bg');
+  @include mx.themify('background-color', 'messages-list-bg');
 
   display: none;
   flex-direction: column;
@@ -16,7 +15,7 @@ $container-offset: 60px;
   padding: 0;
   width: 100%;
   height: auto;
-  max-height: calc(100% - $container-offset);
+  max-height: calc(100% - #{chat-styles.$message-input-height});
   overflow-y: auto;
   overflow-x: hidden;
 

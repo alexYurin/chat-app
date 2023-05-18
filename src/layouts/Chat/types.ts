@@ -7,6 +7,7 @@ import {
   ChatMessagesList,
   ChatMessageInput,
   ChatUsersGroup,
+  ChatUsersForm,
 } from './components'
 import { Avatar, Loader } from 'components/index'
 import { FormProps } from 'components/Form'
@@ -19,6 +20,7 @@ export type ChatContactsListType = ChatContactsList
 export type ChatChatUsersGroupType = ChatUsersGroup
 export type ChatCreateFormType = ChatCreateForm
 export type ChatRemoveFormType = ChatRemoveForm
+export type ChatUsersFormType = ChatUsersForm
 export type ChatProfileFormType = ChatProfileForm
 export type ChatMessagesListType = ChatMessagesList
 export type ChatMessageInputType = ChatMessageInput
@@ -28,6 +30,7 @@ export type ChatChildrenPropsType = [
   ChatMessagesListLoaderType,
   ChatCreateFormType,
   ChatRemoveFormType,
+  ChatUsersFormType,
   ChatContactsListType,
   ChatChatUsersGroupType,
   ChatProfileFormType,
@@ -39,6 +42,7 @@ export interface ChatPropsType extends BaseComponentProps {
   isLoadingContacts?: boolean
   isLoadingCreateChatForm?: boolean
   isLoadingRemoveChatForm?: boolean
+  isLoadingUsersChatForm?: boolean
   isLoadingProfile?: boolean
   isLoadingMessagesList?: boolean
   isVisibleMessageInput?: boolean

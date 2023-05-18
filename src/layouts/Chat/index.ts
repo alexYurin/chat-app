@@ -19,9 +19,10 @@ import {
   ChatMessageInput,
   ChatMessage,
   ChatUsersGroup,
+  ChatUsersForm,
 } from './components'
+import { Input, Avatar, Loader, BaseComponent } from 'components/index'
 import { PREFIX_CHAT_ID } from './components/ContactsList/index'
-import { Avatar, Loader, BaseComponent } from 'components/index'
 
 import './styles.scss'
 import SocketClient from 'services/SocketClient'
@@ -42,6 +43,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     'isLoadingProfile',
     'isLoadingCreateChatForm',
     'isLoadingRemoveChatForm',
+    'isLoadingUsersChatForm',
     'isLoadingMessagesList',
   ]
   private controller: ChatController
@@ -253,7 +255,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         }
 
         case 'isLoadingCreateChatForm': {
-          const isVisible = newValue as boolean
+          const isLoading = newValue as boolean
 
           const createChatForm = document.querySelector(
             '.chat-create'
@@ -265,14 +267,14 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
           )
 
           createChatFormComponent?.setProps<LoaderProps>({
-            isLoading: isVisible,
+            isLoading,
           })
 
           return false
         }
 
         case 'isLoadingRemoveChatForm': {
-          const isVisible = newValue as boolean
+          const isLoading = newValue as boolean
           const removeChatForm = document.querySelector(
             '.chat-remove'
           ) as HTMLElement
@@ -283,7 +285,25 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
           )
 
           removeChatFormComponent?.setProps<LoaderProps>({
-            isLoading: isVisible,
+            isLoading,
+          })
+
+          return false
+        }
+
+        case 'isLoadingUsersChatForm': {
+          const isLoading = newValue as boolean
+          const usersChatForm = document.querySelector(
+            '.chat-users'
+          ) as HTMLElement
+
+          const usersChatFormComponent = BaseLayout.findChild<Loader>(
+            usersChatForm,
+            this.props.children
+          )
+
+          usersChatFormComponent?.setProps<LoaderProps>({
+            isLoading,
           })
 
           return false
@@ -502,7 +522,12 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   }
 
   private triggerUsersGroupForm() {
-    console.log('TRIGGER UsersGroupForm')
+    const triggerClassname = 'chat-layout__users-form_active'
+
+    const formContainer = document.querySelector('.chat-layout__users-form')
+    const isVisible = formContainer?.classList.contains(triggerClassname)
+
+    formContainer?.classList[isVisible ? 'remove' : 'add'](triggerClassname)
   }
 
   private triggerCreateChatForm() {
@@ -580,23 +605,6 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       await this.fetchContacts()
 
       this.setConnectedAllContacts(true)
-    } else {
-      // const createForm = document.querySelector(
-      //   '.chat-create__form'
-      // ) as HTMLElement
-      // const inputs = createForm.querySelectorAll('.input')
-      // inputs.forEach((input) => {
-      //   const inputComponent = ChatLayout.findChild<Input>(
-      //     input as HTMLElement,
-      //     this.props.children
-      //   )
-      //   if (inputComponent?.getProps().name === 'login') {
-      //     inputComponent?.setProps({
-      //       message: response as string,
-      //       status: 'alert',
-      //     })
-      //   }
-      // })
     }
 
     return response
@@ -625,6 +633,43 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
   }
 
+  @withLoading('isLoadingUsersChatForm')
+  private async onUsersChatSubmit(values: { login: string }) {
+    const currentContact = this.props.currentContact
+
+    if (currentContact) {
+      const response = await this.controller.AddUserByLoginToChat(
+        values.login,
+        currentContact.detail.id
+      )
+
+      if (response === 'OK') {
+        this.triggerUsersGroupForm()
+
+        await this.fetchContacts()
+
+        this.setConnectedAllContacts(true)
+      } else {
+        const createForm = document.querySelector(
+          '.chat-users__form'
+        ) as HTMLElement
+        const inputs = createForm.querySelectorAll('.input')
+        inputs.forEach((input) => {
+          const inputComponent = ChatLayout.findChild<Input>(
+            input as HTMLElement,
+            this.props.children
+          )
+          if (inputComponent?.getProps().name === 'login') {
+            inputComponent?.setProps({
+              message: response as string,
+              status: 'alert',
+            })
+          }
+        })
+      }
+    }
+  }
+
   protected init() {
     const {
       user,
@@ -640,6 +685,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       isLoadingProfile,
       isLoadingCreateChatForm,
       isLoadingRemoveChatForm,
+      isLoadingUsersChatForm,
     } = this.props
 
     const avatarProps = {
@@ -665,6 +711,11 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         className: 'chat-layout__remove-users',
         onSubmit: this.onRemoveChatSubmit.bind(this),
         onCancel: this.triggerRemoveChatForm.bind(this),
+      }),
+      new ChatUsersForm({
+        isLoading: isLoadingUsersChatForm,
+        onSubmit: this.onUsersChatSubmit.bind(this),
+        onCancel: this.triggerUsersGroupForm.bind(this),
       }),
       new ChatContactsList({
         currentContact,

@@ -6,7 +6,6 @@ import templateString from 'bundle-text:./template.pug'
 import './styles.scss'
 
 interface ChatRemoveFormProps extends BaseComponentProps {
-  isLoading?: boolean
   onCancel: () => void
   onSubmit: (event: Event) => void
 }
@@ -18,7 +17,7 @@ export default class ChatRemoveForm extends BaseComponent<ChatRemoveFormProps> {
   protected disableRenderPropsList = ['isLoading']
 
   constructor(props: ChatRemoveFormProps) {
-    super('chatRemove', props)
+    super('chatRemoveForm', props)
 
     this.init()
   }

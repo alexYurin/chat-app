@@ -150,24 +150,18 @@ export default class ChatController {
     return users
   }
 
-  // @withHandleErrors({ withRouteOnErrorPage: true })
-  // public async createChatWithAddUser(title: string, login: string) {
-  //   const [user] = await userApi.find({ login })
+  @withHandleErrors({ withRouteOnErrorPage: true })
+  public async AddUserByLoginToChat(login: string, chatId: number) {
+    const [user] = await userApi.find({ login })
 
-  //   if (user) {
-  //     const chatId = await this.createChat({
-  //       title,
-  //     })
+    if (user) {
+      const response = await this.addUsersToChat(chatId, [user.id as number])
 
-  //     if (typeof chatId === 'number') {
-  //       const response = await this.addUsersToChat(chatId, [user.id as number])
+      return response
+    }
 
-  //       return response
-  //     }
-  //   }
-
-  //   return Promise.resolve('Пользователь не найден')
-  // }
+    return Promise.resolve('Пользователь не найден')
+  }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
   public async fetchChats(activeChatId?: number) {

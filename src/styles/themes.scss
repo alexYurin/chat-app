@@ -21,6 +21,7 @@ $theme-dark: (
   contact-bg-active: color.adjust(clr.$background, $lightness: 15%),
   message-bg: color.adjust(clr.$background, $lightness: 5%),
   message-bg-author: color.adjust(clr.$primary, $lightness: 1%),
+  messages-list-bg: color.adjust(clr.$background, $lightness: 0%),
   user-group-bg: color.adjust(clr.$background, $lightness: 10%),
   user-group-border: color.adjust(clr.$comment, $lightness: 15%),
   input-bg: color.adjust(clr.$background, $lightness: 5%),

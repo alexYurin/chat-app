@@ -1,0 +1,51 @@
+@use 'styles/mixins' as mx;
+@use 'styles/config' as cfg;
+@use 'styles/functions' as fn;
+
+.chat-users {
+  @include mx.themify('background-color', 'overlay-bg');
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: cfg.$radius;
+  z-index: cfg.$z-index-content;
+
+  .loader_visible .loader__overlay {
+    border-radius: cfg.$radius;
+  }
+
+  .loader_visible ~ .chat-create__content {
+    filter: blur(4px);
+  }
+
+  &__content {
+    @include mx.themify('background-color', 'modal-bg');
+
+    position: relative;
+    padding: fn.offset(2.6) fn.offset(1.2) fn.offset(1.4);
+    width: min(460px, 60vw);
+  }
+
+  &__buttons {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    margin-top: fn.offset(2);
+  }
+
+  &__title.title {
+    margin-bottom: fn.offset(2);
+    text-align: center;
+    font-weight: 300;
+  }
+
+  &__button {
+    width: calc(50% - #{fn.offset(0.5)});
+
+    &_cancel {
+      margin-right: fn.offset();
+    }
+  }
+}

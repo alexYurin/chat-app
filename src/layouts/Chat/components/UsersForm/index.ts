@@ -8,37 +8,38 @@ import { isFunction } from 'utils/index'
 import templateString from 'bundle-text:./template.pug'
 import './styles.scss'
 
-export type ChatFormCreateValueType = {
-  title: string
+export type ChatFormUsersValuesType = {
+  login: string
 }
 
-export interface ChatCreateFormProps extends BaseComponentProps {
+export interface ChatUsersFormProps extends BaseComponentProps {
   onCancel: () => void
-  onSubmit: (values: ChatFormCreateValueType) => void
+  onSubmit: (values: ChatFormUsersValuesType) => void
 }
 
-const formId = 'chat-create-form'
+const formId = 'chat-users-form'
 
-export default class ChatCreateForm extends BaseComponent<ChatCreateFormProps> {
+export default class ChatUsersForm extends BaseComponent<ChatUsersFormProps> {
   protected template = templateString
   protected disableRenderPropsList = ['isLoading']
 
-  constructor(props: ChatCreateFormProps) {
-    super('chatCreateForm', props)
+  constructor(props: ChatUsersFormProps) {
+    super('chatUsersForm', props)
 
     this.init()
   }
 
   protected onUpdateProps(
-    propKey: keyof ChatCreateFormProps,
+    propKey: keyof ChatUsersFormProps,
     prevValue: unknown,
     newValue: unknown
   ): boolean {
     switch (propKey) {
       case 'isLoading': {
         const isVisible = newValue as boolean
+
         const loader = document.querySelector(
-          '.chat-create__loader'
+          '.chat-users__loader'
         ) as HTMLElement
 
         const loaderComponent = BaseComponent.findChild<Loader>(
@@ -61,7 +62,7 @@ export default class ChatCreateForm extends BaseComponent<ChatCreateFormProps> {
 
   private onSubmit(event: Event) {
     const { isValidForm, values } =
-      Form.preSubmitValidate<ChatFormCreateValueType>(
+      Form.preSubmitValidate<ChatFormUsersValuesType>(
         event,
         this.props.children
       )
@@ -74,34 +75,34 @@ export default class ChatCreateForm extends BaseComponent<ChatCreateFormProps> {
   protected init() {
     this.props.children = [
       new Loader({
-        className: 'chat-create__loader',
+        className: 'chat-users__loader',
         isVisible: this.props.isLoading,
         withOverlay: true,
       }),
       new Title({
         level: 1,
         tagName: 'h2',
-        className: 'chat-create__title',
-        children: ['Создание нового чата'],
+        className: 'chat-users__title',
+        children: ['Управление чатом'],
       }),
       new Form({
         id: formId,
-        className: 'chat-create__form',
+        className: 'chat-users__form',
         fields: [
           {
-            label: 'Название чата',
+            label: 'Добавить пользователя по логину',
             input: {
-              name: 'title',
+              name: 'login',
               type: 'text',
-              validation: Validation.rules.display_name,
+              validation: Validation.rules.login,
               listeners: [
                 {
                   eventType: 'blur',
                   callback: (event: Event) =>
                     this.validate(event, {
-                      name: 'title',
+                      name: 'login',
                       type: 'text',
-                      validation: Validation.rules.display_name,
+                      validation: Validation.rules.login,
                     }),
                 },
               ],
@@ -119,12 +120,12 @@ export default class ChatCreateForm extends BaseComponent<ChatCreateFormProps> {
         form: formId,
         type: 'submit',
         status: 'primary',
-        className: 'chat-create__button chat-create__button_submit',
-        children: ['Создать'],
+        className: 'chat-users__button chat-create__button_submit',
+        children: ['Добавить'],
       }),
       new Button({
         type: 'button',
-        className: 'chat-create__button chat-create__button_cancel',
+        className: 'chat-users__button chat-create__button_cancel',
         children: ['Отмена'],
         listeners: [
           {
