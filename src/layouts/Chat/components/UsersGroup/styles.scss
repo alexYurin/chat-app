@@ -56,7 +56,7 @@ $avatar-size: 26px;
     border-style: solid;
 
     &:not(:first-child) {
-      margin-left: calc($avatar-size * -0.5);
+      margin-left: calc(($avatar-size + 2px) * -0.5);
     }
 
     .avatar {

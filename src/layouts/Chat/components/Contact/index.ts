@@ -3,9 +3,10 @@ import { Avatar, Button, Image } from 'components/index'
 import { ChatContactItemType } from 'types/chat'
 import { store } from 'services/index'
 import { parseDateToTime } from 'utils/index'
+import { isEquals } from 'utils/index'
+
 import templateString from 'bundle-text:./template.pug'
 import removeIconSrc from 'data-url:static/images/remove.svg'
-import { isEquals } from 'utils/index'
 
 import './styles.scss'
 
@@ -105,16 +106,9 @@ export default class ChatContact extends BaseComponent<ChatContactProps> {
       (currentUser) => currentUser.id === user?.id
     )
 
-    const chatContactUser = users.find(
-      (contactUser) => contactUser.id !== user?.id
-    )
-
-    const chatUserAvatarSrc =
-      users.length === 2 && chatContactUser?.avatar
-        ? `${RESOURCES_URL}${chatContactUser.avatar}`
-        : Avatar.defaultAvatarSrc
-
-    const avatarSrc = avatar ? `${RESOURCES_URL}${avatar}` : chatUserAvatarSrc
+    const avatarSrc = avatar
+      ? `${RESOURCES_URL}${avatar}`
+      : Avatar.defaultAvatarSrc
 
     const unreadCount = `${unread_count || ''}`
 

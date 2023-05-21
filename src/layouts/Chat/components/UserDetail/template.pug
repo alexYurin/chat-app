@@ -1,0 +1,12 @@
+-
+  const [avatar, name, button] = children
+
+  const classNames = {
+    [`${className}`]: Boolean(className),
+  }
+
+div.user-detail(class=classNames)
+  | !{avatar}
+  span.user-detail__name #{name}
+  | !{button}
+

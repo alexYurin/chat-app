@@ -9,7 +9,6 @@ import { isEquals, isFunction } from 'utils/index'
 import './styles.scss'
 
 export interface ChatContactsListProps extends BaseComponentProps {
-  isLoading?: boolean
   items?: ChatContactItemType[]
   currentContact?: ChatContactItemType | null
   onChangeContact?: (contact: ChatContactProps) => void

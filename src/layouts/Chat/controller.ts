@@ -164,6 +164,16 @@ export default class ChatController {
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
+  public async removeUserFromChat(userId: number, chatId: number) {
+    const response = await chatApi.removeUsersFromChat({
+      users: [userId],
+      chatId,
+    })
+
+    return response
+  }
+
+  @withHandleErrors({ withRouteOnErrorPage: true })
   public async fetchChats(activeChatId?: number) {
     const chats = await chatApi.fetchChats({
       offset: 0,

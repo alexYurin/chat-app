@@ -23,9 +23,9 @@ import {
 } from './components'
 import { Input, Avatar, Loader, BaseComponent } from 'components/index'
 import { PREFIX_CHAT_ID } from './components/ContactsList/index'
+import SocketClient from 'services/SocketClient'
 
 import './styles.scss'
-import SocketClient from 'services/SocketClient'
 
 const RESOURCES_URL = process.env.RESOURCES_URL as string
 
@@ -152,7 +152,9 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         }
 
         case 'currentContact': {
-          const updatedCurrentContact = newValue as ChatContactItemType
+          const updatedCurrentContact = newValue as
+            | ChatContactItemType
+            | undefined
 
           const messagesList = document.querySelector(
             '.messages-list'
@@ -161,6 +163,8 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
           const usersGroup = document.querySelector(
             '.users-group'
           ) as HTMLElement
+
+          const usersForm = document.querySelector('.chat-users') as HTMLElement
 
           const messagesListInstance =
             BaseComponent.findChild<ChatMessagesList>(
@@ -173,12 +177,22 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
             this.props.children
           )
 
+          const usersFormInstance = BaseComponent.findChild<ChatUsersForm>(
+            usersForm,
+            this.props.children
+          )
+
           messagesListInstance?.setProps({
             currentContact: updatedCurrentContact,
           })
 
           usersGroupInstance?.setProps({
             currentContact: updatedCurrentContact,
+          })
+
+          usersFormInstance?.setProps({
+            currentContact: updatedCurrentContact,
+            users: updatedCurrentContact?.users,
           })
 
           if (!updatedCurrentContact) {
@@ -193,7 +207,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         }
 
         case 'contacts': {
-          const updatedContacts = newValue as ChatContactItemType[]
+          const updatedContacts = newValue as ChatContactItemType[] | undefined
 
           if (updatedContacts) {
             const contactsList = document.querySelector(
@@ -670,6 +684,19 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
   }
 
+  @withLoading('isLoadingUsersChatForm')
+  private async onRemoveUser(userId: number, chatId: number) {
+    const response = await this.controller.removeUserFromChat(userId, chatId)
+
+    if (response === 'OK') {
+      this.triggerUsersGroupForm()
+
+      await this.fetchContacts()
+
+      this.setConnectedAllContacts(true)
+    }
+  }
+
   protected init() {
     const {
       user,
@@ -713,9 +740,11 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         onCancel: this.triggerRemoveChatForm.bind(this),
       }),
       new ChatUsersForm({
+        users: currentContact?.users,
         isLoading: isLoadingUsersChatForm,
         onSubmit: this.onUsersChatSubmit.bind(this),
         onCancel: this.triggerUsersGroupForm.bind(this),
+        onRemoveUser: this.onRemoveUser.bind(this),
       }),
       new ChatContactsList({
         currentContact,

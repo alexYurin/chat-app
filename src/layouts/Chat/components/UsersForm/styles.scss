@@ -41,6 +41,16 @@
     font-weight: 300;
   }
 
+  &__list {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: fn.offset();
+  }
+
+  &__list-title {
+    margin-bottom: fn.offset(0.5);
+  }
+
   &__button {
     width: calc(50% - #{fn.offset(0.5)});
 

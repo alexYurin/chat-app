@@ -1,0 +1,10 @@
+-
+  const classNames = {
+    [`${className}`]: Boolean(className),
+  }
+
+ul.users-list.scroll(class=classNames)
+  each user in children
+    li.users-list__item
+      | !{user}
+

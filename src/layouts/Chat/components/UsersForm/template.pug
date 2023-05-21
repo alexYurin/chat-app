@@ -3,12 +3,15 @@
     [`${className}`]: Boolean(className),
   }
 
-  const [loader, title, form, buttonSubmit, buttonCancel] = children
+  const [loader, title, usersList, form, buttonSubmit, buttonCancel] = children
 
 div(class=classNames).chat-users
   | !{loader}
   .chat-users__content.card
     | !{title}
+    .chat-users__list
+      span.chat-users__list-title Участники:
+      | !{usersList}
     | !{form}
     .chat-users__buttons
       | !{buttonCancel}
