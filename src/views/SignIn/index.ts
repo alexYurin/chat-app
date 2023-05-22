@@ -6,6 +6,7 @@ export default class SignInView {
   static id = 'signIn'
   static title = 'Вход'
   static pathname = '/'
+  static allowedPaths = []
 
   constructor() {
     return new AuthLayout(SignInView.id, {

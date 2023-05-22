@@ -5,6 +5,10 @@ import RouterController from './controller'
 
 const INIT_APP_DELAY = 400
 
+export type AppHistoryStateType = {
+  isWithoutRender?: boolean
+}
+
 class Router {
   private currentPathname = window.location.pathname
   private currentRoute: Route | null = null
@@ -22,6 +26,14 @@ class Router {
 
   private setRoute() {
     const route = this.getRoute(this.currentPathname)
+    const historyState = this.history.getState<AppHistoryStateType>()
+    const isAllowedPath = historyState?.isWithoutRender && route
+
+    if (isAllowedPath) {
+      return route.getLayout()
+        ? this.navigate(this.currentPathname)
+        : route.runRender(this.currentPathname)
+    }
 
     if (!route) {
       return this.navigate(routes.notFound.pathname)
@@ -39,17 +51,20 @@ class Router {
     return this.routes.find((route) => route.isMatch(pathname))
   }
 
-  public navigate(pathname: string) {
+  public navigate(pathname: string, state: AppHistoryStateType = {}) {
     const currentPathname = this.controller.getCurrentPathname(pathname)
 
-    if (this.currentPathname === currentPathname) {
+    if (this.currentPathname === currentPathname && !state.isWithoutRender) {
       return
     }
 
     const nextRoute = this.getRoute(currentPathname)
     const routeName = nextRoute?.getName()
 
-    this.history.pushTo(currentPathname, routeName, { page: routeName })
+    this.history.pushTo(currentPathname, routeName, {
+      page: routeName,
+      ...state,
+    })
   }
 
   public async run() {

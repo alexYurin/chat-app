@@ -10,7 +10,20 @@ export default class RouterController {
   private routesCollection: string[] = []
 
   constructor(private routes: RoutesTypes) {
-    this.routesCollection = Object.values(routes).map((route) => route.pathname)
+    this.routesCollection = Object.values(routes).reduce(
+      (allowedRoutes, route) => {
+        if (route.View.allowedPaths.length > 0) {
+          return [
+            ...allowedRoutes,
+            ...route.View.allowedPaths,
+            route.pathname,
+          ] as RoutePathType[]
+        }
+
+        return [...allowedRoutes, route.pathname]
+      },
+      [] as RoutePathType[]
+    )
 
     return this
   }
@@ -44,7 +57,9 @@ export default class RouterController {
 
     const isFakeErrorPath = pathname === this.routes.error.pathname && !error
 
-    const isMessengerPath = pathname === this.routes.chat.pathname
+    const isMessengerPath =
+      pathname === this.routes.chat.pathname ||
+      this.routes.chat.View.allowedPaths.includes(pathname)
 
     const isAuthPath =
       pathname === this.routes.signIn.pathname ||

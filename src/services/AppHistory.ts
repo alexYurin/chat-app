@@ -23,6 +23,10 @@ export default class AppHistory {
     window.dispatchEvent(new Event('popstate'))
   }
 
+  public getState<TState extends Record<string, unknown>>() {
+    return this.appHistory.state as TState
+  }
+
   public forward() {
     this.appHistory.forward()
   }

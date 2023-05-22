@@ -6,6 +6,7 @@ export default class SignUpView {
   static id = 'signUp'
   static title = 'Регистрация'
   static pathname = '/sign-up'
+  static allowedPaths = []
 
   constructor() {
     return new AuthLayout(SignUpView.id, {

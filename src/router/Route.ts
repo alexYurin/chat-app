@@ -32,10 +32,21 @@ export default class Route {
   }
 
   public isMatch(pathname: string) {
+    if (this.View.allowedPaths.length > 0) {
+      return (
+        this.View.allowedPaths.includes(pathname as never) ||
+        this.View.pathname === pathname
+      )
+    }
+
     return this.View.pathname === pathname
   }
 
   public getName() {
     return this.View.id
+  }
+
+  public getLayout() {
+    return this.layout
   }
 }

@@ -30,6 +30,11 @@ import './styles.scss'
 
 const RESOURCES_URL = process.env.RESOURCES_URL as string
 
+const paths = {
+  MAIN: '/messenger',
+  SETTINGS: '/settings',
+}
+
 class ChatLayout extends BaseLayout<ChatPropsType> {
   protected template = layout
   protected disableRenderPropsList = [
@@ -387,6 +392,14 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     return false
   }
 
+  protected onMount() {
+    const profileInputTrigger = document.querySelector(
+      '.chat-layout__trigger-input_profile'
+    ) as HTMLInputElement
+
+    profileInputTrigger.checked = window.location.pathname === paths.SETTINGS
+  }
+
   private getContactComponentById(chatId: number) {
     const chatContact = document.querySelector(
       `#${PREFIX_CHAT_ID}${chatId}`
@@ -545,10 +558,9 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
 
   private onChangeTriggerProfile(event: Event) {
     const inputTrigger = event.target as HTMLInputElement
+    const path = inputTrigger.checked ? paths.SETTINGS : paths.MAIN
 
-    console.log(inputTrigger)
-
-    Router.navigate
+    Router.navigate(path, { isWithoutRender: true })
   }
 
   private triggerUsersGroupForm() {

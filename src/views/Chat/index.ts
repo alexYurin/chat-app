@@ -6,6 +6,7 @@ export default class ChatView {
   static id = 'chat'
   static title = 'Чат'
   static pathname = '/messenger'
+  static allowedPaths = ['/settings']
 
   constructor() {
     return new ChatLayout(ChatView.id, {
