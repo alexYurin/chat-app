@@ -31,7 +31,7 @@ export type ChatContactType = {
   } | null
 }
 
-export type ChatContactItemType = {
+export type ChatContactRoomType = {
   isActive: boolean
   isConnected?: boolean
   detail: ChatContactType

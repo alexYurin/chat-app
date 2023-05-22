@@ -1,6 +1,6 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import { Avatar, Button, Image } from 'components/index'
-import { ChatContactItemType } from 'types/chat'
+import { ChatContactRoomType } from 'types/chat'
 import { store } from 'services/index'
 import { parseDateToTime } from 'utils/index'
 import { isEquals } from 'utils/index'
@@ -12,7 +12,7 @@ import './styles.scss'
 
 export interface ChatContactProps
   extends BaseComponentProps,
-    ChatContactItemType {
+    ChatContactRoomType {
   isLoading: boolean
 }
 

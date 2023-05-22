@@ -1,6 +1,6 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import ChatContact, { ChatContactProps } from 'layouts/Chat/components/Contact'
-import { ChatContactItemType } from 'types/chat'
+import { ChatContactRoomType } from 'types/chat'
 import templateString from 'bundle-text:./template.pug'
 import { store } from 'services/index'
 import { Button, Loader } from 'components/index'
@@ -9,8 +9,8 @@ import { isEquals, isFunction } from 'utils/index'
 import './styles.scss'
 
 export interface ChatContactsListProps extends BaseComponentProps {
-  items?: ChatContactItemType[]
-  currentContact?: ChatContactItemType | null
+  items?: ChatContactRoomType[]
+  currentContact?: ChatContactRoomType | null
   onChangeContact?: (contact: ChatContactProps) => void
   onRemoveChat?: (chatId: number) => void
 }
@@ -111,6 +111,8 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
           this.props.children
         )
 
+        currentContact.client?.close()
+
         contactContactInstance?.setProps({
           isActive: false,
         })
@@ -120,7 +122,18 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
         isActive: true,
       })
 
-      const contactProps = contactInstance.getProps()
+      const { id, client, detail, users, isActive, isLoading, isConnected } =
+        contactInstance.getProps()
+
+      const contactProps = {
+        id,
+        client,
+        detail,
+        users,
+        isActive,
+        isLoading,
+        isConnected,
+      }
 
       store.set('currentContact', contactProps)
 
@@ -170,7 +183,7 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
         ...items.map((item) => {
           return new ChatContact({
             ...item,
-            isLoading: !item.isConnected,
+            isLoading: false,
             isActive: currentContact?.detail.id === item.detail.id,
             id: `${PREFIX_CHAT_ID}${item.detail.id}`,
             listeners: [

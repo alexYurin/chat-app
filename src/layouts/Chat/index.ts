@@ -2,7 +2,7 @@ import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
 import ChatController from './controller'
 import { UserType } from 'types/user'
-import { ChatContactItemType, ChatMessageType } from 'types/chat'
+import { ChatContactRoomType, ChatMessageType } from 'types/chat'
 import ChatContact, { ChatContactProps } from './components/Contact'
 import { ProfileChangePasswordRequestParamsType } from 'api/Profile'
 import { LoaderProps } from 'components/Loader'
@@ -46,9 +46,10 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     'isLoadingUsersChatForm',
     'isLoadingMessagesList',
   ]
-  private controller: ChatController
 
+  private controller: ChatController
   private messageOffset = 0
+  private clientPingTimer: NodeJS.Timer | null = null
 
   constructor(name: string, props: ChatPropsType) {
     super(name, props)
@@ -153,7 +154,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
 
         case 'currentContact': {
           const updatedCurrentContact = newValue as
-            | ChatContactItemType
+            | ChatContactRoomType
             | undefined
 
           const messagesList = document.querySelector(
@@ -207,7 +208,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
         }
 
         case 'contacts': {
-          const updatedContacts = newValue as ChatContactItemType[] | undefined
+          const updatedContacts = newValue as ChatContactRoomType[] | undefined
 
           if (updatedContacts) {
             const contactsList = document.querySelector(
@@ -414,7 +415,11 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
   private onOpenSocket(chatId: number, client: SocketClient) {
     this.setConnectedContact(chatId, true)
 
-    setInterval(() => {
+    if (this.clientPingTimer) {
+      clearInterval(this.clientPingTimer)
+    }
+
+    this.clientPingTimer = setInterval(() => {
       client.ping()
     }, 1000)
   }
@@ -467,7 +472,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     this.messageOffset += 1
   }
 
-  private onChangeContact(params: ChatContactProps) {
+  private async onChangeContact(params: ChatContactProps) {
     const chatContactInstance = this.getContactComponentById(params.detail.id)
     const contactProps = chatContactInstance?.getProps()
 
@@ -482,8 +487,10 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       })
     }
 
-    if (params.client === undefined) {
-      this.controller.connectToChat(params.detail.id)
+    if (params.client === undefined && this.props.currentContact) {
+      const client = await this.controller.connectToChat(params.detail.id)
+
+      this.props.currentContact.client = client
     } else {
       params.client.getHistory(0)
     }

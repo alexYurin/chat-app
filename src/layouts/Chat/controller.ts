@@ -8,7 +8,7 @@ import ProfileApi, { ProfileChangePasswordRequestParamsType } from 'api/Profile'
 import { Router, routes } from 'router/index'
 import { store, SocketClient } from 'services/index'
 import { UserType } from 'types/user'
-import { ChatMessageType } from 'types/chat'
+import { ChatContactRoomType, ChatMessageType } from 'types/chat'
 import { isFunction, first, isArray } from 'utils/index'
 
 export type ControllerOptionsType = {
@@ -88,6 +88,8 @@ export default class ChatController {
     client.on('open', () => {
       console.log(`Установлено соединение: Чат ${chatId}`)
 
+      client.getHistory(0)
+
       if (isFunction(this.options.onOpenSocket)) {
         this.options.onOpenSocket(chatId, client)
       }
@@ -101,10 +103,6 @@ export default class ChatController {
           `Обрыв соединения: Чат ${chatId} - Код: ${event.code} | Причина: "${event.reason}"`
         )
       }
-
-      setTimeout(() => {
-        this.connectToChat(chatId)
-      }, 500)
     })
 
     client.on('error', (event) => {
@@ -189,47 +187,34 @@ export default class ChatController {
 
       const contactDescription = {
         isActive: contact.id === activeChatId,
+        isConnected: Boolean(oldContact?.isConnected),
         detail: contact,
       }
 
-      if (oldContact) {
-        return {
-          ...contactDescription,
-          isActive: false,
-          isConnected: true,
-          client: oldContact.client,
-        }
-      } else {
-        return this.connectToChat(contact.id).then((client) => {
-          return {
-            ...contactDescription,
-            client,
-          }
-        })
+      return {
+        ...contactDescription,
+        client: oldContact?.client,
       }
-    })
+    }) as ChatContactRoomType[]
 
     store.set('currentContact', null)
     store.set('messages', [])
 
-    const connectedContacts = await Promise.all(contacts)
-
-    const withUsers = connectedContacts.map((connectedContact) => {
-      return this.getChatUsers(connectedContact.detail.id).then((response) => {
-        return {
-          ...connectedContact,
-          users: response,
-        }
-      })
+    const contactsWithUsers = contacts.map((connectedContact) => {
+      return this.getChatUsers(connectedContact.detail.id).then((response) => ({
+        ...connectedContact,
+        users: response,
+      }))
     })
 
-    const connectedContactsWithUsers = await Promise.all(withUsers)
+    const storedContactsWithUsers = await Promise.all(contactsWithUsers)
 
-    store.set('contacts', connectedContactsWithUsers)
+    store.set('contacts', storedContactsWithUsers)
 
-    return connectedContactsWithUsers
+    return storedContactsWithUsers
   }
 
+  @withHandleErrors({ withRouteOnErrorPage: true })
   public async connectToChat(chatId: number) {
     const { user } = store.getState()
     const { token } = await chatApi.fetchChatToken({ chatId })
@@ -243,6 +228,12 @@ export default class ChatController {
     this.addSocketListeners(chatId, client)
 
     return client
+  }
+
+  public disconnectChat(contact: ChatContactRoomType) {
+    const reasonMessage = `Чат №${contact.detail.id} закрыт`
+
+    contact.client.close(reasonMessage)
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -283,7 +274,7 @@ export default class ChatController {
       return 'OK'
     }
 
-    return response
+    throw new Error(`Ошибка при удалении чата: ${response}`)
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })

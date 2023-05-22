@@ -48,6 +48,10 @@ export default class SocketClient {
     )
   }
 
+  public close(reason = '') {
+    this.socket.close(1000, reason)
+  }
+
   public ping() {
     this.socket.send(
       JSON.stringify({

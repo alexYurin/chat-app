@@ -1,5 +1,5 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
-import { ChatContactItemType } from 'types/chat'
+import { ChatContactRoomType } from 'types/chat'
 import templateString from 'bundle-text:./template.pug'
 import { Avatar } from 'components/index'
 import { isEquals } from 'utils/index'
@@ -7,7 +7,7 @@ import { isEquals } from 'utils/index'
 import './styles.scss'
 
 export interface ChatUsersGroupProps extends BaseComponentProps {
-  currentContact?: ChatContactItemType | null
+  currentContact?: ChatContactRoomType | null
 }
 
 const RESOURCES_URL = process.env.RESOURCES_URL as string
