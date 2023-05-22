@@ -680,22 +680,24 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     const currentContact = this.props.currentContact
 
     if (currentContact) {
-      const response = await this.controller.AddUserByLoginToChat(
-        values.login,
-        currentContact.detail.id
-      )
+      try {
+        await this.controller.AddUserByLoginToChat(
+          values.login,
+          currentContact.detail.id
+        )
 
-      if (response === 'OK') {
         this.triggerUsersGroupForm()
 
         await this.fetchContacts()
 
         this.setConnectedAllContacts(true)
-      } else {
+      } catch (error) {
         const createForm = document.querySelector(
           '.chat-users__form'
         ) as HTMLElement
+
         const inputs = createForm.querySelectorAll('.input')
+
         inputs.forEach((input) => {
           const inputComponent = ChatLayout.findChild<Input>(
             input as HTMLElement,
@@ -703,7 +705,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
           )
           if (inputComponent?.getProps().name === 'login') {
             inputComponent?.setProps({
-              message: response as string,
+              message: 'Пользователь не найден',
               status: 'alert',
             })
           }
