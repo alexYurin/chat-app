@@ -8,7 +8,9 @@ const METHODS = {
   DELETE: 'DELETE',
 } as const
 
-type RequestOptionsType<
+const DEFAULT_TIMEOUT = 5000
+
+export type RequestOptionsType<
   TData = Record<string, string | number | string[] | number[]> | FormData
 > = {
   method?: keyof typeof METHODS
@@ -16,6 +18,11 @@ type RequestOptionsType<
   data?: TData
   timeout?: number
 }
+
+export type HTTPMethodType = <TResponse>(
+  url: string,
+  options?: RequestOptionsType
+) => Promise<TResponse>
 
 const isFormData = (data: unknown): data is FormData => {
   return data instanceof FormData
@@ -26,49 +33,49 @@ export default class BaseHTTP {
     return this
   }
 
-  get<TResponse>(url: string, options: RequestOptionsType = {}) {
+  get: HTTPMethodType = (url, options = {}) => {
     url = options.data ? `${url}?${queryStringify(options.data)}` : url
 
-    return this.request<TResponse>(
-      url,
-      { ...options, method: METHODS.GET },
-      options.timeout
-    )
+    return this.request(url, {
+      ...options,
+      timeout: options.timeout,
+      method: METHODS.GET,
+    })
   }
 
-  post<TResponse>(url: string, options: RequestOptionsType = {}) {
-    return this.request<TResponse>(
-      url,
-      { ...options, method: METHODS.POST },
-      options.timeout
-    )
+  post: HTTPMethodType = (url, options = {}) => {
+    return this.request(url, {
+      ...options,
+      timeout: options.timeout,
+      method: METHODS.POST,
+    })
   }
 
-  put<TResponse>(url: string, options: RequestOptionsType = {}) {
-    return this.request<TResponse>(
-      url,
-      { ...options, method: METHODS.PUT },
-      options.timeout
-    )
+  put: HTTPMethodType = (url, options = {}) => {
+    return this.request(url, {
+      ...options,
+      timeout: options.timeout,
+      method: METHODS.PUT,
+    })
   }
 
-  delete<TResponse>(url: string, options: RequestOptionsType = {}) {
-    return this.request<TResponse>(
-      url,
-      { ...options, method: METHODS.DELETE },
-      options.timeout
-    )
+  delete: HTTPMethodType = (url, options = {}) => {
+    return this.request(url, {
+      ...options,
+      timeout: options.timeout,
+      method: METHODS.DELETE,
+    })
   }
 
-  request<TResponse>(
-    url: string,
-    options: RequestOptionsType = {
+  request: HTTPMethodType = (
+    url,
+    options = {
       method: METHODS.GET,
       headers: {},
       data: {},
-    },
-    timeout = 5000
-  ): Promise<TResponse> {
+      timeout: DEFAULT_TIMEOUT,
+    }
+  ) => {
     const { method, data } = options
 
     return new Promise((resolve, reject) => {
@@ -84,7 +91,7 @@ export default class BaseHTTP {
 
       xhr.withCredentials = true
 
-      xhr.timeout = timeout
+      xhr.timeout = options.timeout || DEFAULT_TIMEOUT
 
       Object.entries(options.headers || {}).forEach(([key, value]) => {
         xhr.setRequestHeader(key, value)
