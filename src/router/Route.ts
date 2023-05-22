@@ -46,6 +46,10 @@ export default class Route {
     return this.View.id
   }
 
+  public getPathname() {
+    return this.View.pathname
+  }
+
   public getLayout() {
     return this.layout
   }

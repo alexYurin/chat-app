@@ -69,7 +69,11 @@ export default class RouterController {
       return this.routes.notFound.pathname
     }
 
-    if (user && (isAuthPath || isMessengerPath)) {
+    if (user && isMessengerPath) {
+      return pathname
+    }
+
+    if (user && isAuthPath) {
       return this.routes.chat.pathname
     }
 

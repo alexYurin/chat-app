@@ -17,6 +17,10 @@ class Router {
   private controller = new RouterController(routes)
 
   private onRoute() {
+    if (this.currentRoute?.getPathname() === window.location.pathname) {
+      return
+    }
+
     this.currentPathname = this.controller.getCurrentPathname(
       window.location.pathname
     )
@@ -55,6 +59,8 @@ class Router {
     const currentPathname = this.controller.getCurrentPathname(pathname)
 
     if (this.currentPathname === currentPathname && !state.isWithoutRender) {
+      this.history.pushTo(currentPathname)
+
       return
     }
 

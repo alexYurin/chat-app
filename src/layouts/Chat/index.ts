@@ -560,6 +560,8 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     const inputTrigger = event.target as HTMLInputElement
     const path = inputTrigger.checked ? paths.SETTINGS : paths.MAIN
 
+    console.log('path', path)
+
     Router.navigate(path, { isWithoutRender: true })
   }
 
