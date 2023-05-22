@@ -32,7 +32,7 @@ const RESOURCES_URL = process.env.RESOURCES_URL as string
 
 const paths = {
   MAIN: '/messenger',
-  SETTINGS: '/settings',
+  PROFILE: '/settings',
 }
 
 class ChatLayout extends BaseLayout<ChatPropsType> {
@@ -397,7 +397,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
       '.chat-layout__trigger-input_profile'
     ) as HTMLInputElement
 
-    profileInputTrigger.checked = window.location.pathname === paths.SETTINGS
+    profileInputTrigger.checked = window.location.pathname === paths.PROFILE
   }
 
   private getContactComponentById(chatId: number) {
@@ -558,9 +558,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
 
   private onChangeTriggerProfile(event: Event) {
     const inputTrigger = event.target as HTMLInputElement
-    const path = inputTrigger.checked ? paths.SETTINGS : paths.MAIN
-
-    console.log('path', path)
+    const path = inputTrigger.checked ? paths.PROFILE : paths.MAIN
 
     Router.navigate(path, { isWithoutRender: true })
   }
