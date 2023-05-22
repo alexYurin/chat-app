@@ -53,7 +53,7 @@ class Router {
   }
 
   public async run() {
-    await this.checkUser()
+    await this.checkUser().catch((error) => console.warn(error.message))
 
     this.history.addListeners([this.onRoute.bind(this)])
 

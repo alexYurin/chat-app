@@ -45,9 +45,9 @@ export default function withHandleErrors<TArgs = unknown, TResponse = unknown>(
             Router.navigate(routes.error.pathname)
           }
 
-          console.error(`Error from method: ${key}`, target)
+          console.error(`Error from method: ${key}`, target, error)
 
-          return Promise.reject(error)
+          throw new Error(`Ошибка запроса в методе ${key}`)
         } finally {
           if (options?.withAppLoading) {
             store.set('isLoading', false)

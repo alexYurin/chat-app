@@ -19,31 +19,45 @@ class AuthController {
       ? authApi.signUp(values)
       : authApi.signIn(values))
 
-    await this.checkUser()
+    const id = (response as Record<string, number>)?.id
 
-    Router.navigate(routes.chat.pathname)
+    if (response === 'OK' || id >= 0) {
+      await this.checkUser()
 
-    return response
+      Router.navigate(routes.chat.pathname)
+
+      return response
+    }
+
+    throw new Error('Ошибка авторизации')
   }
 
-  @withHandleErrors()
+  @withHandleErrors({ withRouteOnErrorPage: false })
   public async checkUser() {
-    const response = await authApi.fetchUser()
+    const updatedUser = await authApi.fetchUser()
 
-    store.set('user', response)
+    if (updatedUser) {
+      store.set('user', updatedUser)
 
-    return response
+      return updatedUser
+    }
+
+    throw new Error('Ошибка проверки пользователя')
   }
 
   @withHandleErrors({ withAppLoading: true })
   public async logout() {
     const response = await authApi.logout()
 
-    store.set('user', null)
+    if (response === 'OK') {
+      store.set('user', null)
 
-    Router.navigate(routes.signIn.pathname)
+      Router.navigate(routes.signIn.pathname)
 
-    return response
+      return response
+    }
+
+    throw new Error('Ошибка при выходе их аккаунта')
   }
 }
 

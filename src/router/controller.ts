@@ -21,18 +21,18 @@ export default class RouterController {
 
   public async checkUser() {
     try {
-      const response = await authApi.fetchUser()
+      const updatedUser = await authApi.fetchUser()
 
-      store.set('user', response)
+      store.set('user', updatedUser)
 
-      return response
+      return updatedUser
     } catch (error) {
       if (error instanceof XMLHttpRequest) {
         const response = JSON.parse(error.response)
 
         console.warn(response.reason)
 
-        return false
+        throw new Error('Пользователь не найден')
       }
     }
   }

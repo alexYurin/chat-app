@@ -23,6 +23,7 @@ const chatApi = new ChatApi()
 const userApi = new UserApi()
 
 const MESSAGES_COUNT = 20
+const RECONNECT_SOCKET_DELAY = 500
 
 export default class ChatController {
   constructor(private options: ControllerOptionsType) {
@@ -69,6 +70,8 @@ export default class ChatController {
     }
 
     if (payload.type === 'message') {
+      this.fetchNewCountMessages(chatId)
+
       if (currentContact?.detail.id === chatId) {
         store.set('messages', [
           ...(messages as ChatMessageType[]),
@@ -79,8 +82,6 @@ export default class ChatController {
       if (isFunction(this.options.onGetMessage)) {
         this.options.onGetMessage(chatId, payload)
       }
-
-      return
     }
   }
 
@@ -102,6 +103,10 @@ export default class ChatController {
         console.log(
           `Обрыв соединения: Чат ${chatId} - Код: ${event.code} | Причина: "${event.reason}"`
         )
+
+        setTimeout(() => {
+          this.connectToChat(chatId)
+        }, RECONNECT_SOCKET_DELAY)
       }
     })
 
@@ -118,7 +123,13 @@ export default class ChatController {
   public async fetchNewCountMessages(chatId: number) {
     const response = await chatApi.fetchNewCountMessages({ chatId })
 
-    return response
+    if (response?.unread_count >= 0) {
+      return response
+    }
+
+    throw new Error(
+      `Ошибка при обновлении счетчика сообщений чата: ${response}`
+    )
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -129,26 +140,30 @@ export default class ChatController {
       limit: MESSAGES_COUNT,
     })
 
-    const { contacts } = store.getState()
+    if (isArray(users)) {
+      const { contacts } = store.getState()
 
-    store.set(
-      'contacts',
-      contacts?.map((contact) => {
-        if (contact.detail.id === chatId) {
-          return {
-            ...contact,
-            users,
+      store.set(
+        'contacts',
+        contacts?.map((contact) => {
+          if (contact.detail.id === chatId) {
+            return {
+              ...contact,
+              users,
+            }
           }
-        }
 
-        return contact
-      })
-    )
+          return contact
+        })
+      )
 
-    return users
+      return users
+    }
+
+    throw new Error(`Ошибка при получении пользователей чата: ${users}`)
   }
 
-  @withHandleErrors({ withRouteOnErrorPage: true })
+  @withHandleErrors({ withRouteOnErrorPage: false })
   public async AddUserByLoginToChat(login: string, chatId: number) {
     const [user] = await userApi.find({ login })
 
@@ -158,7 +173,8 @@ export default class ChatController {
       return response
     }
 
-    return Promise.resolve('Пользователь не найден')
+    throw new Error('Пользователь не найден')
+    // return Promise.resolve('Пользователь не найден')
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -168,7 +184,11 @@ export default class ChatController {
       chatId,
     })
 
-    return response
+    if (response === 'OK') {
+      return response
+    }
+
+    throw new Error('Ошибка при удалении пользователя из чата')
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -186,9 +206,13 @@ export default class ChatController {
       )
 
       const contactDescription = {
-        isActive: contact.id === activeChatId,
-        isConnected: Boolean(oldContact?.isConnected),
+        isActive: false,
+        isConnected: false,
         detail: contact,
+      }
+
+      if (oldContact?.client) {
+        oldContact.client.close()
       }
 
       return {
@@ -209,9 +233,13 @@ export default class ChatController {
 
     const storedContactsWithUsers = await Promise.all(contactsWithUsers)
 
-    store.set('contacts', storedContactsWithUsers)
+    if (isArray(storedContactsWithUsers)) {
+      store.set('contacts', storedContactsWithUsers)
 
-    return storedContactsWithUsers
+      return storedContactsWithUsers
+    }
+
+    throw new Error(`Ошибка при обновлении чатов: ${activeChatId || ''}`)
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -219,15 +247,19 @@ export default class ChatController {
     const { user } = store.getState()
     const { token } = await chatApi.fetchChatToken({ chatId })
 
-    const client = new SocketClient({
-      chatId,
-      token,
-      userId: user?.id as number,
-    })
+    if (token) {
+      const client = new SocketClient({
+        chatId,
+        token,
+        userId: user?.id as number,
+      })
 
-    this.addSocketListeners(chatId, client)
+      this.addSocketListeners(chatId, client)
 
-    return client
+      return client
+    }
+
+    throw new Error(`Ошибка при установлении соединения с чатом ${chatId}`)
   }
 
   public disconnectChat(contact: ChatContactRoomType) {
@@ -238,19 +270,15 @@ export default class ChatController {
 
   @withHandleErrors({ withRouteOnErrorPage: true })
   public async getChatUsers(chatId: number) {
-    const response = await chatApi.fetchUsers({ chatId })
-
-    return response
+    return await chatApi.fetchUsers({ chatId })
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
   public async addUsersToChat(chatId: number, users: number[]) {
-    const response = await chatApi.addUsersToChat({
+    return await chatApi.addUsersToChat({
       chatId,
       users,
     })
-
-    return response
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -283,38 +311,55 @@ export default class ChatController {
 
     formData.append('avatar', avatar)
 
-    const response = await profileApi.changeAvatar(formData)
+    const updatedUser = await profileApi.changeAvatar(formData)
 
-    store.set('user', response)
+    if (updatedUser) {
+      store.set('user', updatedUser)
 
-    return response
+      return updatedUser
+    }
+
+    throw new Error('Ошибка при смене аватара пользователя')
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
   public async changeProfile(user: UserType) {
-    const response = await profileApi.change(user)
+    const updatedUser = await profileApi.change(user)
 
-    store.set('user', response)
+    if (updatedUser) {
+      store.set('user', updatedUser)
 
-    return response
+      return updatedUser
+    }
+
+    throw new Error('Ошибка при обновлении данных пользователя')
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
   public async changePassword(form: ProfileChangePasswordRequestParamsType) {
     const response = await profileApi.changePassword(form)
 
-    return response
+    if (response === 'OK') {
+      return response
+    }
+
+    throw new Error('Ошибка при смене пароля пользователя')
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
   public async logout() {
-    await authApi.logout()
+    const response = await authApi.logout()
 
-    store.set('user', null)
-    store.set('currentContact', null)
-    store.set('contacts', [])
-    store.set('messages', [])
+    if (response === 'OK') {
+      store.set('user', null)
+      store.set('currentContact', null)
+      store.set('contacts', [])
 
-    Router.navigate(routes.signIn.pathname)
+      store.set('messages', [])
+
+      return Router.navigate(routes.signIn.pathname)
+    }
+
+    throw new Error('Ошибка при выходе из аккаунта')
   }
 }
