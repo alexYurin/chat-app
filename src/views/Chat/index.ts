@@ -1,6 +1,5 @@
-import Validation from 'components/Form/Validation'
 import ChatLayout from 'layouts/Chat/index'
-
+import Validation from 'components/Form/Validation'
 import avatarPlaceholderSrc from 'data-url:static/images/avatar-placeholder.svg'
 
 export default class ChatView {

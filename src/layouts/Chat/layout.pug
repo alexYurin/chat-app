@@ -1,5 +1,7 @@
 -
   const [
+    triggerProfile,
+    triggerPassword,
     avatar,
     loader,
     createChatForm,
@@ -18,15 +20,8 @@
   }
 
 section.chat-layout.flex.h100
-  input(
-    id="chat-profile-trigger"
-    type="checkbox"
-  ).chat-layout__trigger-input.chat-layout__trigger-input_profile
-
-  input(
-    id="chat-password-trigger"
-    type="checkbox"
-  ).chat-layout__trigger-input.chat-layout__trigger-input_password
+  | !{triggerProfile}
+  | !{triggerPassword}
 
   label(for="chat-profile-trigger").chat-layout__overlay
 

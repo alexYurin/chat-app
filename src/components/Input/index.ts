@@ -15,6 +15,7 @@ export interface InputProps extends BaseComponentProps {
   form?: string
   message?: string
   value?: string
+  checked?: boolean
   disabled?: boolean
   readonly?: boolean
   placeholder?: string

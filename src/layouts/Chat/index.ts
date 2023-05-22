@@ -4,6 +4,7 @@ import ChatController from './controller'
 import { UserType } from 'types/user'
 import { ChatContactRoomType, ChatMessageType } from 'types/chat'
 import ChatContact, { ChatContactProps } from './components/Contact'
+import { Router } from 'router/index'
 import { ProfileChangePasswordRequestParamsType } from 'api/Profile'
 import { LoaderProps } from 'components/Loader'
 import { connect } from 'services/Store'
@@ -542,6 +543,14 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
   }
 
+  private onChangeTriggerProfile(event: Event) {
+    const inputTrigger = event.target as HTMLInputElement
+
+    console.log(inputTrigger)
+
+    Router.navigate
+  }
+
   private triggerUsersGroupForm() {
     const triggerClassname = 'chat-layout__users-form_active'
 
@@ -728,6 +737,26 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     }
 
     this.props.children = [
+      new Input({
+        isCustom: true,
+        id: 'chat-profile-trigger',
+        type: 'checkbox',
+        className:
+          'chat-layout__trigger-input chat-layout__trigger-input_profile',
+        listeners: [
+          {
+            eventType: 'change',
+            callback: this.onChangeTriggerProfile.bind(this),
+          },
+        ],
+      }),
+      new Input({
+        isCustom: true,
+        id: 'chat-password-trigger',
+        type: 'checkbox',
+        className:
+          'chat-layout__trigger-input chat-layout__trigger-input_password',
+      }),
       new Avatar(avatarProps),
       new Loader({
         isVisible: false,
