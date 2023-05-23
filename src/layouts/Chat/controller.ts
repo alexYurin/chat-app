@@ -127,9 +127,7 @@ export default class ChatController {
       return response
     }
 
-    throw new Error(
-      `Ошибка при обновлении счетчика сообщений чата: ${response}`
-    )
+    return { unread_count: 0 }
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -145,22 +143,15 @@ export default class ChatController {
 
       store.set(
         'contacts',
-        contacts?.map((contact) => {
-          if (contact.detail.id === chatId) {
-            return {
-              ...contact,
-              users,
-            }
-          }
-
-          return contact
-        })
+        contacts?.map((contact) =>
+          contact.detail.id === chatId ? { ...contact, users } : contact
+        )
       )
 
       return users
     }
 
-    throw new Error(`Ошибка при получении пользователей чата: ${users}`)
+    return []
   }
 
   @withHandleErrors({ withRouteOnErrorPage: false })
@@ -173,8 +164,7 @@ export default class ChatController {
       return response
     }
 
-    throw new Error('Пользователь не найден')
-    // return Promise.resolve('Пользователь не найден')
+    return 'Пользователь не найден'
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -188,11 +178,11 @@ export default class ChatController {
       return response
     }
 
-    throw new Error('Ошибка при удалении пользователя из чата')
+    return 'Ошибка при удалении пользователя из чата'
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
-  public async fetchChats(activeChatId?: number) {
+  public async fetchChats() {
     const chats = await chatApi.fetchChats({
       offset: 0,
       limit: 20,
@@ -239,7 +229,7 @@ export default class ChatController {
       return storedContactsWithUsers
     }
 
-    throw new Error(`Ошибка при обновлении чатов: ${activeChatId || ''}`)
+    return []
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -247,19 +237,15 @@ export default class ChatController {
     const { user } = store.getState()
     const { token } = await chatApi.fetchChatToken({ chatId })
 
-    if (token) {
-      const client = new SocketClient({
-        chatId,
-        token,
-        userId: user?.id as number,
-      })
+    const client = new SocketClient({
+      chatId,
+      token,
+      userId: user?.id as number,
+    })
 
-      this.addSocketListeners(chatId, client)
+    this.addSocketListeners(chatId, client)
 
-      return client
-    }
-
-    throw new Error(`Ошибка при установлении соединения с чатом ${chatId}`)
+    return client
   }
 
   public disconnectChat(contact: ChatContactRoomType) {
@@ -291,7 +277,7 @@ export default class ChatController {
       return 'OK'
     }
 
-    throw new Error(`Ошибка при создании чата: ${response}`)
+    return `Ошибка при создании чата: ${response}`
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -302,7 +288,7 @@ export default class ChatController {
       return 'OK'
     }
 
-    throw new Error(`Ошибка при удалении чата: ${response}`)
+    return `Ошибка при удалении чата: ${response}`
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -315,11 +301,7 @@ export default class ChatController {
 
     if (updatedUser) {
       store.set('user', updatedUser)
-
-      return updatedUser
     }
-
-    throw new Error('Ошибка при смене аватара пользователя')
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -328,11 +310,7 @@ export default class ChatController {
 
     if (updatedUser) {
       store.set('user', updatedUser)
-
-      return updatedUser
     }
-
-    throw new Error('Ошибка при обновлении данных пользователя')
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -343,7 +321,7 @@ export default class ChatController {
       return response
     }
 
-    throw new Error('Ошибка при смене пароля пользователя')
+    return 'Ошибка при смене пароля пользователя'
   }
 
   @withHandleErrors({ withRouteOnErrorPage: true })
@@ -357,9 +335,11 @@ export default class ChatController {
 
       store.set('messages', [])
 
-      return Router.navigate(routes.signIn.pathname)
+      Router.navigate(routes.signIn.pathname)
+
+      return response
     }
 
-    throw new Error('Ошибка при выходе из аккаунта')
+    return 'Ошибка при выходе из аккаунта'
   }
 }

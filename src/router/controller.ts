@@ -33,21 +33,15 @@ export default class RouterController {
   }
 
   public async checkUser() {
-    try {
-      const updatedUser = await authApi.fetchUser()
+    const updatedUser = await authApi.fetchUser()
 
+    if (updatedUser) {
       store.set('user', updatedUser)
 
       return updatedUser
-    } catch (error) {
-      if (error instanceof XMLHttpRequest) {
-        const response = JSON.parse(error.response)
-
-        console.warn(response.reason)
-
-        throw new Error('Пользователь не найден')
-      }
     }
+
+    return 'Пользователь не найден'
   }
 
   public getCurrentPathname(pathname: string) {

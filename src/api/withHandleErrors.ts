@@ -12,12 +12,16 @@ export default function withHandleErrors<TArgs = unknown, TResponse = unknown>(
   return (
     target: object,
     key: string,
-    descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<TResponse>>
+    descriptor: TypedPropertyDescriptor<
+      (...args: any[]) => Promise<TResponse | any>
+    >
   ) => {
     const fetchMethod = descriptor.value
 
     if (fetchMethod) {
-      descriptor.value = async function (...args: TArgs[]): Promise<TResponse> {
+      descriptor.value = async function (
+        ...args: TArgs[]
+      ): Promise<TResponse | any> {
         if (options?.withAppLoading) {
           store.set('isLoading', true)
         }
@@ -44,10 +48,6 @@ export default function withHandleErrors<TArgs = unknown, TResponse = unknown>(
           if (options?.withRouteOnErrorPage) {
             Router.navigate(routes.error.pathname)
           }
-
-          console.error(`Error from method: ${key}`, target, error)
-
-          throw new Error(`Ошибка запроса в методе ${key}`)
         } finally {
           if (options?.withAppLoading) {
             store.set('isLoading', false)
