@@ -1,0 +1,28 @@
+@use 'styles/mixins' as mx;
+@use 'styles/functions' as fn;
+
+.users-list {
+  flex-direction: column;
+  margin: 0 0 0 #{fn.offset(-1.2)};
+  padding: 0 #{fn.offset(1.2)};
+  max-height: 180px;
+  width: calc(100% + #{fn.offset(2.4)});
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &,
+  &__item {
+    display: flex;
+  }
+
+  &__item {
+    border-style: solid;
+    border-width: 0;
+
+    &:not(:last-child) {
+      @include mx.themify('border-color', 'input-border');
+
+      border-bottom-width: 0.1rem;
+    }
+  }
+}

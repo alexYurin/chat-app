@@ -6,16 +6,31 @@
     [`input_disabled`]: disabled,
   }
 
-.input(class=classNames)
-  .input__area
-    input(
-      id=id
-      type=type
-      name=name
-      value=value
-      form=form
-      placeholder=placeholder
-      required=required
-    ).input__field
-  if message
-    p.input__message #{message}
+if isCustom
+  input(
+    id=id
+    type=type
+    name=name
+    class=classNames
+    value=value
+    form=form
+    checked=checked
+    accept=accept
+    placeholder=placeholder
+    required=required
+  )
+else
+  .input(class=classNames)
+    .input__area
+      input(
+        id=id
+        type=type
+        name=name
+        value=value
+        form=form
+        accept=accept
+        placeholder=placeholder
+        required=required
+      ).input__field
+    if message
+      p.input__message #{message}

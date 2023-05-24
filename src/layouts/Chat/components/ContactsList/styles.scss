@@ -1,0 +1,26 @@
+@use 'styles/mixins' as mx;
+
+.contact-list {
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &,
+  &__item {
+    display: flex;
+    width: 100%;
+  }
+
+  &__item {
+    border-style: solid;
+    border-width: 0;
+
+    &:not(:last-child) {
+      @include mx.themify('border-color', 'input-border');
+
+      border-bottom-width: 0.1rem;
+    }
+  }
+}

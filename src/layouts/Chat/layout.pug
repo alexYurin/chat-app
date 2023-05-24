@@ -1,18 +1,57 @@
 -
-  const [form, submitButton, backLink] = children
+  const [
+    triggerProfile,
+    triggerPassword,
+    avatar,
+    loader,
+    createChatForm,
+    removeChatForm,
+    usersChatForm,
+    contactList,
+    usersGroup,
+    profileForm,
+    messagesList,
+    messageInput,
+  ] = children
+
+  const chatContentClassNames = {
+    'chat-layout__content_input_active': isVisibleMessageInput,
+    'chat-layout__content_contacts_active': isVisibleContacts,
+  }
 
 section.chat-layout.flex.h100
-  .chat-layout__content
-    aside.chat-layout__contacts.column.center
-      | Нет контактов
+  | !{triggerProfile}
+  | !{triggerPassword}
+
+  label(for="chat-profile-trigger").chat-layout__overlay
+
+  | !{profileForm}
+
+  section.chat-layout__create-form
+    | !{createChatForm}
+
+  section.chat-layout__remove-form
+    | !{removeChatForm}
+
+  section.chat-layout__users-form
+    | !{usersChatForm}
+
+  section.chat-layout__content(class=chatContentClassNames)
+    | !{usersGroup}
+    | !{loader}
+    label(
+      for="chat-profile-trigger"
+    ).chat-layout__trigger.chat-layout__trigger_profile.row.row_nowrap
+      | !{avatar}
+      | Профиль
+
+    | !{contactList}
 
     .chat-layout__messages.column.center
-      p Нет сообщений
-      .chat-layout__link.center
-        | !{backLink}
+      | !{messagesList}
 
-    .chat-layout__input
-      | !{form}
+      span.chat-layout__service-text.chat-layout__service-text_chat Пока нет сообщений. Напишите первым 😉
+      span.chat-layout__service-text.chat-layout__service-text_empty Выберете собеседника или создайте новый чат
 
-      .chat-layout__submit
-        | !{submitButton}
+    | !{messageInput}
+

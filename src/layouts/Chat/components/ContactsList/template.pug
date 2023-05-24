@@ -1,0 +1,17 @@
+-
+  const [loader, addContactButton, ...contacts] = children
+
+  const classNames = {
+    [`${className}`]: Boolean(className),
+  }
+
+aside.chat-layout__contacts.column
+  | !{loader}
+  | !{addContactButton}
+  ul(class=classNames).contact-list
+    each contact in contacts
+      li.contact-list__item
+        | !{contact}
+
+  span.chat-layout__service-text| Нет контактов
+

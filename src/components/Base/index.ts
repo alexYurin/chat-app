@@ -1,7 +1,9 @@
 import Templator from 'templators/index'
 import EventBus, { EventCallback } from 'services/EventBus'
+import { StateType } from 'services/Store'
 import { identity } from 'utils/index'
 import { v4 as makeUUID } from 'uuid'
+import { isEquals } from 'utils/index'
 
 export const COMPONENT_LIFE_CYCLE_EVENT = {
   COMPILE: '@event-component:COMPILE',
@@ -29,7 +31,7 @@ export type ComponentBrowserEventListenerPropType = {
   ) => void
 }
 
-export interface BaseComponentProps {
+export interface BaseComponentProps extends StateType {
   id?: string
   status?: ComponentStatusType
   rootElement?: HTMLElement | string | null
@@ -51,7 +53,7 @@ export default abstract class BaseComponent<
     []
   private DOMElement: Element | null = null
 
-  protected abstract template: string
+  protected template = ''
   protected isMount = false
   protected isInitRender = true
   protected targetQueryForBrowserEvents: null | string = null
@@ -77,8 +79,8 @@ export default abstract class BaseComponent<
     }
   }
 
-  private makeProxyProps(props: TPropsType) {
-    return new Proxy(props, {
+  private makeProxyProps(proxyProps: TPropsType) {
+    return new Proxy(proxyProps, {
       get: (props, propName) => {
         const newValue = props[propName as keyof TPropsType]
 
@@ -89,9 +91,8 @@ export default abstract class BaseComponent<
 
         props[propName as keyof TPropsType] = newValue
 
-        this.dispatch(
-          COMPONENT_LIFE_CYCLE_EVENT.UPDATE_PROPS,
-          propName,
+        this.dispatchUpdateProps(
+          propName as keyof TPropsType,
           prevValue,
           newValue
         )
@@ -143,7 +144,7 @@ export default abstract class BaseComponent<
     })
 
     this.isInitRender = false
-    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.RENDER, fragment.content)
+    this.dispatchRender(fragment.content)
 
     return fragment.content
   }
@@ -180,12 +181,12 @@ export default abstract class BaseComponent<
 
     this.props.children?.forEach((child) => {
       if (child instanceof BaseComponent) {
-        child.dispatch(COMPONENT_LIFE_CYCLE_EVENT.COMPILE)
+        child.dispatchCompile()
       }
     })
 
     this.onRender(fragment)
-    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.MOUNT, DOMElement)
+    this.dispatchMount(DOMElement)
   }
 
   private mountComponent(element: Element) {
@@ -207,11 +208,11 @@ export default abstract class BaseComponent<
     prevValue: unknown,
     newValue: unknown
   ) {
-    const isMustBeRender =
+    const isUpdated =
       this.onUpdateProps(propName, prevValue, newValue) && !this.isInitRender
 
-    if (isMustBeRender) {
-      this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.COMPILE)
+    if (isUpdated) {
+      this.dispatchCompile()
     }
   }
 
@@ -267,12 +268,41 @@ export default abstract class BaseComponent<
     return `<div ${componentPlaceholderAttributeNameId}="${this.internalId}"></div>`
   }
 
-  protected registerLifeCycleEvents() {
-    this.subscribeToLifeCycleEvents('on')
-  }
-
   protected dispatch(event: ComponentLifeCycleEventType, ...args: unknown[]) {
     this.eventEmitter.emit(event, ...args)
+  }
+
+  protected dispatchCompile(...args: unknown[]) {
+    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.COMPILE, ...args)
+  }
+
+  protected dispatchRender(...args: unknown[]) {
+    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.RENDER, ...args)
+  }
+
+  protected dispatchMount(...args: unknown[]) {
+    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.MOUNT, ...args)
+  }
+
+  protected dispatchUpdateProps(
+    propName: keyof TPropsType,
+    prevValue: unknown,
+    newValue: unknown
+  ) {
+    this.dispatch(
+      COMPONENT_LIFE_CYCLE_EVENT.UPDATE_PROPS,
+      propName,
+      prevValue,
+      newValue
+    )
+  }
+
+  protected dispatchUnmount(...args: unknown[]) {
+    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT, ...args)
+  }
+
+  protected registerLifeCycleEvents() {
+    this.subscribeToLifeCycleEvents('on')
   }
 
   protected onRender(...args: unknown[]) {
@@ -289,7 +319,7 @@ export default abstract class BaseComponent<
     newProp: unknown
   ) {
     if (propKey) {
-      return prevProp !== newProp
+      return !isEquals(prevProp, newProp)
     }
 
     return false
@@ -304,36 +334,47 @@ export default abstract class BaseComponent<
     children: BaseComponentProps['children']
   ) {
     if (target instanceof HTMLElement) {
-      const internalInputId = target
+      const internalId = target
         ?.closest(`[${componentAttributeNameId}]`)
         ?.getAttribute(componentAttributeNameId)
 
-      if (internalInputId) {
-        return BaseComponent.findChild(internalInputId as string, children)
+      if (internalId) {
+        return BaseComponent.findChild(internalId as string, children)
       }
     }
 
     return undefined
   }
 
-  static findChild(
-    internalId: string,
+  static findChild<TComponentType extends BaseComponent<BaseComponentProps>>(
+    targetOrInternalId: HTMLElement | string,
     children: BaseComponentProps['children']
-  ): BaseComponent<BaseComponentProps> | undefined {
+  ): TComponentType | undefined {
     return children?.reduce((findedChild, child) => {
       if (child instanceof BaseComponent) {
+        const internalId = (
+          targetOrInternalId instanceof HTMLElement
+            ? targetOrInternalId.getAttribute(componentAttributeNameId)
+            : targetOrInternalId
+        ) as string
+
         if (child.internalId === internalId) {
-          findedChild = child
+          findedChild = child as TComponentType
         } else if (!findedChild) {
-          findedChild = BaseComponent.findChild(internalId, child.getChildren())
+          findedChild = BaseComponent.findChild(
+            internalId,
+            child.getChildren()
+          ) as TComponentType
         }
       }
 
       return findedChild
-    }, undefined as undefined | BaseComponent<BaseComponentProps>)
+    }, undefined as undefined | TComponentType)
   }
 
-  public setProps(newProps: TPropsType) {
+  public setProps<TComponentPropsType extends TPropsType>(
+    newProps: Partial<TComponentPropsType>
+  ) {
     Object.entries(newProps).forEach(([propKey, newValue]) => {
       this.props[propKey as keyof TPropsType] = newValue
     })
@@ -344,7 +385,7 @@ export default abstract class BaseComponent<
   }
 
   public destroy() {
-    this.dispatch(COMPONENT_LIFE_CYCLE_EVENT.UNMOUNT)
+    this.dispatchUnmount()
   }
 
   public getInternalId() {
@@ -362,7 +403,8 @@ export default abstract class BaseComponent<
   public getEventTarget<T extends Element>() {
     return (
       this.targetQueryForBrowserEvents
-        ? this.DOMElement?.querySelector(this.targetQueryForBrowserEvents)
+        ? this.DOMElement?.querySelector(this.targetQueryForBrowserEvents) ||
+          this.DOMElement
         : this.DOMElement
     ) as T
   }

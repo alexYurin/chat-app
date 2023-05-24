@@ -1,45 +1,27 @@
+import * as Views from 'views/index'
+
 const routes = {
-  pages: {
-    name: 'page',
-    title: 'Страницы',
-    pathname: '/',
-  },
   signIn: {
-    name: 'signIn',
-    title: 'Вход',
-    pathname: '/sign-in',
+    pathname: Views.SignInView.pathname,
+    View: Views.SignInView,
   },
   signUp: {
-    name: 'signUp',
-    title: 'Регистрация',
-    pathname: '/sign-up',
+    pathname: Views.SignUpView.pathname,
+    View: Views.SignUpView,
   },
   chat: {
-    name: 'chat',
-    title: 'Чат',
-    pathname: '/chat',
-  },
-  profile: {
-    name: 'profile',
-    title: 'Профиль (Настройки)',
-    pathname: '/profile',
-  },
-  profileEditPassword: {
-    name: 'profileEditPassword',
-    title: 'Профиль (Смена пароля)',
-    pathname: '/profile-edit-password',
+    pathname: Views.ChatView.pathname,
+    View: Views.ChatView,
   },
   notFound: {
-    name: 'notFound',
-    title: '404',
-    pathname: '/not-found',
+    pathname: Views.NotFoundView.pathname,
+    View: Views.NotFoundView,
   },
   error: {
-    name: 'error',
-    title: '500',
-    pathname: '/error',
+    pathname: Views.ErrorView.pathname,
+    View: Views.ErrorView,
   },
-}
+} as const
 
 export type RoutesTypes = typeof routes
 

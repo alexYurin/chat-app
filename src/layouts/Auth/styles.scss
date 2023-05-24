@@ -7,16 +7,19 @@
   max-height: 90vh;
 
   &__content {
+    position: relative;
     width: clamp(320px, 60%, 420px);
   }
 
   &__title.title {
-    margin-bottom: fn.offset(1.2);
+    margin: fn.offset(2) 0;
+    font-weight: 200;
   }
 
   &__form {
-    padding: 0 fn.offset(2);
-    width: calc(100% + #{fn.offset(4)});
+    position: relative;
+    padding: 0 fn.offset(1.8);
+    width: calc(100% + #{fn.offset(3.6)});
     max-height: 60vh;
   }
 

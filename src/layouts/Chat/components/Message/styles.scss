@@ -1,0 +1,53 @@
+@use 'styles/mixins' as mx;
+@use 'styles/config' as cfg;
+@use 'styles/functions' as fn;
+
+.message {
+  display: flex;
+  max-width: 70%;
+
+  &_author {
+    margin-left: auto;
+
+    .message__body {
+      @include mx.themify('background-color', 'message-bg-author');
+      @include mx.themify('color', 'text-dark');
+
+      border-bottom-left-radius: cfg.$radius;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  &__body {
+    @include mx.themify('background-color', 'message-bg');
+    @include mx.themify('color', 'text');
+
+    padding: fn.offset(0.4) fn.offset(0.8);
+    border-radius: cfg.$radius;
+    border-bottom-left-radius: 0;
+  }
+
+  &__username {
+    @include mx.themify('color', 'input-color');
+
+    display: inline-block;
+    margin-bottom: fn.offset(0.2);
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  &__text {
+    margin: 0 0 fn.offset(0.5);
+    font-size: 1.35rem;
+    font-weight: 500;
+    line-height: 2.2rem;
+    overflow-wrap: anywhere;
+  }
+
+  &__time {
+    display: inline-block;
+    width: 100%;
+    font-size: 1.2rem;
+    text-align: right;
+  }
+}

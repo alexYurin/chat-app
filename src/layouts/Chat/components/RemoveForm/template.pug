@@ -1,0 +1,15 @@
+-
+  const classNames = {
+    [`${className}`]: Boolean(className),
+  }
+
+  const [loader, title, form, buttonSubmit, buttonCancel] = children
+
+div(class=classNames).chat-remove
+  | !{loader}
+  .chat-remove__content.card
+    | !{title}
+    | !{form}
+    .chat-remove__buttons
+      | !{buttonCancel}
+      | !{buttonSubmit}

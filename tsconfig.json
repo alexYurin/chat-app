@@ -14,6 +14,7 @@
     "strictNullChecks": true,
     "paths": {
       "static/*": ["./static/*"],
+      "api/*": ["src/api/*"],
       "services/*": ["src/services/*"],
       "layouts/*": ["./src/layouts/*"],
       "router/*": ["./src/router/*"],
@@ -21,7 +22,8 @@
       "views/*": ["./src/views/*"],
       "components/*": ["./src/components/*"],
       "templators/*": ["src/templators/*"],
-      "utils/*": ["./src/utils/*"]
+      "utils/*": ["./src/utils/*"],
+      "types/*": ["./src/types/*"]
     }
   }
 }

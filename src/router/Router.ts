@@ -1,77 +1,108 @@
-import { HistoryPusher } from 'services/index'
-import { BaseComponentProps } from 'components/Base'
-import BaseLayout from 'layouts/Base'
+import { AppHistory } from 'services/index'
 import routes from 'router/routes'
-import * as views from 'views/index'
+import Route, { ViewType } from './Route'
+import RouterController from './controller'
 
-type ViewType = BaseLayout<BaseComponentProps['children'], any>
+const INIT_APP_DELAY = 400
 
-const routesCollection = Object.values(routes).map((route) => route.pathname)
+export type AppHistoryStateType = {
+  isWithoutRender?: boolean
+}
 
-const isDefinedPath = (pathname: string) => routesCollection.includes(pathname)
-
-const isMatchedPaths = (currentPathname: string, pathname: string) =>
-  currentPathname === pathname
-
-export default class Router {
+class Router {
   private currentPathname = window.location.pathname
-  private currentView: ViewType | null = null
+  private currentRoute: Route | null = null
+  private routes: Route[] = []
+  private history = new AppHistory()
+  private controller = new RouterController(routes)
 
-  constructor() {
-    this.addListeners()
-    this.init()
+  private onRoute() {
+    if (this.currentRoute?.getPathname() === window.location.pathname) {
+      return
+    }
+
+    this.currentPathname = this.controller.getCurrentPathname(
+      window.location.pathname
+    )
+
+    this.setRoute()
+  }
+
+  private setRoute() {
+    const route = this.getRoute(this.currentPathname)
+    const historyState = this.history.getState<AppHistoryStateType>()
+    const isAllowedPath = historyState?.isWithoutRender && route
+
+    if (isAllowedPath) {
+      return route.getLayout()
+        ? this.navigate(this.currentPathname)
+        : route.runRender(this.currentPathname)
+    }
+
+    if (!route) {
+      return this.navigate(routes.notFound.pathname)
+    }
+
+    if (this.currentRoute) {
+      this.currentRoute.leave()
+    }
+
+    this.currentRoute = route
+    this.currentRoute.runRender(this.currentPathname)
+  }
+
+  public getRoute(pathname: string) {
+    return this.routes.find((route) => route.isMatch(pathname))
+  }
+
+  public navigate(pathname: string, state: AppHistoryStateType = {}) {
+    const currentPathname = this.controller.getCurrentPathname(pathname)
+
+    if (this.currentPathname === currentPathname && !state.isWithoutRender) {
+      this.history.pushTo(currentPathname)
+
+      return
+    }
+
+    const nextRoute = this.getRoute(currentPathname)
+    const routeName = nextRoute?.getName()
+
+    this.history.pushTo(currentPathname, routeName, {
+      page: routeName,
+      ...state,
+    })
+  }
+
+  public async run() {
+    await this.checkUser().catch((error) => error)
+
+    this.history.addListeners([this.onRoute.bind(this)])
+
+    setTimeout(() => {
+      this.onRoute()
+      this.navigate(this.currentPathname)
+    }, INIT_APP_DELAY)
+  }
+
+  public async checkUser() {
+    return await this.controller.checkUser()
+  }
+
+  public use(View: ViewType) {
+    const route = new Route(View)
+
+    this.routes = [...this.routes, route]
 
     return this
   }
 
-  private init() {
-    const isUnknownRoute = !isDefinedPath(this.currentPathname)
-
-    if (isUnknownRoute) {
-      return HistoryPusher.pushTo(routes.notFound.pathname)
-    }
-
-    this.renderCurrentView()
+  public forward() {
+    this.history.forward()
   }
 
-  private onChangeUrl() {
-    this.currentPathname = window.location.pathname
-
-    this.renderCurrentView()
-  }
-
-  private renderCurrentView() {
-    Object.values(views).forEach((view) => {
-      const { Layout, props } = view
-
-      if (this.isCurrentRoute(props.pathname)) {
-        if (this.currentView) {
-          this.currentView.destroy()
-        }
-
-        const { name, pathname, documentTitle, data } = props
-
-        this.currentView = new Layout({
-          name,
-          props: {
-            pathname,
-            documentTitle,
-            data: data as any,
-          },
-        })
-
-        this.currentView.render()
-      }
-    })
-  }
-
-  private addListeners() {
-    new HistoryPusher({
-      onChangeURL: this.onChangeUrl.bind(this),
-    })
-  }
-
-  public isCurrentRoute(pathname: string) {
-    return isMatchedPaths(this.currentPathname, pathname)
+  public back() {
+    this.history.back()
   }
 }
+
+export default new Router()

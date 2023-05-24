@@ -1,17 +1,16 @@
-import routes from 'router/routes'
 import Validation from 'components/Form/Validation'
 import AuthLayout from 'layouts/Auth/index'
+import SignUpView from 'views/SignUp'
 
-const { name, pathname, title } = routes.signIn
+export default class SignInView {
+  static id = 'signIn'
+  static title = 'Вход'
+  static pathname = '/'
+  static allowedPaths = []
 
-export default {
-  Layout: AuthLayout,
-  props: {
-    name,
-    pathname,
-    documentTitle: title,
-    data: {
-      title,
+  constructor() {
+    return new AuthLayout(SignInView.id, {
+      title: 'Войти',
       fields: [
         {
           label: 'Логин',
@@ -32,9 +31,10 @@ export default {
       ],
       submitButtonText: 'Вход',
       authLink: {
-        href: routes.signUp.pathname,
+        href: SignUpView.pathname,
+        isRoute: true,
         children: ['Нет аккаунта?'],
       },
-    },
-  },
+    })
+  }
 }

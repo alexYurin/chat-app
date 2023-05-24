@@ -1,3 +1,3 @@
 export default function first<T>(array: T[]): T | undefined {
-  return array[0]
+  return Array.from(array)[0]
 }

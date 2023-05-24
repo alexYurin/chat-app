@@ -11,7 +11,6 @@ export default class PugTemplator extends BaseTemplator {
   }
 
   public compile(template: string, props: pug.LocalsObject) {
-    // console.log('FROM TEMPLATOR', template)
     const compileToHTML = this.createHTMLCompiler(template)
 
     return compileToHTML(props)

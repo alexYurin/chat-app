@@ -1,0 +1,15 @@
+-
+  const classNames = {
+    [`${className}`]: Boolean(className),
+    ['users-group_visible']: children.length > 0
+  }
+
+div.users-group(class=classNames)
+  if children.length > 0
+    span.users-group__title В чате:
+    ul.users-group__list
+      each user in children
+        li.users-group__item
+          | !{user}
+
+

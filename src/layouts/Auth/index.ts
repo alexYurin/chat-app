@@ -1,62 +1,97 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
-import routes from 'router/routes'
-import { HistoryPusher } from 'services/index'
-import { Title, Form, Button, Link } from 'components/index'
-import { FormProps } from 'components/Form'
+import AuthController from './controller'
+import { connect } from 'services/Store'
+import {
+  Title,
+  Form,
+  Loader,
+  Button,
+  Link,
+  BaseComponent,
+} from 'components/index'
+import {
+  AuthSignInRequestParamsType,
+  AuthSignUpRequestParamsType,
+} from 'api/Auth'
 import { InputProps } from 'components/Input'
-import { LinkProps } from 'components/Link'
+import { LoaderProps } from 'components/Loader'
+import { AuthPropsType } from './types'
+
 import './styles.scss'
 
-export interface AuthDataType {
-  title: string
-  fields: FormProps['fields']
-  submitButtonText: string
-  authLink: LinkProps
-}
-
-export type AuthTitle = Title
-export type AuthForm = Form
-export type AutSwitchFormhLink = Link
-export type AuthSubmitButton = Button
-export type BackLink = Link
-
-export type AuthChildrenPropsType = [
-  AuthTitle,
-  AuthForm,
-  AuthSubmitButton,
-  AutSwitchFormhLink,
-  BackLink
-]
+export type FormValuesType =
+  | AuthSignInRequestParamsType
+  | AuthSignUpRequestParamsType
 
 const formId = 'auth-form'
 
-export default class AuthLayout extends BaseLayout<
-  AuthChildrenPropsType,
-  AuthDataType
-> {
+class AuthLayout extends BaseLayout<AuthPropsType> {
   protected template = layout
+  protected disableRenderPropsList = ['isLoading']
+  protected controller = new AuthController()
 
-  init() {
-    const { title, authLink, fields, submitButtonText } = this.data
+  protected onUpdateProps(
+    propKey: keyof AuthPropsType,
+    prevValue: unknown,
+    newValue: unknown
+  ): boolean {
+    if (this.disableRenderPropsList.includes(propKey)) {
+      switch (propKey) {
+        case 'isLoading': {
+          const isVisible = newValue as boolean
+          const loader = document.querySelector(
+            '.auth-layout__loader'
+          ) as HTMLElement
 
-    const validate = (event: Event, currentInputProps: InputProps) => {
-      Form.validate(event, currentInputProps, this.props.children)
-    }
+          const loaderComponent = BaseLayout.findChild<Loader>(
+            loader,
+            this.props.children
+          )
 
-    const onSubmit = (event: Event) => {
-      const isValidForm = Form.onSubmit(event, this.props.children)
+          loaderComponent?.setProps<LoaderProps>({
+            isVisible,
+          })
 
-      if (isValidForm) {
-        const isRedirect = confirm('Форма успешно отправлена. Перейти в чат?')
-
-        if (isRedirect) {
-          return HistoryPusher.pushTo(routes.chat.pathname)
+          break
         }
+
+        default:
+          console.log(
+            `Unhandled prop "${propKey}" in skip re-render with values: ${prevValue}, ${newValue}`
+          )
+
+          break
       }
     }
 
+    return false
+  }
+
+  private validate(event: Event, currentInputProps: InputProps) {
+    Form.validate(event, currentInputProps, this.props.children)
+  }
+
+  private onSubmit(event: Event) {
+    const { isValidForm, values } = Form.preSubmitValidate<FormValuesType>(
+      event,
+      this.props.children
+    )
+
+    if (isValidForm) {
+      this.controller.setAuth(values)
+    }
+  }
+
+  protected init() {
+    const { isLoading, title, authLink, fields, submitButtonText } = this.props
+
     this.props.children = [
+      new Loader({
+        className: 'auth-layout__loader',
+        isVisible: isLoading,
+        withOverlay: true,
+      }),
       new Title({
         className: 'auth-layout__title',
         level: 1,
@@ -68,12 +103,8 @@ export default class AuthLayout extends BaseLayout<
         fields: fields.map(({ label, input }) => {
           input.listeners = [
             {
-              eventType: 'focus',
-              callback: (event: Event) => validate(event, input),
-            },
-            {
               eventType: 'blur',
-              callback: (event: Event) => validate(event, input),
+              callback: (event: Event) => this.validate(event, input),
             },
           ]
 
@@ -85,7 +116,7 @@ export default class AuthLayout extends BaseLayout<
         listeners: [
           {
             eventType: 'submit',
-            callback: onSubmit,
+            callback: this.onSubmit.bind(this),
           },
         ],
       }),
@@ -96,10 +127,13 @@ export default class AuthLayout extends BaseLayout<
         children: [submitButtonText],
       }),
       new Link(authLink),
-      new Link({
-        href: '/',
-        children: ['К списку страниц'],
-      }),
     ]
   }
 }
+
+const withState = connect((state) => ({
+  user: state.user,
+  isLoading: state.isLoading,
+}))
+
+export default withState<AuthPropsType>(AuthLayout as typeof BaseComponent)

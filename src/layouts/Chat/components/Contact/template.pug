@@ -1,0 +1,24 @@
+-
+  const [avatar, name, lastMessageText, lastMessageDate, unread, removeIcon] = children
+
+  const classNames = {
+    [`${className}`]: Boolean(className),
+    'contact_admin': Boolean(removeIcon),
+    'contact_loading': isLoading,
+    'contact_active': isActive,
+  }
+
+.contact(id=id class=classNames)
+  | !{avatar}
+
+  .contact__body
+    span.contact__name #{name}
+    p.contact__message #{lastMessageText}
+    time(datetime=lastMessageDate).contact__date !{lastMessageDate}
+
+    span.contact__unread-status
+      if (unread)
+        b.contact__unread-count !{unread}
+
+    if (removeIcon)
+      | !{removeIcon}

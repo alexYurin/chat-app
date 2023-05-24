@@ -1,0 +1,10 @@
+-
+  const classNames = {
+    [`${className}`]: Boolean(className),
+  }
+
+ul(class=classNames).messages-list.scroll
+  | !{loader}
+  each message in children
+    li.messages-list__item
+      | !{message}

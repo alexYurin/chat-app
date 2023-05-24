@@ -1,34 +1,58 @@
 import layout from 'bundle-text:./layout.pug'
 import BaseLayout from 'layouts/Base/index'
-import { Title, Link } from 'components/index'
+import { Title, Link, BaseComponent } from 'components/index'
+import { store } from 'services/index'
+import { connect } from 'services/Store'
+import { Router, routes } from 'router/index'
+import { PlaceholderPropsType } from './types'
+
 import './styles.scss'
 
-export type PlaceholderDataType = {
-  title: string
-  description: string
-}
-
-export type PlaceholderChildrenPropsType = [Title, string, Link]
-
-export default class PlaceholderLayout extends BaseLayout<
-  PlaceholderChildrenPropsType,
-  PlaceholderDataType
-> {
+class PlaceholderLayout extends BaseLayout<PlaceholderPropsType> {
   protected template = layout
 
-  init() {
-    const { title, description } = this.data
+  private setRouteBack(event: Event) {
+    const { error } = store.getState()
+
+    event.preventDefault()
+
+    if (error) {
+      store.set('error', null)
+    }
+
+    Router.navigate(routes.signIn.pathname)
+  }
+
+  protected init() {
+    const { title, description, error } = this.props
+
+    const titleText = error?.status || title
+    const descriptionText = error?.message || description
 
     this.props.children = [
       new Title({
         level: 1,
-        children: [title],
+        children: [titleText as string],
       }),
-      description,
+      descriptionText,
       new Link({
-        href: '/',
-        children: ['К списку страниц'],
+        href: '#',
+        children: ['Назад'],
+        listeners: [
+          {
+            eventType: 'click',
+            callback: this.setRouteBack,
+          },
+        ],
       }),
     ]
   }
 }
+
+const withError = connect((state) => ({
+  error: state.error,
+}))
+
+export default withError<PlaceholderPropsType>(
+  PlaceholderLayout as typeof BaseComponent
+)

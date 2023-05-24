@@ -1,17 +1,15 @@
-import routes from 'router/routes'
 import PlaceholderLayout from 'layouts/Placeholder/index'
 
-const { name, pathname, title } = routes.error
+export default class ErrorView {
+  static id = 'error'
+  static title = '500'
+  static pathname = '/error'
+  static allowedPaths = []
 
-export default {
-  Layout: PlaceholderLayout,
-  props: {
-    name,
-    pathname,
-    documentTitle: title,
-    data: {
-      title,
-      description: 'Мы уже фиксим',
-    },
-  },
+  constructor() {
+    return new PlaceholderLayout(ErrorView.id, {
+      title: '500',
+      description: 'Мы уже фиксим...',
+    })
+  }
 }

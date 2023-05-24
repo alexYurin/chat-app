@@ -1,8 +1,10 @@
 -
-  const [title, form, submitButton, authLink, backLink] = children
+  const [loader, title, form, submitButton, authLink] = children
 
 section.auth-layout.column.center.h100
   .auth-layout__content.card.column.center
+    | !{loader}
+
     | !{title}
 
     | !{form}
@@ -12,6 +14,3 @@ section.auth-layout.column.center.h100
 
     .auth-layout__link.center
       | !{authLink}
-
-  .auth-layout__link.center
-    | !{backLink}

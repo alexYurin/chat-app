@@ -1,0 +1,48 @@
+@use 'styles/mixins' as mx;
+@use 'styles/config' as cfg;
+@use 'styles/functions' as fn;
+@use 'layouts/Chat/styles' as chat-styles;
+
+.messages-list {
+  @include mx.themify('background-color', 'messages-list-bg');
+
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: auto;
+  max-height: calc(100% - #{chat-styles.$message-input-height});
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &__text,
+  &__item {
+    display: flex;
+  }
+
+  &__text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.8rem;
+    text-align: center;
+  }
+
+  &__item {
+    align-self: center;
+    padding: 0 fn.offset(0.5);
+    width: 100%;
+    max-width: 960px;
+    border-style: solid;
+    border-width: 0;
+
+    &:not(:last-child) {
+      margin-bottom: fn.offset();
+    }
+  }
+}

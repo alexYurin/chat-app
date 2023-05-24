@@ -2,59 +2,312 @@
 @use 'styles/config' as cfg;
 @use 'styles/functions' as fn;
 
+$contacts-section-width: 400px;
+$profile-section-width: 400px;
+$profile-section--avatar-height: 30vh;
+$message-input-height: 60px;
+$add-contact-button-height: calc(4rem + #{fn.offset(0.5)});
+
+%absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .chat-layout {
   flex: 1 0 100%;
+  position: relative;
+  overflow: hidden;
+
+  &__trigger {
+    &_profile {
+      @include mx.themify('background-color', 'chat-sidebar-bg');
+
+      position: absolute;
+      align-items: center;
+      top: fn.offset(0.5);
+      right: fn.offset(0.5);
+      padding: fn.offset(0.3) fn.offset(0.5) fn.offset(0.3) fn.offset(0.3);
+      border-radius: cfg.$radius * 1.2;
+      font-weight: 600;
+      transition: box-shadow 0.2s ease-in-out, transform 0.2s linear;
+      cursor: pointer;
+      z-index: cfg.$z-index-content;
+
+      &:hover {
+        box-shadow: 0 0 2.5rem #{fn.theme-color('dark', 'primary')};
+        transform: scale(1.02);
+      }
+
+      .avatar {
+        margin-right: fn.offset(0.5);
+        width: 30px;
+        height: 30px;
+      }
+    }
+
+    &_avatar {
+      @include mx.themify('background-color', 'avatar-bg-overlay');
+
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      z-index: cfg.$base-z-index;
+      transition: opacity 0.2s linear;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 1;
+
+        & ~ .chat-layout__profile-avatar-content {
+          filter: blur(4px);
+        }
+
+        & ~ .chat-layout__profile-avatar-content .avatar {
+          transform: scale(1.05);
+        }
+      }
+    }
+  }
+
+  &__trigger-input {
+    display: none;
+
+    &_profile {
+      &:checked ~ .chat-layout__profile {
+        box-shadow: 0 0 5.4rem #{fn.theme-color('dark', 'primary')};
+      }
+
+      &:checked {
+        & ~ .chat-layout__overlay {
+          opacity: 0.5;
+          transform: scale(1);
+        }
+
+        & ~ .chat-layout__profile {
+          transform: translateX(0);
+        }
+
+        & ~ .chat-layout__content {
+          filter: blur(6px);
+        }
+      }
+    }
+
+    &_password {
+      &:checked ~ .chat-layout__profile {
+        .chat-layout__form-container_password {
+          transform: translateX(0);
+        }
+      }
+    }
+  }
+
+  &__create-form,
+  &__remove-form,
+  &__users-form {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: translateY(100vh);
+    transition: transform 0.3s ease-in-out;
+    z-index: cfg.$z-index-overlay;
+
+    &_active {
+      position: fixed;
+      transform: translateY(0);
+
+      & ~ .chat-layout__content {
+        filter: blur(10px);
+      }
+    }
+  }
 
   &__content {
     display: grid;
     grid-template-areas:
       'contacts messages'
       'contacts input';
-    grid-template-columns: 400px 1fr;
+    grid-template-columns: #{$contacts-section-width} 1fr;
     grid-template-rows: 1fr 60px;
+    grid-template-rows: 1fr;
     width: 100%;
     height: 100%;
+    transition: filter 0.2s linear;
+
+    &_input_active {
+      .chat-layout__input {
+        margin-bottom: 0;
+      }
+
+      .messages-list {
+        display: flex;
+      }
+
+      .chat-layout__service-text_empty {
+        display: none;
+      }
+    }
+
+    &_contacts_active {
+      .chat-layout__contacts-list {
+        display: flex;
+
+        & ~ .chat-layout__service-text {
+          display: none;
+        }
+      }
+    }
+  }
+
+  &__loader-messages.loader {
+    position: absolute;
+    top: 33px;
+    right: 135px;
+
+    &,
+    .loader__item {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    &.loader_visible ~ .chat-layout__messages .messages-list {
+      filter: blur(4px);
+      overflow: hidden;
+    }
+  }
+
+  &__overlay {
+    @include mx.themify('background-color', 'overlay-bg');
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: scale(0);
+    z-index: cfg.$z-index-overlay;
+    transition: opacity 0.2s ease-in-out;
+    cursor: pointer;
   }
 
   &__contacts {
     @include mx.themify('border-color', 'input-border');
 
     grid-area: contacts;
+    position: relative;
     border-style: solid;
     border-width: 0;
     border-right-width: 0.1rem;
   }
 
+  &__contacts-loader {
+    .loader__overlay {
+      position: absolute;
+    }
+  }
+
+  &__contacts-add-button {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    flex: 0 0 auto;
+    margin: fn.offset(0.5);
+    width: calc(100% - #{fn.offset()});
+  }
+
+  &__contacts-list {
+    display: none;
+    margin-bottom: $message-input-height;
+    height: calc(100% - #{$message-input-height});
+
+    & ~ .chat-layout__service-text {
+      margin: auto;
+    }
+  }
+
   &__message,
   &__input {
-    padding: 0 fn.offset();
+    padding: 0 fn.offset(0.5);
   }
 
   &__messages {
     grid-area: messages;
+    position: relative;
   }
 
   &__input {
     grid-area: input;
     display: flex;
+    margin-bottom: -$message-input-height;
     flex-flow: row nowrap;
+    align-items: center;
+    height: $message-input-height;
+    transition: margin-bottom 0.2s linear;
   }
 
   &__form {
-    width: 100%;
-
-    .form__label {
+    &.form_readonly ~ .chat-layout__form-submit .chat-layout__submit-button {
       display: none;
     }
+  }
 
-    .input {
-      position: relative;
+  &__form-container {
+    @include mx.themify('background-color', 'chat-sidebar-bg');
+
+    position: absolute;
+    top: $profile-section--avatar-height;
+    left: 0;
+    padding: fn.offset(3) fn.offset() fn.offset(2);
+    width: 100%;
+    height: calc(100vh - #{$profile-section--avatar-height});
+
+    &_password {
+      transform: translateX(100%);
+      transition: transform 0.2s ease-in-out;
     }
 
-    .input__message {
-      position: absolute;
-      margin-top: fn.offset(-0.5);
-      bottom: 100%;
+    .form {
+      margin-left: fn.offset(-1);
+      padding: 0 fn.offset();
+      width: calc(100% + #{fn.offset()} * 2);
+    }
+
+    .button {
+      width: 100%;
+    }
+  }
+
+  &__messages-text {
+    font-size: 1.8rem;
+    max-width: 360px;
+    text-align: center;
+    font-weight: 300;
+  }
+
+  &__form-title.title {
+    @include mx.themify('color', 'primary');
+
+    align-items: center;
+    margin-bottom: calc(#{fn.offset(3)} - 2rem);
+    font-weight: 200;
+  }
+
+  &__form-submit {
+    margin-top: auto;
+    padding-top: fn.offset(2);
+
+    .button {
+      font-size: 1.4rem;
+
+      &:not(:first-child) {
+        margin-top: fn.offset();
+      }
     }
   }
 
@@ -64,5 +317,26 @@
 
   &__link {
     margin-top: fn.offset();
+  }
+
+  &__service-text {
+    padding: 0 fn.offset(1.4);
+    max-width: $profile-section-width;
+    font-size: 1.8rem;
+    text-align: center;
+    font-weight: 300;
+
+    &_chat {
+      display: none;
+
+      &_active {
+        display: block;
+        z-index: cfg.$z-index-content;
+
+        & ~ .chat-layout__service-text {
+          display: none;
+        }
+      }
+    }
   }
 }
