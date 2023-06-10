@@ -9,5 +9,6 @@ module.exports = merge(commonConfig, {
     port: 3000,
     open: false,
     static: path.resolve(__dirname, 'static'),
+    historyApiFallback: true,
   },
 })

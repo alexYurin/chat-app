@@ -18,8 +18,7 @@
     ],
     "*.{ts}": [
       "prettier --write .",
-      "eslint --ext .ts src/ --fix",
-      "git add ."
+      "eslint --ext .ts src/ --fix"
     ]
   },
   "alias": {
