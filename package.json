@@ -14,11 +14,11 @@
   },
   "lint-staged": {
     "*.scss": [
-      "stylelint '**/*.scss'"
+      "lint:styles"
     ],
     "*.ts": [
-      "prettier --write .",
-      "eslint --ext .ts src/ --fix"
+      "format",
+      "lint"
     ]
   },
   "alias": {
