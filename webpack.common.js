@@ -15,6 +15,7 @@ module.exports = {
     filename: 'app.js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
+    publicPath: '/',
   },
   module: {
     rules: [
