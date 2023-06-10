@@ -2,7 +2,7 @@ import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import Validation, { ValidationProps } from 'components/Form/Validation'
 import { InputProps } from 'components/Input'
 import FormField, { FormFieldProps } from './Field'
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 
 import './styles.scss'
 

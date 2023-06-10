@@ -2,7 +2,7 @@ import BaseComponent, { BaseComponentProps } from 'components/Base'
 
 export default function withLoading<
   TComponent extends BaseComponent<BaseComponentProps>,
-  TResponse = unknown
+  TResponse = any
 >(loadingKey: string) {
   return (
     target: TComponent,

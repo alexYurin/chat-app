@@ -1,5 +1,5 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 
 import './styles.scss'
 

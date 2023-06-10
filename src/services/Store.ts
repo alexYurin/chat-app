@@ -42,7 +42,9 @@ class Store extends EventBus<StoreEventType> {
     key: keyof StateType,
     value: TValue
   ) {
-    this.state[key] = value
+    const state = this.state as Record<string, TValue>
+
+    state[key] = value
 
     this.emit(STORE_EVENT.UPDATE)
   }

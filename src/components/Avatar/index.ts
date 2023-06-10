@@ -1,7 +1,7 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 
-import avatarPlaceholderSrc from 'data-url:static/images/avatar-placeholder.svg'
+import avatarPlaceholderSrc from 'static/images/avatar-placeholder.svg'
 import './styles.scss'
 
 export interface AvatarProps extends BaseComponentProps {

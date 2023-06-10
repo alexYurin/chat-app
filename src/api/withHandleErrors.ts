@@ -6,7 +6,7 @@ export type WithHandleErrorsOptionsType = {
   withRouteOnErrorPage?: boolean
 }
 
-export default function withHandleErrors<TArgs = unknown, TResponse = unknown>(
+export default function withHandleErrors<TArgs = any, TResponse = any>(
   options: WithHandleErrorsOptionsType = {}
 ) {
   return (

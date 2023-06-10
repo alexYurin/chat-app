@@ -1,4 +1,4 @@
-import layout from 'bundle-text:./layout.pug'
+import layout from './layout.pug'
 import BaseLayout from 'layouts/Base/index'
 import { Title, Link, BaseComponent } from 'components/index'
 import { store } from 'services/index'

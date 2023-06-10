@@ -3,7 +3,7 @@ import { Form, Button, Input } from 'components/index'
 import { FormProps } from 'components/Form'
 import { isFunction } from 'utils/index'
 
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 import './styles.scss'
 
 export interface ChatMessageInputProps extends BaseComponentProps {

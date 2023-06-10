@@ -1,7 +1,7 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import { Title, Form, Button, Loader } from 'components/index'
 import { LoaderProps } from 'components/Loader'
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 
 import './styles.scss'
 

@@ -4,7 +4,7 @@ import { store } from 'services/index'
 import { UserType } from 'types/user'
 import { isEquals, isFunction } from 'utils/index'
 
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 import './styles.scss'
 
 export interface ChatUsersListProps extends BaseComponentProps {

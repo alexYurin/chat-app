@@ -53,7 +53,7 @@ export default abstract class BaseComponent<
     []
   private DOMElement: Element | null = null
 
-  protected template = ''
+  protected template: (locals: Record<string, any>) => string = () => ''
   protected isMount = false
   protected isInitRender = true
   protected targetQueryForBrowserEvents: null | string = null

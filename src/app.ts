@@ -1,4 +1,4 @@
-import 'styles/index.scss'
+import 'styles'
 import 'components'
 import { Router, routes } from 'router/index'
 

@@ -4,8 +4,8 @@ import { store } from 'services/index'
 import { UserType } from 'types/user'
 import { isEquals, isFunction } from 'utils/index'
 
-import templateString from 'bundle-text:./template.pug'
-import removeIconSrc from 'data-url:static/images/remove.svg'
+import templateString from './template.pug'
+import removeIconSrc from 'static/images/remove.svg'
 import './styles.scss'
 
 export interface ChatUserDetailProps extends BaseComponentProps {

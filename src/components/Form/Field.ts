@@ -1,6 +1,6 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import Input, { InputProps } from 'components/Input'
-import templateString from 'bundle-text:./template.field.pug'
+import templateString from './template.field.pug'
 
 export interface FormFieldProps extends BaseComponentProps {
   label?: string

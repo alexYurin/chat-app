@@ -1,7 +1,7 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import { ChatMessageType } from 'types/chat'
 import { parseDateToTime } from 'utils/index'
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 
 import './styles.scss'
 

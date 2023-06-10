@@ -1,7 +1,7 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import ChatContact, { ChatContactProps } from 'layouts/Chat/components/Contact'
 import { ChatContactRoomType } from 'types/chat'
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 import { store } from 'services/index'
 import { Button, Loader } from 'components/index'
 import { isEquals, isFunction } from 'utils/index'

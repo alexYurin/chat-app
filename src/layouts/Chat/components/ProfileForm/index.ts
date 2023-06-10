@@ -7,8 +7,8 @@ import { AvatarProps } from 'components/Avatar'
 import { LoaderProps } from 'components/Loader'
 import { UserType } from 'types/user'
 import { first, isFunction, isEquals } from 'utils/index'
-import editAvatarIconSrc from 'data-url:static/images/edit.svg'
-import templateString from 'bundle-text:./template.pug'
+import editAvatarIconSrc from 'static/images/edit.svg'
+import templateString from './template.pug'
 
 import './styles.scss'
 

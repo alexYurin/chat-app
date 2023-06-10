@@ -1,6 +1,6 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import { ChatContactRoomType } from 'types/chat'
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 import { Avatar } from 'components/index'
 import { isEquals } from 'utils/index'
 
