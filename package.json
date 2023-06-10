@@ -9,6 +9,7 @@
     "lint": "eslint '**/*.{ts,tsx}'",
     "lint:styles": "stylelint '**/*.scss'",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
+    "pre-commit": "lint-staged",
     "prepare": "husky install"
   },
   "lint-staged": {
@@ -17,7 +18,8 @@
     ],
     "*.{ts}": [
       "prettier --write .",
-      "eslint --ext .ts src/ --fix"
+      "eslint --ext .ts src/ --fix",
+      "git add ."
     ]
   },
   "alias": {
@@ -63,7 +65,7 @@
     "eslint-webpack-plugin": "4.0.1",
     "html-webpack-plugin": "5.5.2",
     "html-webpack-pug-plugin": "4.0.0",
-    "husky": "8.0.3",
+    "husky": "^8.0.3",
     "lint-staged": "13.2.2",
     "mini-css-extract-plugin": "2.7.6",
     "prettier": "2.8.3",
