@@ -30,7 +30,7 @@ import './styles.scss'
 
 const RESOURCES_URL = process.env.RESOURCES_URL as string
 
-const paths = {
+export const paths = {
   MAIN: '/messenger',
   PROFILE: '/settings',
 }

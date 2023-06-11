@@ -46,6 +46,7 @@ export default class RouterController {
 
   public getCurrentPathname(pathname: string) {
     const { user, error } = store.getState()
+    const pathnameWithoutURLParams = pathname.split('?')[0]
 
     const isDefinedPath = this.isDefinedPath(pathname)
 

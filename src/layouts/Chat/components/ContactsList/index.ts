@@ -3,6 +3,8 @@ import ChatContact, { ChatContactProps } from 'layouts/Chat/components/Contact'
 import { ChatContactRoomType } from 'types/chat'
 import templateString from './template.pug'
 import { store } from 'services/index'
+import Router from 'router/Router'
+import { paths } from 'layouts/Chat'
 import { Button, Loader } from 'components/index'
 import { isEquals, isFunction } from 'utils/index'
 
@@ -124,6 +126,13 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
 
       const { id, client, detail, users, isActive, isLoading, isConnected } =
         contactInstance.getProps()
+
+      Router.setURLParams(
+        {
+          id: `${detail.id}`,
+        },
+        paths.MAIN
+      )
 
       const contactProps = {
         id,
