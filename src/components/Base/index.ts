@@ -129,7 +129,7 @@ export default abstract class BaseComponent<
     )
   }
 
-  private compileComponent() {
+  protected compileComponent() {
     const fragment = document.createElement('template')
 
     fragment.innerHTML = Templator.compile(this.template, {

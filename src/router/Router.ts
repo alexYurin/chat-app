@@ -1,5 +1,4 @@
 import { AppHistory } from 'services/index'
-import routes from 'router/routes'
 import Route, { ViewType } from './Route'
 import RouterController from './controller'
 
@@ -14,7 +13,7 @@ export class Router {
   private currentRoute: Route | null = null
   private routes: Route[] = []
   private history = new AppHistory()
-  private controller = new RouterController(routes)
+  private controller = new RouterController()
   private searchParams = window.location.search
 
   private onRoute() {
@@ -43,7 +42,7 @@ export class Router {
     }
 
     if (!route) {
-      return this.navigate(routes.notFound.pathname)
+      return this.navigate('/not-found')
     }
 
     if (this.currentRoute) {

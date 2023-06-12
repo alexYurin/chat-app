@@ -1,9 +1,18 @@
 import 'styles'
 import 'components'
-import { Router, routes } from 'router/index'
+import { Router } from 'router/index'
+import {
+  ChatView,
+  SignInView,
+  SignUpView,
+  ErrorView,
+  NotFoundView,
+} from './views'
 
-Object.values(routes).forEach((route) => {
-  Router.use(route.View)
-})
-
-Router.run()
+Router.use(ChatView)
+  .use(SignInView)
+  .use(SignInView)
+  .use(SignUpView)
+  .use(ErrorView)
+  .use(NotFoundView)
+  .run()

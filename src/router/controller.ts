@@ -1,5 +1,5 @@
 import AuthApi from 'api/Auth'
-import { RoutesTypes } from 'router/routes'
+import routes, { RoutesTypes } from 'router/routes'
 import { store } from 'services/index'
 
 type RoutePathType = RoutesTypes[keyof RoutesTypes]['pathname']
@@ -9,13 +9,13 @@ const authApi = new AuthApi()
 export default class RouterController {
   private routesCollection: string[] = []
 
-  constructor(private routes: RoutesTypes) {
+  constructor() {
     this.routesCollection = Object.values(routes).reduce(
       (allowedRoutes, route) => {
-        if (route.View.allowedPaths.length > 0) {
+        if (route.allowedPaths.length > 0) {
           return [
             ...allowedRoutes,
-            ...route.View.allowedPaths,
+            ...route.allowedPaths,
             route.pathname,
           ] as RoutePathType[]
         }
@@ -47,22 +47,20 @@ export default class RouterController {
   public getCurrentPathname(pathname: string) {
     const { user, error } = store.getState()
 
-    const [path, urlParams] = pathname.split('?')
+    const [path] = pathname.split('?')
 
     const isDefinedPath = this.isDefinedPath(path)
 
-    const isFakeErrorPath = path === this.routes.error.pathname && !error
+    const isFakeErrorPath = path === routes.error.pathname && !error
 
     const isMessengerPath =
-      path === this.routes.chat.pathname ||
-      this.routes.chat.View.allowedPaths.includes(path)
+      path === routes.chat.pathname || routes.chat.allowedPaths.includes(path)
 
     const isAuthPath =
-      path === this.routes.signIn.pathname ||
-      path === this.routes.signUp.pathname
+      path === routes.signIn.pathname || path === routes.signUp.pathname
 
     if (!isDefinedPath || isFakeErrorPath) {
-      return this.routes.notFound.pathname
+      return routes.notFound.pathname
     }
 
     if (user && isMessengerPath) {
@@ -70,11 +68,11 @@ export default class RouterController {
     }
 
     if (user && isAuthPath) {
-      return this.routes.chat.pathname
+      return routes.chat.pathname
     }
 
     if (!user && isMessengerPath) {
-      return this.routes.signIn.pathname
+      return routes.signIn.pathname
     }
 
     return path
