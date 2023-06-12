@@ -14,9 +14,6 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "precommit": [
-      "npm run test"
-    ],
     "*.scss": [
       "stylelint '**/*.scss'"
     ],
