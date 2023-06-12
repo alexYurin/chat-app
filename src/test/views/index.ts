@@ -1,4 +1,4 @@
-import { TestAuthLayout, TestChatLayout } from '../layouts'
+import { layouts } from '../layouts'
 
 class TestChatView {
   static id = 'chat'
@@ -7,7 +7,7 @@ class TestChatView {
   static allowedPaths = ['/settings']
 
   constructor() {
-    return new TestChatLayout('chat-test-page', {})
+    return new layouts.TestChatLayout('chat-test-page', {})
   }
 }
 
@@ -18,7 +18,7 @@ class TestSignInView {
   static allowedPaths = []
 
   constructor() {
-    return new TestAuthLayout('sign-in-test-page', {})
+    return new layouts.TestAuthLayout('sign-in-test-page', {})
   }
 }
 
@@ -29,8 +29,36 @@ class TestSignUpView {
   static allowedPaths = []
 
   constructor() {
-    return new TestAuthLayout('sign-up-test-page', {})
+    return new layouts.TestAuthLayout('sign-up-test-page', {})
   }
 }
 
-export { TestChatView, TestSignInView, TestSignUpView }
+class TestNotFoundView {
+  static id = 'notFound'
+  static title = '404'
+  static pathname = '/not-found'
+  static allowedPaths = []
+
+  constructor() {
+    return new layouts.TestPlaceholderLayout('not-found-test-page', {})
+  }
+}
+
+class TestErrorView {
+  static id = 'error'
+  static title = '500'
+  static pathname = '/error'
+  static allowedPaths = []
+
+  constructor() {
+    return new layouts.TestPlaceholderLayout('error-test-page', {})
+  }
+}
+
+export {
+  TestChatView,
+  TestSignInView,
+  TestSignUpView,
+  TestNotFoundView,
+  TestErrorView,
+}

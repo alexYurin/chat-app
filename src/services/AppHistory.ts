@@ -34,4 +34,8 @@ export default class AppHistory {
   public back() {
     this.appHistory.back()
   }
+
+  public getLength() {
+    return this.appHistory.length
+  }
 }

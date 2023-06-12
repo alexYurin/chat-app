@@ -281,7 +281,7 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.1.tgz#aa22750962f3bf0e79d753d3cc067f010c95f194"
   integrity sha512-LG4opVs2ANWZ1TJoKc937iMmNstM/d0ae1vNbnBvBhqCSezgVUOzcLCqbI5elV8Vy6WKwKjaqR+zO9VKirBBCA==
 
-"@types/expect@^24.3.0":
+"@types/expect@24.3.0":
   version "24.3.0"
   resolved "https://registry.yarnpkg.com/@types/expect/-/expect-24.3.0.tgz#d7cab8b3c10c2d92a0cbb31981feceb81d3486f1"
   integrity sha512-aq5Z+YFBz5o2b6Sp1jigx5nsmoZMK5Ceurjwy6PZmRv7dEi1jLtkARfvB1ME+OXJUG+7TZUDcv3WoCr/aor6dQ==
@@ -339,7 +339,7 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
-"@types/jsdom@^21.1.1":
+"@types/jsdom@21.1.1":
   version "21.1.1"
   resolved "https://registry.yarnpkg.com/@types/jsdom/-/jsdom-21.1.1.tgz#e59e26352071267b507bf04d51841a1d7d3e8617"
   integrity sha512-cZFuoVLtzKP3gmq9eNosUL1R50U+USkbLtUQ1bYVgl/lKp0FZM7Cq4aIHAL8oIvQ17uSHi7jXPtfDOdjPwBE7A==
@@ -2732,7 +2732,7 @@ js-yaml@4.1.0, js-yaml@^4.1.0:
   dependencies:
     argparse "^2.0.1"
 
-jsdom@^22.1.0:
+jsdom@22.1.0:
   version "22.1.0"
   resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-22.1.0.tgz#0fca6d1a37fbeb7f4aac93d1090d782c56b611c8"
   integrity sha512-/9AVW7xNbsBv6GfWho4TTNjEo9fe6Zhf9O7s0Fhhr3u+awPwAJMKwAMXnkk5vBxflqLW9hTHX/0cs+P3gW+cQw==
@@ -3109,7 +3109,7 @@ mkdirp@^0.5.1:
   dependencies:
     minimist "^1.2.6"
 
-mocha@^10.2.0:
+mocha@10.2.0:
   version "10.2.0"
   resolved "https://registry.yarnpkg.com/mocha/-/mocha-10.2.0.tgz#1fd4a7c32ba5ac372e03a17eef435bd00e5c68b8"
   integrity sha512-IDY7fl/BecMwFHzoqF2sg/SHHANeBoMMXFlS9r0OXKDssYE1M5O43wUY/9BVPeIvfH2zmEbBfseqN9gBQZzXkg==
@@ -4574,7 +4574,7 @@ ts-loader@9.4.3:
     micromatch "^4.0.0"
     semver "^7.3.4"
 
-ts-mocha@^10.0.0:
+ts-mocha@10.0.0:
   version "10.0.0"
   resolved "https://registry.yarnpkg.com/ts-mocha/-/ts-mocha-10.0.0.tgz#41a8d099ac90dbbc64b06976c5025ffaebc53cb9"
   integrity sha512-VRfgDO+iiuJFlNB18tzOfypJ21xn2xbuZyDvJvqpTbWgkAgD17ONGr8t+Tl8rcBtOBdjXp5e/Rk+d39f7XBHRw==

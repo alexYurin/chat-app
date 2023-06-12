@@ -15,6 +15,7 @@ export class Router {
   private history = new AppHistory()
   private controller = new RouterController()
   private searchParams = window.location.search
+  private paths: string[] = []
 
   private onRoute() {
     if (this.currentRoute?.getPathname() === window.location.pathname) {
@@ -127,6 +128,14 @@ export class Router {
 
   public getUrlParams() {
     return this.searchParams
+  }
+
+  public getHistory() {
+    return this.history
+  }
+
+  public getCurentPathname() {
+    return this.currentPathname
   }
 }
 

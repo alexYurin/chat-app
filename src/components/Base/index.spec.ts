@@ -1,24 +1,8 @@
-import BaseComponent, { BaseComponentProps } from '.'
+import BaseComponent from '.'
+import { createComponent } from 'test/helpers'
 import { assert, expect } from 'chai'
 
 describe('Компонент', () => {
-  const createComponent = <T extends BaseComponentProps>(props: T) => {
-    class TestComponent extends BaseComponent<T> {
-      protected template = (locals: Record<string, any>) =>
-        `.test-component(id="${locals.id}", class=${locals.className})`
-
-      constructor(componentProps: T) {
-        super('test-component', componentProps)
-      }
-
-      public compile() {
-        this.compileComponent()
-      }
-    }
-
-    return new TestComponent(props)
-  }
-
   describe('Создание экземпляра', () => {
     it('Должен быть экземпляром базовового компонента', () => {
       const componentInstance = createComponent({})
