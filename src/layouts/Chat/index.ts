@@ -560,6 +560,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     const inputTrigger = event.target as HTMLInputElement
     const path = inputTrigger.checked ? paths.PROFILE : paths.MAIN
 
+    this.controller.dropContacts()
     Router.navigate(path, { isWithoutRender: true })
   }
 

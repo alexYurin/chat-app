@@ -43,7 +43,13 @@ export default class ChatContact extends BaseComponent<ChatContactProps> {
       }
 
       case 'isActive': {
-        HTMLContact.classList[newProp ? 'add' : 'remove']('contact_active')
+        const id = HTMLContact.getAttribute('id')
+
+        setTimeout(() => {
+          const newHTMLContact = document.querySelector(`#${id}`) as HTMLElement
+
+          newHTMLContact.classList[newProp ? 'add' : 'remove']('contact_active')
+        })
 
         return false
       }

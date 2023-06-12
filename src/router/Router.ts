@@ -22,10 +22,10 @@ export class Router {
       return
     }
 
-    const urlParams = this.searchParams || ''
+    this.searchParams = window.location.search || ''
 
     this.currentPathname = this.controller.getCurrentPathname(
-      window.location.pathname + urlParams
+      window.location.pathname + this.searchParams
     )
 
     this.setRoute()
@@ -85,7 +85,6 @@ export class Router {
 
     setTimeout(() => {
       this.onRoute()
-      this.navigate(this.currentPathname)
     }, INIT_APP_DELAY)
   }
 
@@ -125,6 +124,10 @@ export class Router {
       ...historyState,
       page: routeName,
     })
+  }
+
+  public getUrlParams() {
+    return this.searchParams
   }
 }
 

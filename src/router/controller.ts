@@ -46,26 +46,27 @@ export default class RouterController {
 
   public getCurrentPathname(pathname: string) {
     const { user, error } = store.getState()
-    const pathnameWithoutURLParams = pathname.split('?')[0]
 
-    const isDefinedPath = this.isDefinedPath(pathname)
+    const [path, urlParams] = pathname.split('?')
 
-    const isFakeErrorPath = pathname === this.routes.error.pathname && !error
+    const isDefinedPath = this.isDefinedPath(path)
+
+    const isFakeErrorPath = path === this.routes.error.pathname && !error
 
     const isMessengerPath =
-      pathname === this.routes.chat.pathname ||
-      this.routes.chat.View.allowedPaths.includes(pathname)
+      path === this.routes.chat.pathname ||
+      this.routes.chat.View.allowedPaths.includes(path)
 
     const isAuthPath =
-      pathname === this.routes.signIn.pathname ||
-      pathname === this.routes.signUp.pathname
+      path === this.routes.signIn.pathname ||
+      path === this.routes.signUp.pathname
 
     if (!isDefinedPath || isFakeErrorPath) {
       return this.routes.notFound.pathname
     }
 
     if (user && isMessengerPath) {
-      return pathname
+      return path
     }
 
     if (user && isAuthPath) {
@@ -76,6 +77,6 @@ export default class RouterController {
       return this.routes.signIn.pathname
     }
 
-    return pathname
+    return path
   }
 }

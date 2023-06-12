@@ -62,6 +62,10 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
     }
   }
 
+  protected onMount() {
+    this.onChangeContact()
+  }
+
   private triggerCreateChatForm() {
     const triggerClassname = 'chat-layout__create-form_active'
 
@@ -71,9 +75,16 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
     formContainer?.classList[isVisible ? 'remove' : 'add'](triggerClassname)
   }
 
-  private onChangeContact(event: Event) {
-    const target = event.target as HTMLElement
-    const contact = event.currentTarget as HTMLElement
+  private onChangeContact(event?: Event) {
+    const contactId = new URLSearchParams(Router.getUrlParams()).get('id')
+
+    const contactFromUrlParams = document.querySelector(
+      `#${PREFIX_CHAT_ID}${contactId}`
+    ) as HTMLElement
+
+    const target = event?.target as HTMLElement
+    const contact = (event?.currentTarget ||
+      contactFromUrlParams) as HTMLElement
 
     const { currentContact, contacts } = store.getState()
 
@@ -82,7 +93,7 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
       this.props.children
     )
 
-    const HTMLRemoveButton = target.closest('.contact__remove-button')
+    const HTMLRemoveButton = target?.closest('.contact__remove-button')
 
     if (HTMLRemoveButton) {
       if (isFunction(this.props.onRemoveChat)) {
