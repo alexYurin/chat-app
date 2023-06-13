@@ -1,4 +1,4 @@
-# SPA ChatApp [![Netlify Status](https://api.netlify.com/api/v1/badges/99c21787-a881-4b2c-a8e8-ee602548790a/deploy-status)](https://app.netlify.com/sites/yalex-chat/deploys)
+# SPA ChatApp
 
 Реализация чата как SPA приложения.
 В качестве базового шаблонизатора используеться **PugJs**.
@@ -14,9 +14,11 @@
 
 Написаны тесты для компонента, роутера и модуля отправки запросов с помощью **Mocha**, **Chai** и **Sinon**.
 
+Добавлен Dockerfile. Создан образ в репозитории docker-hub и задеплоен с помощью сервиса render.com
+
 ## Демо
 
-[yalex-chat.netlify.app](https://yalex-chat.netlify.app)
+[messenger-owdv.onrender.com](https://messenger-owdv.onrender.com)
 
 ## UI
 
