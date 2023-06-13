@@ -18,7 +18,7 @@
       "stylelint '**/*.scss'"
     ],
     "*.ts": [
-      "npm run test",
+      "ts-mocha -r src/test/test-env.ts --paths -p tsconfig.json **/*.spec.ts --recursive",
       "prettier --write .",
       "eslint --ext .ts src/ --fix"
     ]
