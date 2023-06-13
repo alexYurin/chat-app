@@ -2,7 +2,8 @@ import BaseLayout from 'layouts/Base'
 import { connect } from 'services/Store'
 import BaseComponent, { BaseComponentProps } from 'components/Base'
 
-const layout = (locals: Record<string, any>) => `.test-layout(id=${locals.id})`
+const layout = (locals: Record<string, unknown>) =>
+  `.test-layout(id=${locals.id})`
 
 class TestAuthLayout extends BaseLayout<BaseComponentProps> {
   protected template = layout

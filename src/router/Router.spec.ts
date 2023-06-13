@@ -1,5 +1,6 @@
 import Router from './Router'
 import { UserType } from 'types/user'
+import { ViewType } from './Route'
 import store from 'services/Store'
 import {
   TestChatView,
@@ -10,13 +11,20 @@ import {
 } from 'test/views'
 import { expect } from 'chai'
 
+const testViews = [
+  TestChatView,
+  TestSignInView,
+  TestSignUpView,
+  TestNotFoundView,
+  TestErrorView,
+]
+
 describe('Роутер', () => {
-  Router.use(TestChatView)
-    .use(TestSignInView)
-    .use(TestSignUpView)
-    .use(TestNotFoundView)
-    .use(TestErrorView)
-    .run()
+  testViews.forEach((testView) => {
+    Router.use(testView as ViewType)
+  })
+
+  Router.run()
 
   describe('Переходы роутера', () => {
     it('Переход назад', () => {

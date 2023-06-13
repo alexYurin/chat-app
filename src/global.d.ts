@@ -5,7 +5,7 @@ declare module '*.svg' {
 }
 
 declare module '*.pug' {
-  const content: (locals: Record<string, any>) => string
+  const content: (locals: Record<string, unknown>) => string
 
   export default content
 }

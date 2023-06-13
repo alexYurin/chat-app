@@ -1,6 +1,7 @@
-import 'styles'
+import 'styles/index.scss'
 import 'components'
 import { Router } from 'router/index'
+import { ViewType } from 'router/Route'
 import {
   ChatView,
   SignInView,
@@ -9,10 +10,10 @@ import {
   NotFoundView,
 } from './views'
 
-Router.use(ChatView)
-  .use(SignInView)
-  .use(SignInView)
-  .use(SignUpView)
-  .use(ErrorView)
-  .use(NotFoundView)
-  .run()
+const views = [ChatView, SignInView, SignUpView, ErrorView, NotFoundView]
+
+views.forEach((view) => {
+  Router.use(view as ViewType)
+})
+
+Router.run()

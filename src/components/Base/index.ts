@@ -53,7 +53,7 @@ export default abstract class BaseComponent<
     []
   private DOMElement: Element | null = null
 
-  protected template: (locals: Record<string, any>) => string = () => ''
+  protected template: (locals: Record<string, unknown>) => string = () => ''
   protected isMount = false
   protected isInitRender = true
   protected targetQueryForBrowserEvents: null | string = null
@@ -132,9 +132,11 @@ export default abstract class BaseComponent<
   protected compileComponent() {
     const fragment = document.createElement('template')
 
+    const props = this.props as BaseComponentProps
+
     fragment.innerHTML = Templator.compile(this.template, {
-      ...this.props,
-      children: this.props.children?.map((child) => {
+      ...props,
+      children: props.children?.map((child) => {
         if (child instanceof BaseComponent) {
           return child.createTemplatePlaceholder()
         }

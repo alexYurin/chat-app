@@ -1,7 +1,13 @@
 import BaseLayout from 'layouts/Base'
 import { BaseComponentProps } from 'components/Base'
 
-export type ViewType = any
+export interface ViewType {
+  new (): BaseLayout<BaseComponentProps>
+  id: string
+  title: string
+  allowedPaths: string[]
+  pathname: string
+}
 
 export default class Route {
   private layout: BaseLayout<BaseComponentProps> | null = null

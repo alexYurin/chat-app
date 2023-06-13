@@ -1,7 +1,7 @@
 // import pug from 'pug'
 import BaseTemplator from './BaseTemplator'
 
-export type PugLocalsPropsType = Record<string, any>
+export type PugLocalsPropsType = Record<string, unknown>
 
 export type PugTemplateCompileFunctionType = (
   locals?: PugLocalsPropsType
