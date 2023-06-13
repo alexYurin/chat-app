@@ -18,6 +18,7 @@
       "stylelint '**/*.scss'"
     ],
     "*.ts": [
+      "npm run test",
       "prettier --write .",
       "eslint --ext .ts src/ --fix"
     ]
