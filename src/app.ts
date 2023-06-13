@@ -1,4 +1,4 @@
-import 'styles/index.scss'
+import 'styles'
 import 'components'
 import { Router } from 'router/index'
 import { ViewType } from 'router/Route'
