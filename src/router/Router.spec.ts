@@ -1,4 +1,3 @@
-import { DOM } from 'test/test-env'
 import Router from './Router'
 import { UserType } from 'types/user'
 import store from 'services/Store'
@@ -9,7 +8,7 @@ import {
   TestNotFoundView,
   TestErrorView,
 } from 'test/views'
-import { assert, expect } from 'chai'
+import { expect } from 'chai'
 
 describe('Роутер', () => {
   Router.use(TestChatView)

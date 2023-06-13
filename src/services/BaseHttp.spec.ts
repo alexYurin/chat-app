@@ -1,10 +1,27 @@
+import { useFakeXMLHttpRequest, SinonFakeXMLHttpRequest } from 'sinon'
 import BaseHTTP from './BaseHttp'
-import { assert, expect } from 'chai'
+import { expect } from 'chai'
 
 describe('HTTP', () => {
-  describe('Создание экземпляра', () => {
+  describe('Проверка методов BaseHttp', () => {
+    const xhr = useFakeXMLHttpRequest()
+
+    let request: SinonFakeXMLHttpRequest
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    global.XMLHttpRequest = xhr
+
+    xhr.onCreate = (xhrRequest: SinonFakeXMLHttpRequest) => {
+      request = xhrRequest
+    }
+
     const baseHttp = new BaseHTTP(process.env.BASE_URL_API)
 
-    // expect(baseHttp.request('')).to.be.an.instanceOf(XMLHttpRequest)
+    it('Метод .get() должен делать GET запрос', () => {
+      baseHttp.get('/user')
+
+      expect(request.method).to.eq('GET')
+    })
   })
 })
