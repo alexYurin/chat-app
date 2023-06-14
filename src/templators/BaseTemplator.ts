@@ -5,5 +5,8 @@ export default abstract class BaseTemplator {
     return this
   }
 
-  public abstract compile<T extends object>(template: string, props: T): string
+  public abstract compile<T extends Record<string, unknown>>(
+    template: unknown,
+    props: T
+  ): string
 }

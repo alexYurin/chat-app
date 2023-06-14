@@ -3,7 +3,7 @@ import { ChatMessage } from 'layouts/Chat/components/index'
 import { ChatMessageType } from 'types/chat'
 import { isEquals, first } from 'utils/index'
 
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 import './styles.scss'
 
 export interface ChatMessagesListProps extends BaseComponentProps {

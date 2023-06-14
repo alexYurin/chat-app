@@ -1,5 +1,4 @@
 import { AppHistory } from 'services/index'
-import routes from 'router/routes'
 import Route, { ViewType } from './Route'
 import RouterController from './controller'
 
@@ -9,20 +8,24 @@ export type AppHistoryStateType = {
   isWithoutRender?: boolean
 }
 
-class Router {
+export class Router {
   private currentPathname = window.location.pathname
   private currentRoute: Route | null = null
   private routes: Route[] = []
   private history = new AppHistory()
-  private controller = new RouterController(routes)
+  private controller = new RouterController()
+  private searchParams = window.location.search
+  private paths: string[] = []
 
   private onRoute() {
     if (this.currentRoute?.getPathname() === window.location.pathname) {
       return
     }
 
+    this.searchParams = window.location.search || ''
+
     this.currentPathname = this.controller.getCurrentPathname(
-      window.location.pathname
+      window.location.pathname + this.searchParams
     )
 
     this.setRoute()
@@ -40,7 +43,7 @@ class Router {
     }
 
     if (!route) {
-      return this.navigate(routes.notFound.pathname)
+      return this.navigate('/not-found')
     }
 
     if (this.currentRoute) {
@@ -68,9 +71,11 @@ class Router {
     const routeName = nextRoute?.getName()
 
     this.history.pushTo(currentPathname, routeName, {
-      page: routeName,
       ...state,
+      page: routeName,
     })
+
+    this.searchParams = ''
   }
 
   public async run() {
@@ -80,7 +85,6 @@ class Router {
 
     setTimeout(() => {
       this.onRoute()
-      this.navigate(this.currentPathname)
     }, INIT_APP_DELAY)
   }
 
@@ -102,6 +106,36 @@ class Router {
 
   public back() {
     this.history.back()
+  }
+
+  public setURLParams(params: Record<string, string>, pathname?: string) {
+    const urlParams = new URLSearchParams(window.location.search)
+    const historyState = this.history.getState<AppHistoryStateType>()
+    const routeName = this.currentRoute?.getName()
+    const oath = pathname
+      ? this.controller.getCurrentPathname(pathname)
+      : this.currentPathname
+
+    Object.entries(params).forEach(([key, value]) => {
+      urlParams.set(key, value)
+    })
+
+    this.history.pushTo(`${oath}?${urlParams.toString()}`, routeName, {
+      ...historyState,
+      page: routeName,
+    })
+  }
+
+  public getUrlParams() {
+    return this.searchParams
+  }
+
+  public getHistory() {
+    return this.history
+  }
+
+  public getCurentPathname() {
+    return this.currentPathname
   }
 }
 

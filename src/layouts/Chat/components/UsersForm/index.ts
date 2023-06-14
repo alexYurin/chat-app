@@ -7,7 +7,7 @@ import { UserType } from 'types/user'
 import Validation from 'components/Form/Validation'
 import { isFunction, isEquals } from 'utils/index'
 
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 import './styles.scss'
 
 export type ChatFormUsersValuesType = {

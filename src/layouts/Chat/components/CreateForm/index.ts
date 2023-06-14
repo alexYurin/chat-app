@@ -5,7 +5,7 @@ import { InputProps } from 'components/Input'
 import Validation from 'components/Form/Validation'
 import { isFunction } from 'utils/index'
 
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 import './styles.scss'
 
 export type ChatFormCreateValueType = {

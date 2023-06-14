@@ -3,7 +3,7 @@ import BaseComponent, {
   ComponentStatusType,
 } from 'components/Base/index'
 import { ValidationProps } from 'components/Form/Validation'
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 
 import './styles.scss'
 

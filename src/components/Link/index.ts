@@ -3,7 +3,7 @@ import BaseComponent, {
   ComponentBrowserEventListenerPropType,
 } from 'components/Base/index'
 import Router from 'router/Router'
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 
 import './styles.scss'
 

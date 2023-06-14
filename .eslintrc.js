@@ -20,7 +20,8 @@ module.exports = {
   rules: {
     'prettier/prettier': 2,
     'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': ['error'],
+    '@typescript-eslint/no-unused-vars': ['warn'],
+    '@typescript-eslint/no-var-requires': 0,
     semi: ['error', 'never'],
     quotes: ['error', 'single'],
     indent: ['error', 2, { SwitchCase: 1 }],

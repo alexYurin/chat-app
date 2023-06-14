@@ -33,7 +33,7 @@ export default class BaseHTTP {
     return this
   }
 
-  get: HTTPMethodType = (url, options = {}) => {
+  public get: HTTPMethodType = (url, options = {}) => {
     url = options.data ? `${url}?${queryStringify(options.data)}` : url
 
     return this.request(url, {
@@ -43,7 +43,7 @@ export default class BaseHTTP {
     })
   }
 
-  post: HTTPMethodType = (url, options = {}) => {
+  public post: HTTPMethodType = (url, options = {}) => {
     return this.request(url, {
       ...options,
       timeout: options.timeout,
@@ -51,7 +51,7 @@ export default class BaseHTTP {
     })
   }
 
-  put: HTTPMethodType = (url, options = {}) => {
+  public put: HTTPMethodType = (url, options = {}) => {
     return this.request(url, {
       ...options,
       timeout: options.timeout,
@@ -59,7 +59,7 @@ export default class BaseHTTP {
     })
   }
 
-  delete: HTTPMethodType = (url, options = {}) => {
+  public delete: HTTPMethodType = (url, options = {}) => {
     return this.request(url, {
       ...options,
       timeout: options.timeout,
@@ -67,7 +67,7 @@ export default class BaseHTTP {
     })
   }
 
-  request: HTTPMethodType = (
+  public request: HTTPMethodType = (
     url,
     options = {
       method: METHODS.GET,

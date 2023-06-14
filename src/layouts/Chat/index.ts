@@ -1,4 +1,4 @@
-import layout from 'bundle-text:./layout.pug'
+import layout from './layout.pug'
 import BaseLayout from 'layouts/Base/index'
 import ChatController from './controller'
 import { UserType } from 'types/user'
@@ -30,7 +30,7 @@ import './styles.scss'
 
 const RESOURCES_URL = process.env.RESOURCES_URL as string
 
-const paths = {
+export const paths = {
   MAIN: '/messenger',
   PROFILE: '/settings',
 }
@@ -560,6 +560,7 @@ class ChatLayout extends BaseLayout<ChatPropsType> {
     const inputTrigger = event.target as HTMLInputElement
     const path = inputTrigger.checked ? paths.PROFILE : paths.MAIN
 
+    this.controller.dropContacts()
     Router.navigate(path, { isWithoutRender: true })
   }
 

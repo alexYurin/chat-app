@@ -7,9 +7,7 @@ const DEFAULT_TEMPLATOR = process.env.HTML_TEMPLATOR as TemplatorType
 const createTemplator = (templator: TemplatorType): BaseTemplator => {
   switch (templator) {
     case 'pug':
-      return new PugTemplator({
-        pretty: true,
-      })
+      return new PugTemplator()
 
     default:
       throw new Error(`Unknown templator: ${templator}`)

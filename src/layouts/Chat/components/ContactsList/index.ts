@@ -1,8 +1,10 @@
 import BaseComponent, { BaseComponentProps } from 'components/Base/index'
 import ChatContact, { ChatContactProps } from 'layouts/Chat/components/Contact'
 import { ChatContactRoomType } from 'types/chat'
-import templateString from 'bundle-text:./template.pug'
+import templateString from './template.pug'
 import { store } from 'services/index'
+import Router from 'router/Router'
+import { paths } from 'layouts/Chat'
 import { Button, Loader } from 'components/index'
 import { isEquals, isFunction } from 'utils/index'
 
@@ -60,6 +62,10 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
     }
   }
 
+  protected onMount() {
+    this.onChangeContact()
+  }
+
   private triggerCreateChatForm() {
     const triggerClassname = 'chat-layout__create-form_active'
 
@@ -69,9 +75,16 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
     formContainer?.classList[isVisible ? 'remove' : 'add'](triggerClassname)
   }
 
-  private onChangeContact(event: Event) {
-    const target = event.target as HTMLElement
-    const contact = event.currentTarget as HTMLElement
+  private onChangeContact(event?: Event) {
+    const contactId = new URLSearchParams(Router.getUrlParams()).get('id')
+
+    const contactFromUrlParams = document.querySelector(
+      `#${PREFIX_CHAT_ID}${contactId}`
+    ) as HTMLElement
+
+    const target = event?.target as HTMLElement
+    const contact = (event?.currentTarget ||
+      contactFromUrlParams) as HTMLElement
 
     const { currentContact, contacts } = store.getState()
 
@@ -80,7 +93,7 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
       this.props.children
     )
 
-    const HTMLRemoveButton = target.closest('.contact__remove-button')
+    const HTMLRemoveButton = target?.closest('.contact__remove-button')
 
     if (HTMLRemoveButton) {
       if (isFunction(this.props.onRemoveChat)) {
@@ -124,6 +137,13 @@ export default class ChatContactsList extends BaseComponent<ChatContactsListProp
 
       const { id, client, detail, users, isActive, isLoading, isConnected } =
         contactInstance.getProps()
+
+      Router.setURLParams(
+        {
+          id: `${detail.id}`,
+        },
+        paths.MAIN
+      )
 
       const contactProps = {
         id,

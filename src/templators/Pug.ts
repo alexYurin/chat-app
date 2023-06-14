@@ -1,18 +1,21 @@
-import pug from 'pug'
+// import pug from 'pug'
 import BaseTemplator from './BaseTemplator'
 
+export type PugLocalsPropsType = Record<string, unknown>
+
+export type PugTemplateCompileFunctionType = (
+  locals?: PugLocalsPropsType
+) => string
+
 export default class PugTemplator extends BaseTemplator {
-  constructor(private templatorOptions: pug.Options = {}) {
+  constructor() {
     super('pug')
   }
 
-  private createHTMLCompiler(template: string): ReturnType<typeof pug.compile> {
-    return pug.compile(template.trim(), this.templatorOptions)
-  }
-
-  public compile(template: string, props: pug.LocalsObject) {
-    const compileToHTML = this.createHTMLCompiler(template)
-
-    return compileToHTML(props)
+  public compile(
+    templateFunction: PugTemplateCompileFunctionType,
+    props: PugLocalsPropsType
+  ) {
+    return templateFunction(props)
   }
 }

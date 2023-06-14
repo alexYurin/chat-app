@@ -1,8 +1,13 @@
-import * as views from 'views/index'
 import BaseLayout from 'layouts/Base'
 import { BaseComponentProps } from 'components/Base'
 
-export type ViewType = (typeof views)[keyof typeof views]
+export interface ViewType {
+  new (): BaseLayout<BaseComponentProps>
+  id: string
+  title: string
+  allowedPaths: string[]
+  pathname: string
+}
 
 export default class Route {
   private layout: BaseLayout<BaseComponentProps> | null = null
@@ -18,7 +23,7 @@ export default class Route {
   }
 
   public render() {
-    this.layout = new this.View() as BaseLayout<BaseComponentProps>
+    this.layout = new this.View()
 
     if (this.layout) {
       document.title = this.View.title

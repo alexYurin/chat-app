@@ -1,27 +1,25 @@
-import * as Views from 'views/index'
-
 const routes = {
   signIn: {
-    pathname: Views.SignInView.pathname,
-    View: Views.SignInView,
+    pathname: '/',
+    allowedPaths: [],
   },
   signUp: {
-    pathname: Views.SignUpView.pathname,
-    View: Views.SignUpView,
+    pathname: '/sign-up',
+    allowedPaths: [],
   },
   chat: {
-    pathname: Views.ChatView.pathname,
-    View: Views.ChatView,
+    pathname: '/messenger',
+    allowedPaths: ['/settings'],
   },
   notFound: {
-    pathname: Views.NotFoundView.pathname,
-    View: Views.NotFoundView,
+    pathname: '/not-found',
+    allowedPaths: [],
   },
   error: {
-    pathname: Views.ErrorView.pathname,
-    View: Views.ErrorView,
+    pathname: '/error',
+    allowedPaths: [],
   },
-} as const
+}
 
 export type RoutesTypes = typeof routes
 

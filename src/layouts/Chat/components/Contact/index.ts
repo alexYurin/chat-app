@@ -5,8 +5,8 @@ import { store } from 'services/index'
 import { parseDateToTime } from 'utils/index'
 import { isEquals } from 'utils/index'
 
-import templateString from 'bundle-text:./template.pug'
-import removeIconSrc from 'data-url:static/images/remove.svg'
+import templateString from './template.pug'
+import removeIconSrc from 'static/images/remove.svg'
 
 import './styles.scss'
 
@@ -43,7 +43,13 @@ export default class ChatContact extends BaseComponent<ChatContactProps> {
       }
 
       case 'isActive': {
-        HTMLContact.classList[newProp ? 'add' : 'remove']('contact_active')
+        const id = HTMLContact.getAttribute('id')
+
+        setTimeout(() => {
+          const newHTMLContact = document.querySelector(`#${id}`) as HTMLElement
+
+          newHTMLContact.classList[newProp ? 'add' : 'remove']('contact_active')
+        })
 
         return false
       }

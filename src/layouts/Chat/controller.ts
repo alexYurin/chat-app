@@ -342,4 +342,9 @@ export default class ChatController {
 
     return 'Ошибка при выходе из аккаунта'
   }
+
+  public dropContacts() {
+    store.set('currentContact', null)
+    store.set('messages', [])
+  }
 }
